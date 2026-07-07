@@ -384,21 +384,45 @@ button:focus-visible {
   padding: 32px 24px 96px;
 }
 
+/* No horizontal padding: block bands (P5 full-bleed envelope in
+   @forge/blocks) paint edge to edge of the lesson page; the title aligns
+   to the same centered 46rem content column the blocks use. */
 .fe-canvas-lesson {
-  max-width: 760px;
+  max-width: 860px;
   margin: 0 auto;
   background: var(--forge-bg, #ffffff);
   color: var(--forge-text, #1f2328);
   font-family: var(--forge-body-font, inherit), sans-serif;
   border-radius: var(--fe-radius);
   box-shadow: var(--fe-shadow);
-  padding: 40px 48px 64px;
+  padding: 40px 0 64px;
+  overflow: hidden;
 }
 
+/* Lesson title edited in place (P1): an input styled as the h1. */
 .fe-canvas-lesson-title {
+  display: block;
+  width: 100%;
   font-family: var(--forge-heading-font, inherit), sans-serif;
+  font-weight: 700;
   font-size: 30px;
-  margin: 0 0 12px;
+  margin: 0 auto 12px;
+  max-width: 46rem;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+}
+
+.fe-canvas-lesson-title:hover {
+  box-shadow: 0 0 0 1px var(--fe-border);
+}
+
+.fe-canvas-lesson-title:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--fe-primary-soft), 0 0 0 1px var(--fe-primary);
 }
 
 .fe-canvas-panel {
@@ -435,42 +459,117 @@ button:focus-visible {
   box-shadow: 0 0 0 2px var(--fe-primary-soft);
 }
 
-.fe-block-toolbar {
+/* Contextual block rail (P2, Rise teardown "Contextual Block Rail"):
+   compact vertical icon stack attached to the block's left edge, shown on
+   hover/selection. The block band's content column is centered, so the
+   left gutter is empty and the rail never overlaps content. */
+.fe-block-rail {
   position: absolute;
-  top: -14px;
-  right: 8px;
-  z-index: 5;
+  top: 8px;
+  left: 6px;
+  z-index: 6;
   display: none;
-  align-items: center;
-  gap: 4px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
   background: var(--fe-surface);
   border: 1px solid var(--fe-border);
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow: var(--fe-shadow);
-  padding: 2px 6px;
+  padding: 4px;
+  max-width: 132px;
 }
 
-.fe-block-frame:hover .fe-block-toolbar,
-.fe-block-frame-selected .fe-block-toolbar {
+.fe-block-frame:hover .fe-block-rail,
+.fe-block-frame:focus-within .fe-block-rail,
+.fe-block-frame-selected .fe-block-rail {
+  display: flex;
+}
+
+.fe-rail-chip {
   display: inline-flex;
-}
-
-.fe-block-toolbar-label {
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--fe-border);
+  background: var(--fe-bg);
+  border-radius: 6px;
+  padding: 3px 6px;
   font-size: 11px;
   font-weight: 600;
+  color: var(--fe-text);
+  white-space: nowrap;
+}
+
+.fe-rail-chip:hover {
+  border-color: var(--fe-primary);
+  color: var(--fe-primary);
+}
+
+.fe-rail-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Variant menu popover opened from the block-type chip. */
+.fe-variant-menu {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 6px);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 190px;
+  background: var(--fe-surface);
+  border: 1px solid var(--fe-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(20, 23, 28, 0.18);
+  padding: 6px;
+}
+
+.fe-variant-menu-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--fe-muted);
-  padding-right: 2px;
+  padding: 2px 8px 6px;
 }
 
-.fe-variant-select {
-  font-size: 12px;
-  padding: 2px 4px;
+.fe-variant-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  text-align: left;
 }
 
+.fe-variant-option:hover {
+  background: var(--fe-primary-soft);
+  color: var(--fe-primary);
+}
+
+.fe-variant-option-active {
+  font-weight: 600;
+  color: var(--fe-primary);
+}
+
+.fe-variant-option-check {
+  display: inline-flex;
+  width: 12px;
+  justify-content: center;
+}
+
+/* Insert affordances (P2): Rise-style round accent plus, revealed above the
+   hovered block, below it (the next slot's plus), and on direct hover. */
 .fe-insert {
   display: flex;
   justify-content: center;
-  height: 18px;
+  height: 22px;
   align-items: center;
 }
 
@@ -478,21 +577,25 @@ button:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 1px solid var(--fe-border);
-  background: var(--fe-surface);
-  color: var(--fe-muted);
+  border: none;
+  background: var(--forge-primary, var(--fe-primary));
+  color: #ffffff;
+  box-shadow: var(--fe-shadow);
   opacity: 0;
-  transition: opacity 120ms ease;
+  transform: scale(0.85);
+  transition: opacity 120ms ease, transform 120ms ease;
 }
 
 .fe-insert:hover .fe-insert-btn,
+.fe-block-slot:hover .fe-insert-btn,
+.fe-block-slot:hover + .fe-block-slot .fe-insert-btn,
+.fe-block-slot:hover + .fe-insert .fe-insert-btn,
 .fe-insert-btn:focus-visible {
   opacity: 1;
-  border-color: var(--fe-primary);
-  color: var(--fe-primary);
+  transform: scale(1);
 }
 
 /* ---- palette modal ---- */
@@ -615,6 +718,34 @@ button:focus-visible {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--fe-muted);
+}
+
+/* Envelope settings demoted into a collapsed Format group (P3-lite). */
+.fe-settings-format {
+  border-bottom: 1px solid var(--fe-border);
+}
+
+.fe-settings-format > summary {
+  cursor: pointer;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fe-muted);
+}
+
+.fe-settings-format > summary:hover {
+  color: var(--fe-primary);
+}
+
+.fe-settings-format[open] > summary {
+  padding-bottom: 0;
+}
+
+.fe-settings-format .fe-settings-section {
+  border-bottom: none;
+  padding-top: 12px;
 }
 
 .fe-field {

@@ -31,12 +31,12 @@ const courseIdOr = (value: unknown): string =>
 
 const migrate090To100: CourseDocMigration = {
   from: "0.9.0",
-  to: CURRENT_SCHEMA_VERSION,
+  to: "1.0.0",
   up(input: unknown): unknown {
     const source = isRecord(input) ? cloneJson(input) : {};
 
     return {
-      schemaVersion: CURRENT_SCHEMA_VERSION,
+      schemaVersion: "1.0.0",
       id: courseIdOr(source.id),
       title: stringOr(source.title, "Untitled course"),
       description: stringOr(source.description, ""),
@@ -52,7 +52,26 @@ const migrate090To100: CourseDocMigration = {
   },
 };
 
-export const courseDocMigrationRegistry = [migrate090To100] as const;
+// 1.0.0 -> 1.1.0 (ADR 0004): the teardown additions (text audioMediaId,
+// button item title/description, course author) are all optional, so the
+// upgrade is a pure schemaVersion bump.
+const migrate100To110: CourseDocMigration = {
+  from: "1.0.0",
+  to: "1.1.0",
+  up(input: unknown): unknown {
+    const source = isRecord(input) ? cloneJson(input) : {};
+
+    return {
+      ...source,
+      schemaVersion: "1.1.0",
+    };
+  },
+};
+
+export const courseDocMigrationRegistry = [
+  migrate090To100,
+  migrate100To110,
+] as const;
 
 export function migrateCourseDoc(input: unknown): CourseDoc {
   const firstParse = courseDocSchema.safeParse(input);

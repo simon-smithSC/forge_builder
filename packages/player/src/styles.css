@@ -91,6 +91,12 @@
   margin: 0 0 0.75rem;
 }
 
+.fp-cover-author {
+  font-size: 0.95rem;
+  color: color-mix(in srgb, var(--forge-text, #1f2328) 70%, transparent);
+  margin: 0 0 0.75rem;
+}
+
 .fp-cover-count {
   color: color-mix(in srgb, var(--forge-text, #1f2328) 65%, transparent);
   margin: 0 0 2rem;
@@ -202,14 +208,20 @@
   padding: 2rem 1.5rem 4rem;
 }
 
+/* The lesson column is the block BAND width (matches the editor canvas);
+   @forge/blocks centers its own content column inside each band, so the
+   title/footer align to the same 46rem column as block content. */
 .fp-lesson {
-  max-width: 760px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
 .fp-lesson-title {
   font-size: 2rem;
-  margin: 0 0 1.5rem;
+  margin: 0 auto 1.5rem;
+  max-width: 46rem;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
 }
 
 .fp-lesson-title:focus {
@@ -221,8 +233,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 3rem;
-  padding-top: 1.5rem;
+  margin: 3rem auto 0;
+  max-width: 46rem;
+  padding: 1.5rem 1.5rem 0;
+  box-sizing: border-box;
   border-top: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 12%, transparent);
 }
 

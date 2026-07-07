@@ -21,6 +21,7 @@ import { checklistEntry } from "./families/checklist.js";
 
 export type {
   BlockEvents,
+  InlineEditingPort,
   RenderContext,
   RenderMode,
 } from "./context.js";
@@ -30,13 +31,19 @@ export {
   useRenderContext,
 } from "./context.js";
 export type {
+  BlockContentWidth,
   BlockRegistryEntry,
   BlockRendererProps,
+  ContentWidthHint,
   PaletteGroup,
   PaletteMeta,
 } from "./registry.js";
-export { validateWithSchema, variantsOf } from "./registry.js";
-export { Html, MediaPlaceholder } from "./html.js";
+export {
+  resolveContentWidth,
+  validateWithSchema,
+  variantsOf,
+} from "./registry.js";
+export { EditableHtml, Html, MediaPlaceholder } from "./html.js";
 export { BlockView } from "./blockView.js";
 
 export const blockRegistry: Record<BlockFamily, BlockRegistryEntry> = {

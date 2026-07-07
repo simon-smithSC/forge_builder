@@ -1,3 +1,7 @@
+// Flashcards rebuilt to the Rise treatment (teardown Flashcards, lines
+// 817-856): fixed-ratio cards with a 3D flip transition (CSS handles
+// prefers-reduced-motion), a "Click to flip" hint, grid and stack layouts
+// with a "1 of 3" counter on the stack.
 import type { ReactElement } from "react";
 import { useState } from "react";
 import type { BlockFor } from "@forge/schema";
@@ -37,25 +41,34 @@ function FlipCard({
   onFlip: () => void;
 }): ReactElement {
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      className={`fb-flashcard-card${flipped ? " fb-flashcard-card-flipped" : ""}`}
-      aria-pressed={flipped}
-      onClick={onFlip}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onFlip();
-        }
-      }}
-    >
-      <span className="fb-flashcard-side-label" aria-hidden="true">
-        {flipped ? "Back" : "Front"}
-      </span>
-      <SideContent side={flipped ? card.back : card.front} />
+    <div className="fb-flashcard-scene">
+      <div
+        role="button"
+        tabIndex={0}
+        className={`fb-flashcard-card${flipped ? " fb-flashcard-card-flipped" : ""}`}
+        aria-pressed={flipped}
+        aria-label={flipped ? "Card back. Click to flip" : "Card front. Click to flip"}
+        onClick={onFlip}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onFlip();
+          }
+        }}
+      >
+        <div className="fb-flashcard-face fb-flashcard-face-front">
+          <SideContent side={card.front} />
+        </div>
+        <div className="fb-flashcard-face fb-flashcard-face-back">
+          <SideContent side={card.back} />
+        </div>
+      </div>
     </div>
   );
+}
+
+function FlipHint(): ReactElement {
+  return <p className="fb-flashcard-hint">Click to flip</p>;
 }
 
 function FlashcardRendererImpl({ block }: BlockRendererProps): ReactElement {
@@ -78,10 +91,7 @@ function FlashcardRendererImpl({ block }: BlockRendererProps): ReactElement {
     setSeen(nextSeen);
     if (mode === "player") {
       events.onInteracted?.(b.id, { cardId });
-      if (
-        !completed &&
-        visibleCards.every((card) => nextSeen.has(card.id))
-      ) {
+      if (!completed && visibleCards.every((card) => nextSeen.has(card.id))) {
         setCompleted(true);
         events.onCompleted?.(b.id);
       }
@@ -90,15 +100,18 @@ function FlashcardRendererImpl({ block }: BlockRendererProps): ReactElement {
 
   if (b.variant === "grid") {
     return (
-      <div className="fb-flashcard fb-flashcard-grid">
-        {visibleCards.map((card) => (
-          <FlipCard
-            key={card.id}
-            card={card}
-            flipped={flipped.has(card.id)}
-            onFlip={() => flip(card.id)}
-          />
-        ))}
+      <div className="fb-flashcard">
+        <div className="fb-flashcard-grid">
+          {visibleCards.map((card) => (
+            <FlipCard
+              key={card.id}
+              card={card}
+              flipped={flipped.has(card.id)}
+              onFlip={() => flip(card.id)}
+            />
+          ))}
+        </div>
+        <FlipHint />
       </div>
     );
   }
@@ -115,6 +128,7 @@ function FlashcardRendererImpl({ block }: BlockRendererProps): ReactElement {
             onFlip={() => flip(current.id)}
           />
         ) : null}
+        <FlipHint />
         <div className="fb-flashcard-stack-controls">
           <button
             type="button"
@@ -123,10 +137,10 @@ function FlashcardRendererImpl({ block }: BlockRendererProps): ReactElement {
             disabled={safeIndex === 0}
             onClick={() => setIndex(safeIndex - 1)}
           >
-            &#8592;
+            <span aria-hidden="true">&#8592;</span>
           </button>
           <span className="fb-flashcard-stack-counter" aria-live="polite">
-            {safeIndex + 1} / {visibleCards.length}
+            {safeIndex + 1} of {visibleCards.length}
           </span>
           <button
             type="button"
@@ -135,7 +149,7 @@ function FlashcardRendererImpl({ block }: BlockRendererProps): ReactElement {
             disabled={safeIndex === visibleCards.length - 1}
             onClick={() => setIndex(safeIndex + 1)}
           >
-            &#8594;
+            <span aria-hidden="true">&#8594;</span>
           </button>
         </div>
       </div>
@@ -152,6 +166,7 @@ function FlashcardRendererImpl({ block }: BlockRendererProps): ReactElement {
           onFlip={() => flip(single.id)}
         />
       ) : null}
+      <FlipHint />
     </div>
   );
 }
@@ -165,6 +180,7 @@ export const flashcardEntry: BlockRegistryEntry = {
     description: "Flip cards with text or image sides.",
     icon: "layers",
   },
+  contentWidth: { grid: "wide" },
   createDefaultPayload: () => ({
     cards: [
       {

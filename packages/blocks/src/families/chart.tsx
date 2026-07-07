@@ -11,9 +11,11 @@ type ChartBlock =
 
 type ChartItem = ChartBlock["payload"]["items"][number];
 
+// Default series derive from the course theme (Rise charts are theme-bound,
+// teardown Chart, lines 907-946); later series fall back to fixed hues.
 const FALLBACK_COLORS = [
-  "#1f6feb",
-  "#dd6b20",
+  "var(--fb-primary)",
+  "var(--fb-accent)",
   "#2da44e",
   "#8250df",
   "#cf222e",
@@ -23,7 +25,11 @@ const FALLBACK_COLORS = [
 ] as const;
 
 function colorFor(item: ChartItem, index: number): string {
-  return item.color ?? FALLBACK_COLORS[index % FALLBACK_COLORS.length] ?? "#1f6feb";
+  return (
+    item.color ??
+    FALLBACK_COLORS[index % FALLBACK_COLORS.length] ??
+    "var(--fb-primary)"
+  );
 }
 
 const LEFT = 50;

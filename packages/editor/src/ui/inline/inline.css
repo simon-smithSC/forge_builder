@@ -1,0 +1,78 @@
+/* In-place canvas editing chrome (fe-inline- prefix). The ProseMirror root
+   carries the same fb-html classes the shared Html component emits, so the
+   text renders exactly like the player output; this file only adds the
+   hover/focus ring, the floating toolbar, and the transient error chip. */
+
+.fe-inline-editor {
+  position: relative;
+}
+
+/* Borderless at rest; a quiet ring only on hover, a firm one while editing. */
+.fe-inline-content {
+  outline: none;
+  border-radius: 4px;
+  transition: box-shadow 100ms ease;
+}
+
+.fe-inline-editor:hover .fe-inline-content {
+  box-shadow: 0 0 0 1px var(--fe-border);
+}
+
+.fe-inline-editor-focused .fe-inline-content,
+.fe-inline-content:focus {
+  box-shadow: 0 0 0 2px var(--fe-primary-soft), 0 0 0 1px var(--fe-primary);
+}
+
+/* Floating minimal toolbar above the active field. */
+.fe-inline-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(calc(-100% - 6px));
+  z-index: 30;
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px 4px;
+  background: var(--fe-surface);
+  border: 1px solid var(--fe-border);
+  border-radius: 6px;
+  box-shadow: var(--fe-shadow);
+}
+
+.fe-inline-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  padding: 4px;
+  color: var(--fe-muted);
+}
+
+.fe-inline-btn:hover {
+  background: var(--fe-primary-soft);
+  color: var(--fe-primary);
+}
+
+.fe-inline-btn-active {
+  background: var(--fe-primary-soft);
+  color: var(--fe-primary);
+}
+
+/* Transient validation error under the field. */
+.fe-inline-error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: #fdecea;
+  color: var(--fe-danger);
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: var(--fe-shadow);
+}

@@ -7,7 +7,7 @@ import {
 } from "./sanitizer.js";
 import { ULID_PATTERN } from "./ulid.js";
 
-export const CURRENT_SCHEMA_VERSION = "1.0.0";
+export const CURRENT_SCHEMA_VERSION = "1.1.0";
 
 const idSchema = z.string().min(1);
 export const ulidSchema = z.string().regex(new RegExp(ULID_PATTERN), {
@@ -118,18 +118,21 @@ export const blockFamilySchema = z.enum(blockFamilyNames);
 const textParagraphPayloadSchema = z
   .object({
     html: htmlFragmentSchema,
+    audioMediaId: mediaIdSchema.optional(),
   })
   .strict();
 
 const textHeadingPayloadSchema = z
   .object({
     heading: htmlFragmentSchema,
+    audioMediaId: mediaIdSchema.optional(),
   })
   .strict();
 
 const textSubheadingPayloadSchema = z
   .object({
     subheading: htmlFragmentSchema,
+    audioMediaId: mediaIdSchema.optional(),
   })
   .strict();
 
@@ -137,6 +140,7 @@ const textHeadingParagraphPayloadSchema = z
   .object({
     heading: htmlFragmentSchema,
     html: htmlFragmentSchema,
+    audioMediaId: mediaIdSchema.optional(),
   })
   .strict();
 
@@ -144,6 +148,7 @@ const textSubheadingParagraphPayloadSchema = z
   .object({
     subheading: htmlFragmentSchema,
     html: htmlFragmentSchema,
+    audioMediaId: mediaIdSchema.optional(),
   })
   .strict();
 
@@ -159,6 +164,7 @@ const textTwoColumnPayloadSchema = z
           .strict(),
       )
       .length(2),
+    audioMediaId: mediaIdSchema.optional(),
   })
   .strict();
 
@@ -462,6 +468,8 @@ const buttonsPayloadSchema = z
           .object({
             id: idSchema,
             label: z.string().min(1),
+            title: htmlFragmentSchema.optional(),
+            description: htmlFragmentSchema.optional(),
             destination: buttonDestinationSchema,
           })
           .strict(),
@@ -1178,6 +1186,7 @@ export const courseDocSchema = z
     id: ulidSchema,
     title: z.string().min(1),
     description: z.string(),
+    author: z.string().min(1).optional(),
     defaultLocale: bcp47LocaleSchema,
     theme: themeSchema,
     labelSet: labelSetSchema,

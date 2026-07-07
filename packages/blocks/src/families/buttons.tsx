@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import type { BlockFor } from "@forge/schema";
 import { useRenderContext } from "../context.js";
+import { EditableHtml } from "../html.js";
 import type { BlockRegistryEntry, BlockRendererProps } from "../registry.js";
 import { validateWithSchema, variantsOf } from "../registry.js";
 
@@ -53,8 +54,26 @@ function ButtonsRendererImpl({ block }: BlockRendererProps): ReactElement {
     b.variant === "single button" ? "fb-buttons-single" : "fb-buttons-stack";
   return (
     <div className={`fb-buttons ${variantClass}`}>
-      {b.payload.buttons.map((button) => (
-        <ButtonItem key={button.id} button={button} />
+      {b.payload.buttons.map((button, index) => (
+        <div key={button.id} className="fb-buttons-item">
+          {button.title ? (
+            <EditableHtml
+              blockId={b.id}
+              path={`buttons.${index}.title`}
+              fragment={button.title}
+              className="fb-buttons-item-title"
+            />
+          ) : null}
+          {button.description ? (
+            <EditableHtml
+              blockId={b.id}
+              path={`buttons.${index}.description`}
+              fragment={button.description}
+              className="fb-buttons-item-description"
+            />
+          ) : null}
+          <ButtonItem button={button} />
+        </div>
       ))}
     </div>
   );

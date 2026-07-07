@@ -30,6 +30,18 @@
   overflow-wrap: anywhere;
 }
 
+/* Read-only plain-text preview of an inline-edited html item (P3). */
+.fe-pl-snippet {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--fe-bg, #f4f5f7);
+  color: #59636e;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
 .fe-pl-media-row {
   display: flex;
   align-items: center;

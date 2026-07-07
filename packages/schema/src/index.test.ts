@@ -67,7 +67,10 @@ describe("Forge schema public API", () => {
     type ParagraphBlock = BlockFor<"text", "paragraph">;
     expectTypeOf<ParagraphBlock["family"]>().toEqualTypeOf<"text">();
     expectTypeOf<ParagraphBlock["variant"]>().toEqualTypeOf<"paragraph">();
-    expectTypeOf<ParagraphBlock["payload"]>().toEqualTypeOf<{ html: string }>();
+    expectTypeOf<ParagraphBlock["payload"]>().toEqualTypeOf<{
+      html: string;
+      audioMediaId?: string | undefined;
+    }>();
 
     type TableBlock = BlockFor<"table", "basic">;
     expectTypeOf<
@@ -219,6 +222,84 @@ describe("Forge schema public API", () => {
     };
 
     expect(stateDocumentEnvelopeSchema.safeParse(idsOnlyState).success).toBe(false);
+  });
+
+  it("accepts the 1.1.0 teardown additions and keeps them constrained", () => {
+    const course = validateCourseDoc(loadKitchenSink());
+    expect(course.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
+    expect(course.author).toBe("Forge Fixtures Team");
+
+    const blocks = course.lessons.flatMap((lesson) =>
+      lesson.type === "blocks" ? lesson.blocks : [],
+    );
+    const paragraphBlock = blocks.find(
+      (block) => block.id === "block_text_paragraph",
+    );
+    if (!paragraphBlock || paragraphBlock.family !== "text") {
+      throw new Error("Expected paragraph block in fixture.");
+    }
+    const paragraphPayload = paragraphBlock.payload as { audioMediaId?: string };
+    expect(paragraphPayload.audioMediaId).toBe("audio_text_narration");
+    expect(course.media["audio_text_narration"]?.kind).toBe("audio");
+
+    const buttonsBlock = blocks.find((block) => block.id === "block_buttons_single");
+    if (!buttonsBlock || buttonsBlock.family !== "buttons") {
+      throw new Error("Expected single button block in fixture.");
+    }
+    const firstButton = (
+      buttonsBlock.payload as {
+        buttons: { title?: string; description?: string }[];
+      }
+    ).buttons[0];
+    expect(firstButton?.title).toBe("<p>Location 1</p>");
+    expect(firstButton?.description).toBe(
+      "<p>This location can be a URL, another lesson, or an email address.</p>",
+    );
+
+    expect(
+      courseDocSchema.safeParse({
+        ...(loadKitchenSink() as Record<string, unknown>),
+        author: "",
+      }).success,
+    ).toBe(false);
+
+    const unsafeButton = structuredClone(buttonsBlock) as unknown as Record<
+      string,
+      unknown
+    >;
+    unsafeButton.payload = {
+      buttons: [
+        {
+          id: "button_unsafe",
+          label: "Visit example",
+          description: "<p>ok</p><script>alert('owned')</script>",
+          destination: { type: "url", url: "https://example.com" },
+        },
+      ],
+    };
+    expect(blockSchema.safeParse(unsafeButton).success).toBe(false);
+  });
+
+  it("migrates a 1.0.0 course doc to 1.1.0 with a pure version bump", () => {
+    const legacyDoc: Record<string, unknown> = {
+      ...(loadKitchenSink() as Record<string, unknown>),
+      schemaVersion: "1.0.0",
+    };
+    delete legacyDoc.author;
+    const original = structuredClone(legacyDoc);
+
+    const migrated = migrateCourseDoc(legacyDoc);
+
+    expect(legacyDoc).toEqual(original);
+    expect(migrated.schemaVersion).toBe("1.1.0");
+    expect(migrated.author).toBeUndefined();
+    expect(migrated.title).toBe(original.title);
+    expect(migrated.lessons).toEqual(
+      validateCourseDoc({ ...original, schemaVersion: "1.1.0" }).lessons,
+    );
+    expect(courseDocMigrationRegistry.map((migration) => migration.from)).toContain(
+      "1.0.0",
+    );
   });
 
   it("migrates legacy course docs without mutating the input", () => {

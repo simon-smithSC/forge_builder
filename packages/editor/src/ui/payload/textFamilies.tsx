@@ -1,67 +1,54 @@
 // Purpose-built editors for the text-centric families: text, list, checklist,
-// callout, and impact.
+// callout, and impact. P1/P3: their html fragments are edited IN PLACE on the
+// canvas (EditableHtml + InlineHtmlEditor), so the drawer keeps only
+// structure: add/remove/reorder items, toggles, attribution, media. Item rows
+// show a read-only snippet so authors can tell items apart while reordering.
 import type { ReactElement } from "react";
 import { createUlid } from "@forge/schema";
-import { HtmlField, ItemListEditor, StringField, ToggleField } from "./fields.js";
+import { ItemListEditor, StringField, ToggleField } from "./fields.js";
+import { MediaPickerField } from "./mediaField.js";
 import type { FamilyEditorProps } from "./types.js";
 import { setOptional } from "./types.js";
+
+/** Plain-text preview of an html fragment for identifying list items. */
+export function htmlSnippet(html: string, max = 60): string {
+  const text = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (text.length === 0) return "(empty)";
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+function ItemSnippet({ html }: { html: string }): ReactElement {
+  return <p className="fe-pl-snippet">{htmlSnippet(html)}</p>;
+}
+
+function CanvasEditHint(): ReactElement {
+  return <p className="fe-pl-hint">Text is edited directly on the block.</p>;
+}
 
 export function TextEditor({ block, onChange }: FamilyEditorProps): ReactElement | null {
   if (block.family !== "text") return null;
 
   if (block.variant === "two column") {
-    const payload = block.payload;
-    return (
-      <>
-        {payload.columns.map((column, index) => (
-          <HtmlField
-            key={column.id}
-            label={`Column ${index + 1} text (HTML)`}
-            value={column.html}
-            required
-            onCommit={(raw) =>
-              onChange({
-                columns: payload.columns.map((existing, i) =>
-                  i === index ? { ...existing, html: raw } : existing,
-                ),
-              })
-            }
-          />
-        ))}
-      </>
-    );
+    return <CanvasEditHint />;
   }
 
-  const payload = block.payload as Record<string, unknown>;
-  const commit = (key: string, raw: string): void => onChange({ ...payload, [key]: raw });
+  const payload = block.payload as Record<string, unknown> & {
+    audioMediaId?: string;
+  };
 
   return (
     <>
-      {typeof payload.heading === "string" ? (
-        <HtmlField
-          label="Heading (HTML)"
-          value={payload.heading}
-          required
-          onCommit={(raw) => commit("heading", raw)}
-        />
-      ) : null}
-      {typeof payload.subheading === "string" ? (
-        <HtmlField
-          label="Subheading (HTML)"
-          value={payload.subheading}
-          required
-          onCommit={(raw) => commit("subheading", raw)}
-        />
-      ) : null}
-      {typeof payload.html === "string" ? (
-        <HtmlField
-          label="Text (HTML)"
-          value={payload.html}
-          required
-          rows={5}
-          onCommit={(raw) => commit("html", raw)}
-        />
-      ) : null}
+      <CanvasEditHint />
+      <MediaPickerField
+        label="Audio"
+        kind="audio"
+        mediaId={payload.audioMediaId}
+        onSelect={(audioMediaId) => onChange({ ...payload, audioMediaId })}
+        onClear={() => onChange(setOptional(payload, "audioMediaId", undefined))}
+      />
     </>
   );
 }
@@ -72,31 +59,29 @@ export function ListEditor({ block, onChange }: FamilyEditorProps): ReactElement
   const showChecked = block.variant === "checkboxes";
 
   return (
-    <ItemListEditor
-      label="List items"
-      itemLabel="Item"
-      items={payload.items}
-      minItems={1}
-      onCommit={(items) => onChange({ items })}
-      createItem={() => ({ id: createUlid(), html: "New item" })}
-      renderItem={(item, update) => (
-        <>
-          <HtmlField
-            label="Item text (HTML)"
-            value={item.html}
-            required
-            onCommit={(raw) => update({ ...item, html: raw })}
-          />
-          {showChecked ? (
-            <ToggleField
-              label="Checked"
-              checked={item.checked ?? false}
-              onCommit={(checked) => update({ ...item, checked })}
-            />
-          ) : null}
-        </>
-      )}
-    />
+    <>
+      <CanvasEditHint />
+      <ItemListEditor
+        label="List items"
+        itemLabel="Item"
+        items={payload.items}
+        minItems={1}
+        onCommit={(items) => onChange({ items })}
+        createItem={() => ({ id: createUlid(), html: "New item" })}
+        renderItem={(item, update) => (
+          <>
+            <ItemSnippet html={item.html} />
+            {showChecked ? (
+              <ToggleField
+                label="Checked"
+                checked={item.checked ?? false}
+                onCommit={(checked) => update({ ...item, checked })}
+              />
+            ) : null}
+          </>
+        )}
+      />
+    </>
   );
 }
 
@@ -106,6 +91,7 @@ export function ChecklistEditor({ block, onChange }: FamilyEditorProps): ReactEl
 
   return (
     <>
+      <CanvasEditHint />
       <ToggleField
         label="Required for lesson completion"
         checked={payload.requiredForCompletion}
@@ -120,12 +106,7 @@ export function ChecklistEditor({ block, onChange }: FamilyEditorProps): ReactEl
         createItem={() => ({ id: createUlid(), html: "New task" })}
         renderItem={(item, update) => (
           <>
-            <HtmlField
-              label="Task text (HTML)"
-              value={item.html}
-              required
-              onCommit={(raw) => update({ ...item, html: raw })}
-            />
+            <ItemSnippet html={item.html} />
             <ToggleField
               label="Initially checked"
               checked={item.initiallyChecked ?? false}
@@ -144,18 +125,12 @@ export function CalloutEditor({ block, onChange }: FamilyEditorProps): ReactElem
 
   return (
     <>
+      <CanvasEditHint />
       <StringField
         label="Title"
         value={payload.title ?? ""}
         placeholder="Optional title"
         onCommit={(raw) => onChange(setOptional(payload, "title", raw))}
-      />
-      <HtmlField
-        label="Text (HTML)"
-        value={payload.html}
-        required
-        rows={4}
-        onCommit={(raw) => onChange({ ...payload, html: raw })}
       />
       <StringField
         label="Icon"
@@ -173,13 +148,7 @@ export function ImpactEditor({ block, onChange }: FamilyEditorProps): ReactEleme
 
   return (
     <>
-      <HtmlField
-        label="Text (HTML)"
-        value={payload.html}
-        required
-        rows={4}
-        onCommit={(raw) => onChange({ ...payload, html: raw })}
-      />
+      <CanvasEditHint />
       <StringField
         label="Attribution"
         value={payload.attribution ?? ""}

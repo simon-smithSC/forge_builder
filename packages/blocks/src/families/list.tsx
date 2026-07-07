@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import type { BlockFor } from "@forge/schema";
 import { useRenderContext } from "../context.js";
-import { Html } from "../html.js";
+import { EditableHtml } from "../html.js";
 import type { BlockRegistryEntry, BlockRendererProps } from "../registry.js";
 import { validateWithSchema, variantsOf } from "../registry.js";
 
@@ -24,7 +24,7 @@ function ListRendererImpl({ block }: BlockRendererProps): ReactElement {
   if (b.variant === "checkboxes") {
     return (
       <ul className="fb-list fb-list-checkboxes">
-        {b.payload.items.map((item) => {
+        {b.payload.items.map((item, index) => {
           const isChecked = checked.has(item.id);
           return (
             <li key={item.id} className="fb-list-checkbox-item">
@@ -45,7 +45,12 @@ function ListRendererImpl({ block }: BlockRendererProps): ReactElement {
                     }
                   }}
                 />
-                <Html fragment={item.html} className="fb-list-item-html" />
+                <EditableHtml
+                  blockId={b.id}
+                  path={`items.${index}.html`}
+                  fragment={item.html}
+                  className="fb-list-item-html"
+                />
               </label>
             </li>
           );
@@ -57,9 +62,14 @@ function ListRendererImpl({ block }: BlockRendererProps): ReactElement {
   const ListTag = b.variant === "numbered" ? "ol" : "ul";
   return (
     <ListTag className={`fb-list fb-list-${b.variant}`}>
-      {b.payload.items.map((item) => (
+      {b.payload.items.map((item, index) => (
         <li key={item.id}>
-          <Html fragment={item.html} className="fb-list-item-html" />
+          <EditableHtml
+            blockId={b.id}
+            path={`items.${index}.html`}
+            fragment={item.html}
+            className="fb-list-item-html"
+          />
         </li>
       ))}
     </ListTag>

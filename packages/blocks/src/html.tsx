@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { useRenderContext } from "./context.js";
 
 /**
  * Renders a sanitized HTML fragment. Fragments are validated by
@@ -18,6 +19,43 @@ export function Html({
       className={className ? `fb-html ${className}` : "fb-html"}
       dangerouslySetInnerHTML={{ __html: fragment }}
     />
+  );
+}
+
+/**
+ * An html fragment that is editable in place on the editor canvas (Rise
+ * parity P1). In mode "edit" with the inlineEditing port present it
+ * delegates rendering to the host-supplied editor component; in every other
+ * case (player, edit without port) it renders <Html> exactly as before, so
+ * player output is byte-identical. `path` is the JSON path of the field
+ * inside the block payload (e.g. "html", "heading", "items.2.html").
+ */
+export function EditableHtml({
+  blockId,
+  path,
+  fragment,
+  className,
+}: {
+  blockId: string;
+  path: string;
+  fragment: string;
+  className?: string;
+}): ReactElement {
+  const { mode, inlineEditing } = useRenderContext();
+  if (mode === "edit" && inlineEditing) {
+    return (
+      <>
+        {inlineEditing.renderHtmlEditor({
+          blockId,
+          path,
+          html: fragment,
+          ...(className !== undefined ? { className } : {}),
+        })}
+      </>
+    );
+  }
+  return (
+    <Html fragment={fragment} {...(className !== undefined ? { className } : {})} />
   );
 }
 

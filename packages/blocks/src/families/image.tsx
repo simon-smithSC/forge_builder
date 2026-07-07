@@ -75,6 +75,12 @@ export const imageEntry: BlockRegistryEntry = {
     description: "Hero, full width, centered, text aside, and banner images.",
     icon: "image",
   },
+  contentWidth: {
+    hero: "wide",
+    "full width": "full",
+    banner: "full",
+    "text aside": "wide",
+  },
   createDefaultPayload: () => ({
     mediaId: "media-placeholder",
     alt: "Describe this image",

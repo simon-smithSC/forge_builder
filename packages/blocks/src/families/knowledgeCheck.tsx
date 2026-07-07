@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { useId, useState } from "react";
 import type { BlockFor } from "@forge/schema";
 import { useRenderContext } from "../context.js";
-import { Html } from "../html.js";
+import { EditableHtml, Html } from "../html.js";
 import type { BlockRegistryEntry, BlockRendererProps } from "../registry.js";
 import { validateWithSchema, variantsOf } from "../registry.js";
 
@@ -122,7 +122,12 @@ function ChoiceCheck({
 
   return (
     <div className="fb-knowledgeCheck">
-      <Html fragment={p.prompt} className="fb-knowledgeCheck-prompt" />
+      <EditableHtml
+        blockId={block.id}
+        path="prompt"
+        fragment={p.prompt}
+        className="fb-knowledgeCheck-prompt"
+      />
       <div
         className="fb-knowledgeCheck-answers"
         role={multiple ? "group" : "radiogroup"}
@@ -202,7 +207,12 @@ function FillBlankCheck({ block }: { block: FillBlankBlock }): ReactElement {
 
   return (
     <div className="fb-knowledgeCheck">
-      <Html fragment={p.prompt} className="fb-knowledgeCheck-prompt" />
+      <EditableHtml
+        blockId={block.id}
+        path="prompt"
+        fragment={p.prompt}
+        className="fb-knowledgeCheck-prompt"
+      />
       <div className="fb-knowledgeCheck-blank">
         <label className="fb-knowledgeCheck-blank-label" htmlFor={inputId}>
           Your answer
@@ -265,7 +275,12 @@ function MatchingCheck({ block }: { block: MatchingBlock }): ReactElement {
 
   return (
     <div className="fb-knowledgeCheck">
-      <Html fragment={p.prompt} className="fb-knowledgeCheck-prompt" />
+      <EditableHtml
+        blockId={block.id}
+        path="prompt"
+        fragment={p.prompt}
+        className="fb-knowledgeCheck-prompt"
+      />
       <div className="fb-knowledgeCheck-matches">
         {p.pairs.map((pair) => (
           <label key={pair.id} className="fb-knowledgeCheck-match-row">

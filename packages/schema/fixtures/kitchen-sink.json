@@ -1,8 +1,9 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "id": "01JZ9S99Z8A0Y4Y6RAZ76D9M7F",
   "title": "Forge Kitchen Sink",
   "description": "A cleaned Forge-shaped fixture covering every v1 block variant and quiz question type.",
+  "author": "Forge Fixtures Team",
   "defaultLocale": "en-US",
   "theme": {
     "primaryColor": "#1f6feb",
@@ -62,7 +63,8 @@
           "family": "text",
           "variant": "paragraph",
           "payload": {
-            "html": "<p>Paragraph body with <strong>emphasis</strong> and a <a href=\"https://example.com\">link</a>.</p>"
+            "html": "<p>Paragraph body with <strong>emphasis</strong> and a <a href=\"https://example.com\">link</a>.</p>",
+            "audioMediaId": "audio_text_narration"
           },
           "settings": {
             "paddingTop": 2,
@@ -850,6 +852,8 @@
               {
                 "id": "button_01",
                 "label": "Visit example",
+                "title": "<p>Location 1</p>",
+                "description": "<p>This location can be a URL, another lesson, or an email address.</p>",
                 "destination": {
                   "type": "url",
                   "url": "https://example.com"
@@ -1698,6 +1702,15 @@
       "bytes": 4096000,
       "durationSeconds": 90,
       "storageKey": "courses/course_kitchen_sink/media/narration.mp3"
+    },
+    "audio_text_narration": {
+      "id": "audio_text_narration",
+      "kind": "audio",
+      "filename": "paragraph-narration.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 512000,
+      "durationSeconds": 24,
+      "storageKey": "courses/course_kitchen_sink/media/paragraph-narration.mp3"
     }
   },
   "createdAt": "2026-07-04T09:00:00.000Z",

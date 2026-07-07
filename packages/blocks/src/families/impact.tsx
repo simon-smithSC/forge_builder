@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import type { BlockFor } from "@forge/schema";
-import { Html } from "../html.js";
+import { EditableHtml } from "../html.js";
 import type { BlockRegistryEntry, BlockRendererProps } from "../registry.js";
 import { validateWithSchema, variantsOf } from "../registry.js";
 
@@ -20,7 +20,12 @@ function ImpactRendererImpl({ block }: BlockRendererProps): ReactElement {
   if (b.variant === "note") {
     return (
       <aside className="fb-impact fb-impact-note" role="note">
-        <Html fragment={b.payload.html} className="fb-impact-note-body" />
+        <EditableHtml
+          blockId={b.id}
+          path="html"
+          fragment={b.payload.html}
+          className="fb-impact-note-body"
+        />
         {b.payload.attribution ? (
           <p className="fb-impact-attribution">{b.payload.attribution}</p>
         ) : null}
@@ -30,7 +35,7 @@ function ImpactRendererImpl({ block }: BlockRendererProps): ReactElement {
   return (
     <figure className={`fb-impact fb-impact-${b.variant}`}>
       <blockquote className="fb-impact-quote">
-        <Html fragment={b.payload.html} />
+        <EditableHtml blockId={b.id} path="html" fragment={b.payload.html} />
       </blockquote>
       {b.payload.attribution ? (
         <figcaption className="fb-impact-attribution">

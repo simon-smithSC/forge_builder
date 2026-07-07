@@ -1,5 +1,7 @@
-// Right settings panel: envelope settings bound to schema BlockSettings plus
-// the generic payload editor. // R2: purpose-built per-family editors.
+// Right edit drawer (Rise parity P3-lite): titled "Edit {variant}", content
+// and structure editors first, the envelope settings demoted into a
+// collapsed Format section at the bottom (also the target of the rail's
+// Style/Format control).
 import type { ReactElement } from "react";
 import { useState } from "react";
 import { X } from "lucide-react";
@@ -8,6 +10,7 @@ import type { Block } from "@forge/schema";
 import { selectBlock, setBlockSettings } from "../state/actions.js";
 import { useStore } from "../state/store.js";
 import { PayloadEditor } from "./PayloadEditor.js";
+import { editTitle } from "./variantLabels.js";
 
 const ANCHOR_PATTERN = /^[A-Za-z][A-Za-z0-9_-]*$/;
 
@@ -43,8 +46,6 @@ function EnvelopeSettings({
 
   return (
     <section className="fe-settings-section">
-      <h3>Block settings</h3>
-
       <label className="fe-field">
         <span className="fe-field-label">
           Padding top ({block.settings.paddingTop})
@@ -180,10 +181,7 @@ export function SettingsPanel(): ReactElement | null {
   return (
     <aside className="fe-settings" aria-label="Block settings">
       <div className="fe-settings-header">
-        <span>
-          {entry.palette.label}
-          <span className="fe-muted"> / {block.variant}</span>
-        </span>
+        <span>{editTitle(entry.palette.label, block.variant)}</span>
         <button
           type="button"
           className="fe-icon-btn"
@@ -194,11 +192,14 @@ export function SettingsPanel(): ReactElement | null {
           <X size={16} aria-hidden />
         </button>
       </div>
-      <EnvelopeSettings key={`env-${block.id}`} lessonId={lesson.id} block={block} />
       <section className="fe-settings-section">
         <h3>Content</h3>
         <PayloadEditor key={`payload-${block.id}-${block.variant}`} lessonId={lesson.id} block={block} />
       </section>
+      <details className="fe-settings-format">
+        <summary>Format</summary>
+        <EnvelopeSettings key={`env-${block.id}`} lessonId={lesson.id} block={block} />
+      </details>
     </aside>
   );
 }

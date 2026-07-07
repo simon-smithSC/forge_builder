@@ -2,7 +2,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, ReactElement } from "react";
 import { useState } from "react";
 import type { BlockFor } from "@forge/schema";
 import { useRenderContext } from "../context.js";
-import { Html, MediaPlaceholder } from "../html.js";
+import { EditableHtml, MediaPlaceholder } from "../html.js";
 import type { BlockRegistryEntry, BlockRendererProps } from "../registry.js";
 import { validateWithSchema, variantsOf } from "../registry.js";
 
@@ -12,7 +12,15 @@ type InteractiveBlock =
 
 type InteractiveItem = InteractiveBlock["payload"]["items"][number];
 
-function ItemBody({ item }: { item: InteractiveItem }): ReactElement {
+function ItemBody({
+  blockId,
+  item,
+  index,
+}: {
+  blockId: string;
+  item: InteractiveItem;
+  index: number;
+}): ReactElement {
   const { resolveMediaUrl } = useRenderContext();
   const imageUrl = item.imageMediaId ? resolveMediaUrl(item.imageMediaId) : undefined;
   const audioUrl = item.audioMediaId ? resolveMediaUrl(item.audioMediaId) : undefined;
@@ -25,7 +33,11 @@ function ItemBody({ item }: { item: InteractiveItem }): ReactElement {
           <MediaPlaceholder label={item.title} />
         )
       ) : null}
-      <Html fragment={item.html} />
+      <EditableHtml
+        blockId={blockId}
+        path={`items.${index}.html`}
+        fragment={item.html}
+      />
       {audioUrl ? (
         <audio controls src={audioUrl} className="fb-interactive-audio" />
       ) : null}
@@ -57,7 +69,7 @@ function AccordionView({ block }: { block: InteractiveBlock }): ReactElement {
 
   return (
     <div className="fb-interactive fb-interactive-accordion">
-      {items.map((item) => {
+      {items.map((item, index) => {
         const isOpen = openId === item.id;
         const headerId = `${block.id}-header-${item.id}`;
         const panelId = `${block.id}-panel-${item.id}`;
@@ -73,9 +85,12 @@ function AccordionView({ block }: { block: InteractiveBlock }): ReactElement {
                 onClick={() => toggle(item.id)}
               >
                 <span>{item.title}</span>
-                <span className="fb-interactive-chevron" aria-hidden="true">
-                  {isOpen ? "−" : "+"}
-                </span>
+                <span
+                  className={`fb-interactive-chevron${
+                    isOpen ? " fb-interactive-chevron-open" : ""
+                  }`}
+                  aria-hidden="true"
+                />
               </button>
             </h3>
             {isOpen ? (
@@ -85,7 +100,7 @@ function AccordionView({ block }: { block: InteractiveBlock }): ReactElement {
                 aria-labelledby={headerId}
                 className="fb-interactive-accordion-panel"
               >
-                <ItemBody item={item} />
+                <ItemBody blockId={block.id} item={item} index={index} />
               </div>
             ) : null}
           </div>
@@ -140,7 +155,8 @@ function TabsView({ block }: { block: InteractiveBlock }): ReactElement {
     document.getElementById(tabId(next.id))?.focus();
   };
 
-  const active = items.find((item) => item.id === activeId) ?? first;
+  const activeIndex = items.findIndex((item) => item.id === activeId);
+  const active = activeIndex >= 0 ? items[activeIndex] : first;
 
   return (
     <div className="fb-interactive fb-interactive-tabs">
@@ -173,7 +189,11 @@ function TabsView({ block }: { block: InteractiveBlock }): ReactElement {
           tabIndex={0}
           className="fb-interactive-tabpanel"
         >
-          <ItemBody item={active} />
+          <ItemBody
+            blockId={block.id}
+            item={active}
+            index={activeIndex >= 0 ? activeIndex : 0}
+          />
         </div>
       ) : null}
     </div>

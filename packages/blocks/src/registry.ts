@@ -23,6 +23,21 @@ export interface BlockRendererProps {
 }
 
 /**
+ * Width of the centered content column inside the full-bleed block band.
+ * "column" is the Rise reading column (~46rem), "wide" is for media-heavy
+ * layouts (galleries, labeled graphics), "full" spans the whole band.
+ */
+export type BlockContentWidth = "column" | "wide" | "full";
+
+/**
+ * Per-family width hint: a single value applies to every variant, a map
+ * assigns widths per variant (unlisted variants fall back to "column").
+ */
+export type ContentWidthHint =
+  | BlockContentWidth
+  | Readonly<Partial<Record<string, BlockContentWidth>>>;
+
+/**
  * Registry contract per coordination/CONTRACTS.md. One entry per family.
  * `Renderer` is THE single renderer used by both the editor canvas and the
  * player (enforced by scripts/contract-check.mjs and the module-identity test).
@@ -34,6 +49,17 @@ export interface BlockRegistryEntry {
   createDefaultPayload: (variant: string) => unknown;
   validatePayload: (payload: unknown, variant: string) => unknown;
   Renderer: ComponentType<BlockRendererProps>;
+  /** Content column width hint; omitted means "column" for every variant. */
+  contentWidth?: ContentWidthHint;
+}
+
+export function resolveContentWidth(
+  hint: ContentWidthHint | undefined,
+  variant: string,
+): BlockContentWidth {
+  if (hint === undefined) return "column";
+  if (typeof hint === "string") return hint;
+  return hint[variant] ?? "column";
 }
 
 export function validateWithSchema(

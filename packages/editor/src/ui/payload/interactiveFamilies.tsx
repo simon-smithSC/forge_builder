@@ -35,6 +35,9 @@ export function InteractiveEditor({
   const payload = block.payload;
   const tabs = block.variant === "tabs";
 
+  // P1/P3: panel body html is edited in place on the canvas (open the
+  // accordion item / activate the tab, then click the text); the drawer
+  // keeps titles, item structure, and media.
   return (
     <ItemListEditor
       label={tabs ? "Tabs" : "Accordion items"}
@@ -50,13 +53,6 @@ export function InteractiveEditor({
             value={item.title}
             required
             onCommit={(raw) => update({ ...item, title: raw })}
-          />
-          <HtmlField
-            label="Body (HTML)"
-            value={item.html}
-            required
-            rows={4}
-            onCommit={(raw) => update({ ...item, html: raw })}
           />
           <MediaPickerField
             label="Image"

@@ -21,7 +21,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { BlockRenderContext, getRegistryEntry } from "@forge/blocks";
-import type { RenderContext } from "@forge/blocks";
+import type { InlineEditingPort, RenderContext } from "@forge/blocks";
 import type { BlocksLesson, CourseDoc, Lesson } from "@forge/schema";
 import {
   renameLesson,
@@ -31,6 +31,7 @@ import { reorderBlock } from "../state/dndActions.js";
 import { useStore } from "../state/store.js";
 import { BlockEditFrame } from "./BlockEditFrame.js";
 import { BlockPalette } from "./BlockPalette.js";
+import { InlineHtmlEditor } from "./inline/InlineHtmlEditor.js";
 import { QuizLessonEditor } from "./quiz/QuizLessonEditor.js";
 import "./dnd.css";
 
@@ -140,9 +141,29 @@ function BlocksCanvas({
     [mediaUrls],
   );
 
+  // In-place editing port (P1): the ONLY surface that provides it is the
+  // edit-mode canvas; the player never sets it, so EditableHtml renders
+  // plain Html everywhere else.
+  const inlineEditing = useMemo<InlineEditingPort>(
+    () => ({
+      renderHtmlEditor: (args) => (
+        <InlineHtmlEditor
+          key={`${args.blockId}:${args.path}`}
+          lessonId={lesson.id}
+          blockId={args.blockId}
+          path={args.path}
+          html={args.html}
+          className={args.className}
+        />
+      ),
+    }),
+    [lesson.id],
+  );
+
   const context = useMemo<RenderContext>(
     () => ({
       mode: "edit",
+      inlineEditing,
       theme: course.theme,
       labels: course.labelSet,
       media: course.media,
@@ -150,12 +171,18 @@ function BlocksCanvas({
       events: {},
       consumedBlockIds: EMPTY_CONSUMED,
     }),
-    [course.theme, course.labelSet, course.media, resolveMediaUrl],
+    [course.theme, course.labelSet, course.media, resolveMediaUrl, inlineEditing],
   );
 
   return (
     <div className="fe-canvas-lesson" style={themeVars(course)}>
-      <h1 className="fe-canvas-lesson-title">{lesson.title}</h1>
+      <input
+        className="fe-canvas-lesson-title"
+        value={lesson.title}
+        onChange={(event) => renameLesson(lesson.id, event.target.value)}
+        placeholder="Lesson title"
+        aria-label="Lesson title"
+      />
       <BlockRenderContext.Provider value={context}>
         <DndContext
           sensors={sensors}
@@ -166,7 +193,7 @@ function BlocksCanvas({
         >
           <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
             {lesson.blocks.map((block, index) => (
-              <div key={block.id}>
+              <div key={block.id} className="fe-block-slot">
                 <InsertAffordance onInsert={() => setPaletteIndex(index)} />
                 <BlockEditFrame
                   block={block}

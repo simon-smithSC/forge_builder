@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import type { BlockFor } from "@forge/schema";
 import { useRenderContext } from "../context.js";
-import { Html } from "../html.js";
+import { EditableHtml } from "../html.js";
 import type { BlockRegistryEntry, BlockRendererProps } from "../registry.js";
 import { validateWithSchema, variantsOf } from "../registry.js";
 
@@ -39,7 +39,7 @@ function ChecklistRendererImpl({ block }: BlockRendererProps): ReactElement {
         <span className="fb-checklist-required">Required</span>
       ) : null}
       <ul className="fb-checklist-items">
-        {items.map((item) => (
+        {items.map((item, index) => (
           <li key={item.id} className="fb-checklist-item">
             <label className="fb-checklist-label">
               <input
@@ -47,7 +47,12 @@ function ChecklistRendererImpl({ block }: BlockRendererProps): ReactElement {
                 checked={checked.has(item.id)}
                 onChange={() => toggle(item.id)}
               />
-              <Html fragment={item.html} className="fb-checklist-item-html" />
+              <EditableHtml
+                blockId={b.id}
+                path={`items.${index}.html`}
+                fragment={item.html}
+                className="fb-checklist-item-html"
+              />
             </label>
           </li>
         ))}

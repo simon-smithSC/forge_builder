@@ -19,6 +19,9 @@ export function Cover({
   return (
     <div className="fp-cover">
       <h1 className="fp-cover-title">{course.title}</h1>
+      {course.author ? (
+        <p className="fp-cover-author">By {course.author}</p>
+      ) : null}
       {course.description ? (
         <p className="fp-cover-description">{course.description}</p>
       ) : null}

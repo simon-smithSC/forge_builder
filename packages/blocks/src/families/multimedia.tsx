@@ -90,7 +90,7 @@ function AttachmentView({ block }: { block: AttachmentBlock }): ReactElement {
       <span className="fb-multimedia-attachment-meta">
         <span className="fb-multimedia-attachment-label">{block.payload.label}</span>
         <span className="fb-multimedia-attachment-size">
-          {formatBytes(block.payload.sizeBytes)}
+          {url ? formatBytes(block.payload.sizeBytes) : "No file added"}
         </span>
       </span>
     </>

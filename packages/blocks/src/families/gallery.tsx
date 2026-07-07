@@ -43,31 +43,49 @@ function GalleryRendererImpl({ block }: BlockRendererProps): ReactElement {
         events.onInteracted?.(b.id, { index: wrapped });
       }
     };
+    // Rise carousel chrome: arrows at the image edges, "1 of 2" counter,
+    // position dots, caption below the slide (teardown Gallery, 534-560).
     return (
       <div className="fb-gallery fb-gallery-carousel" role="group" aria-roledescription="carousel">
-        {current ? <GalleryFigure item={current} /> : null}
-        <div className="fb-gallery-carousel-controls">
+        <div className="fb-gallery-carousel-stage">
           <button
             type="button"
-            className="fb-gallery-carousel-button"
+            className="fb-gallery-carousel-arrow fb-gallery-carousel-arrow-prev"
             aria-label="Previous image"
             disabled={items.length < 2}
             onClick={() => go(safeIndex - 1)}
           >
-            &#8592;
+            <span aria-hidden="true">&#8592;</span>
           </button>
-          <span className="fb-gallery-carousel-counter" aria-live="polite">
-            {safeIndex + 1} / {items.length}
-          </span>
+          {current ? <GalleryFigure item={current} /> : null}
           <button
             type="button"
-            className="fb-gallery-carousel-button"
+            className="fb-gallery-carousel-arrow fb-gallery-carousel-arrow-next"
             aria-label="Next image"
             disabled={items.length < 2}
             onClick={() => go(safeIndex + 1)}
           >
-            &#8594;
+            <span aria-hidden="true">&#8594;</span>
           </button>
+        </div>
+        <div className="fb-gallery-carousel-footer">
+          <span className="fb-gallery-carousel-counter" aria-live="polite">
+            {safeIndex + 1} of {items.length}
+          </span>
+          <div className="fb-gallery-carousel-dots">
+            {items.map((item, dotIndex) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`fb-gallery-carousel-dot${
+                  dotIndex === safeIndex ? " fb-gallery-carousel-dot-active" : ""
+                }`}
+                aria-label={`Go to image ${dotIndex + 1} of ${items.length}`}
+                aria-current={dotIndex === safeIndex}
+                onClick={() => go(dotIndex)}
+              />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -93,6 +111,7 @@ export const galleryEntry: BlockRegistryEntry = {
     description: "Image grids and a centered carousel.",
     icon: "layout-grid",
   },
+  contentWidth: "wide",
   createDefaultPayload: () => ({
     items: [
       { id: "item-1", mediaId: "media-placeholder", alt: "First image" },

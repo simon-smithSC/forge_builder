@@ -62,6 +62,7 @@ export const tableEntry: BlockRegistryEntry = {
     description: "Data tables with optional header row and column.",
     icon: "table",
   },
+  contentWidth: "wide",
   createDefaultPayload: () => ({
     headerRow: true,
     headerColumn: false,

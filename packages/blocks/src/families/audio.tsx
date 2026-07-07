@@ -13,12 +13,16 @@ function AudioRendererImpl({ block }: BlockRendererProps): ReactElement {
   const url = resolveMediaUrl(b.payload.mediaId);
   return (
     <div className="fb-audio">
-      {b.payload.title ? <h3 className="fb-audio-title">{b.payload.title}</h3> : null}
-      {url ? (
-        <audio controls src={url} className="fb-audio-player" />
-      ) : (
-        <MediaPlaceholder label={b.payload.title ?? "Audio"} />
-      )}
+      <div className="fb-audio-card">
+        {b.payload.title ? (
+          <h3 className="fb-audio-title">{b.payload.title}</h3>
+        ) : null}
+        {url ? (
+          <audio controls src={url} className="fb-audio-player" preload="metadata" />
+        ) : (
+          <MediaPlaceholder label={b.payload.title ?? "Audio"} />
+        )}
+      </div>
       <details className="fb-audio-transcript">
         <summary>Transcript</summary>
         <Html fragment={b.payload.transcript} />

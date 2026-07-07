@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+import type { ReactNode } from "react";
 import type { LabelSet, MediaRef, Theme } from "@forge/schema";
 import { defaultLabelSet, defaultTheme } from "@forge/schema";
 
@@ -18,8 +19,27 @@ export interface BlockEvents {
   onNavigateToLesson?: (lessonId: string) => void;
 }
 
+/**
+ * In-place editing port (Rise parity P1). The EDITOR supplies a render
+ * function for html-fragment fields through context; renderers opt in per
+ * field via EditableHtml. The player never provides this port, so the
+ * runtime bundle stays TipTap-free and renders plain <Html> unchanged.
+ */
+export interface InlineEditingPort {
+  renderHtmlEditor: (args: {
+    blockId: string;
+    /** JSON path of the html field inside the block payload,
+     * e.g. "html", "heading", "columns.0.html", "items.2.html". */
+    path: string;
+    html: string;
+    className?: string;
+  }) => ReactNode;
+}
+
 export interface RenderContext {
   mode: RenderMode;
+  /** Present only on the editor canvas; enables in-place text editing. */
+  inlineEditing?: InlineEditingPort;
   theme: Theme;
   labels: LabelSet;
   media: Record<string, MediaRef>;

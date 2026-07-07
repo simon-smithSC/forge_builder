@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import type { BlockFor } from "@forge/schema";
-import { Html } from "../html.js";
+import { EditableHtml } from "../html.js";
 import type { BlockRegistryEntry, BlockRendererProps } from "../registry.js";
 import { validateWithSchema, variantsOf } from "../registry.js";
 
@@ -29,7 +29,7 @@ function CalloutRendererImpl({ block }: BlockRendererProps): ReactElement {
         {b.payload.title ? (
           <h4 className="fb-callout-title">{b.payload.title}</h4>
         ) : null}
-        <Html fragment={b.payload.html} />
+        <EditableHtml blockId={b.id} path="html" fragment={b.payload.html} />
       </div>
     </aside>
   );
