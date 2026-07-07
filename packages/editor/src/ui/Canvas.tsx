@@ -30,8 +30,9 @@ import {
 import { reorderBlock } from "../state/dndActions.js";
 import { useStore } from "../state/store.js";
 import { BlockEditFrame } from "./BlockEditFrame.js";
-import { BlockPalette } from "./BlockPalette.js";
 import { InlineHtmlEditor } from "./inline/InlineHtmlEditor.js";
+import { BlockLibrary } from "./library/BlockLibrary.js";
+import { QuickAddStrip } from "./library/QuickAddStrip.js";
 import { QuizLessonEditor } from "./quiz/QuizLessonEditor.js";
 import "./dnd.css";
 
@@ -103,7 +104,12 @@ function BlocksCanvas({
 }): ReactElement {
   const mediaUrls = useStore((state) => state.mediaUrls);
   const selectedBlockId = useStore((state) => state.selectedBlockId);
-  const [paletteIndex, setPaletteIndex] = useState<number | null>(null);
+  // Two-tier insertion (P4): plus opens the quick-add strip anchored at the
+  // insertion point; its "All blocks" chip escalates to the full library.
+  const [insertAt, setInsertAt] = useState<{
+    index: number;
+    tier: "strip" | "library";
+  } | null>(null);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
 
   // Activation distance 6px keeps plain clicks (select block, toolbar
@@ -196,7 +202,19 @@ function BlocksCanvas({
           <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
             {lesson.blocks.map((block, index) => (
               <div key={block.id} className="fe-block-slot">
-                <InsertAffordance onInsert={() => setPaletteIndex(index)} />
+                <div className="fe-lib-anchor">
+                  <InsertAffordance
+                    onInsert={() => setInsertAt({ index, tier: "strip" })}
+                  />
+                  {insertAt?.index === index && insertAt.tier === "strip" ? (
+                    <QuickAddStrip
+                      lessonId={lesson.id}
+                      index={index}
+                      onOpenLibrary={() => setInsertAt({ index, tier: "library" })}
+                      onClose={() => setInsertAt(null)}
+                    />
+                  ) : null}
+                </div>
                 <BlockEditFrame
                   block={block}
                   lessonId={lesson.id}
@@ -214,17 +232,33 @@ function BlocksCanvas({
           </DragOverlay>
         </DndContext>
       </BlockRenderContext.Provider>
-      <InsertAffordance onInsert={() => setPaletteIndex(lesson.blocks.length)} />
+      <div className="fe-lib-anchor">
+        <InsertAffordance
+          onInsert={() =>
+            setInsertAt({ index: lesson.blocks.length, tier: "strip" })
+          }
+        />
+        {insertAt?.index === lesson.blocks.length && insertAt.tier === "strip" ? (
+          <QuickAddStrip
+            lessonId={lesson.id}
+            index={lesson.blocks.length}
+            onOpenLibrary={() =>
+              setInsertAt({ index: lesson.blocks.length, tier: "library" })
+            }
+            onClose={() => setInsertAt(null)}
+          />
+        ) : null}
+      </div>
       {lesson.blocks.length === 0 ? (
         <p className="fe-muted fe-canvas-empty">
           This lesson is empty. Use the plus button to add your first block.
         </p>
       ) : null}
-      {paletteIndex !== null ? (
-        <BlockPalette
+      {insertAt !== null && insertAt.tier === "library" ? (
+        <BlockLibrary
           lessonId={lesson.id}
-          index={paletteIndex}
-          onClose={() => setPaletteIndex(null)}
+          index={insertAt.index}
+          onClose={() => setInsertAt(null)}
         />
       ) : null}
     </div>
