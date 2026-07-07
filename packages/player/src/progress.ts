@@ -33,6 +33,33 @@ export function consumesByInteraction(block: Block): boolean {
   return interactionGatedFamilies.has(block.family);
 }
 
+/** True for the one block variant that gates progressive reveal (U2). */
+export function isContinueGate(block: Block): boolean {
+  return block.family === "divider" && block.variant === "continue button";
+}
+
+/**
+ * Progressive reveal (docs/PLAYER-UX-PLAN.md U2, Rise parity): the player
+ * renders only the prefix of blocks up to and including the FIRST continue
+ * divider whose id is not in the consumed set; blocks after it do not mount.
+ * Multiple gates chain naturally: consuming gate 1 exposes content up to
+ * gate 2, and so on. Non-continue dividers never gate. Percent math is
+ * untouched: hidden blocks stay unconsumed, so completion still requires
+ * revealing (and consuming) everything.
+ */
+export function visibleBlocks(
+  lesson: Lesson,
+  consumed: ReadonlySet<string>,
+): Block[] {
+  if (lesson.type !== "blocks") return [];
+  const shown: Block[] = [];
+  for (const block of lesson.blocks) {
+    shown.push(block);
+    if (isContinueGate(block) && !consumed.has(block.id)) break;
+  }
+  return shown;
+}
+
 /**
  * Ids that gate completion for a lesson: every block of a blocks lesson,
  * every question of a quiz lesson (answered questions are recorded in the

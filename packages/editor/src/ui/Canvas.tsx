@@ -170,6 +170,8 @@ function BlocksCanvas({
       resolveMediaUrl,
       events: {},
       consumedBlockIds: EMPTY_CONSUMED,
+      // Authors always get the full native video controls on the canvas.
+      videoPlaybackSpeedControl: true,
     }),
     [course.theme, course.labelSet, course.media, resolveMediaUrl, inlineEditing],
   );

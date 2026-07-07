@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tincan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="https://xapi.supercell.com/courses/01KWYDAT5EA8DK253809HQPW65" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en">Untitled course</name>
+      <description lang="en"></description>
+      <launch lang="en">index.html</launch>
+    </activity>
+    <activity id="https://xapi.supercell.com/courses/01KWYDAT5EA8DK253809HQPW65/lessons/01KWYDAT5E3FEGNWN9RXT7BT7Y" type="http://adlnet.gov/expapi/activities/module">
+      <name lang="en">Lesson 1</name>
+      <description lang="en"></description>
+    </activity>
+  </activities>
+</tincan>

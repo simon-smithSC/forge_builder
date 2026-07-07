@@ -66,6 +66,22 @@ edge to edge of the lesson page (full-bleed envelope).
 | scenario / branching scene | n/a (Forge-only) | White card, choice buttons with accent hover, feedback panel + continue | [ ] | [ ] |
 | checklist / task checklist | n/a (Forge-only) | Bordered tick rows, accent checks, Required chip | [ ] | [ ] |
 
+Player chrome (docs/PLAYER-UX-PLAN.md U1-U5; "Teardown" cites rise-teardown.md
+lines or the Rise runtime CSS)
+
+| Family / variant | Teardown | Expected | Editor | Preview |
+|---|---|---|---|---|
+| player / block entrance | 240, Rise css scroll-animation | Blocks fade/slide in individually on scroll, 1s ease-out, 0.12s + 0.15s stagger; editor canvas static; reduced motion disables | [ ] | [ ] |
+| player / continue reveal | 952-976, 1207 | Content below CONTINUE absent from DOM until click; reveal animates + smooth-scrolls + announces "Continued"; resume keeps it open | [ ] | [ ] |
+| player / cover | 228-239 | Full-height hero: theme logo, title in heading typeface, "By {author}", lesson count (behind showLessonCount), uppercase start pill; resume uses labelSet.resumeCourse | [ ] | [ ] |
+| player / lesson header | 236-239 | "Lesson n of m" small caps, title, "By {author}"; headerImage renders a full-bleed scrimmed band | [ ] | [ ] |
+| player / sidebar progress | 229, 253-258 | Course title + "{n}% COMPLETE" small caps + primary progress track update live | [ ] | [ ] |
+| player / sidebar states | 253-258 | Numbered rows; theme check when complete, lock when sequentially locked, hollow dot otherwise; active row primary tint + inset bar + aria-current | [ ] | [ ] |
+| player / sidebar search | teardown search notes | Title filter input at sidebar top only when settings.searchEnabled; sections hidden while filtering | [ ] | [ ] |
+| player / mobile drawer | Rise nav-overlay css | Under 768px sidebar becomes a fixed overlay drawer with scrim; slim topbar shows hamburger + "Lesson n of m" + lesson title; selection closes drawer | [ ] | [ ] |
+| player / video speed setting | n/a (settings honoring) | videoPlaybackSpeedControl false hides the native playback speed menu (controlsList="noplaybackrate"); editor canvas always shows it | [ ] | [ ] |
+| player / theme encapsulation | 246-249 | Typeface names map to curated font stacks; primary/accent buttons compute readable text color; focus rings/checks/progress all theme-driven | [ ] | [ ] |
+
 Cross-cutting checks
 
 - [ ] A block with settings.backgroundColor paints edge to edge in editor canvas, preview, and export.

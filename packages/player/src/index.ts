@@ -14,8 +14,27 @@ export {
   computeLessonPercent,
   consumesByInteraction,
   gatingIds,
+  isContinueGate,
+  visibleBlocks,
 } from "./progress.js";
 export type { CourseProgressSnapshot } from "./progress.js";
+
+// U1 entrance mechanics (pure; PlayerBlock consumes these internally).
+export {
+  ENTRANCE_BASE_DELAY_S,
+  ENTRANCE_DURATION_S,
+  ENTRANCE_EASING,
+  ENTRANCE_FALLBACK_MS,
+  ENTRANCE_ROOT_MARGIN,
+  ENTRANCE_STAGGER_S,
+  entranceDelaySeconds,
+  resolveEntranceKind,
+} from "./entrance.js";
+export type {
+  BlockEntranceOverride,
+  CourseEntranceSetting,
+  EntranceKind,
+} from "./entrance.js";
 
 export { QuizLessonView } from "./quiz/QuizLessonView.js";
 export type { QuizLessonViewProps } from "./quiz/QuizLessonView.js";

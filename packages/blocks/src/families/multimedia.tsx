@@ -26,7 +26,7 @@ function formatBytes(bytes: number): string {
 }
 
 function VideoView({ block }: { block: VideoBlock }): ReactElement {
-  const { resolveMediaUrl } = useRenderContext();
+  const { resolveMediaUrl, videoPlaybackSpeedControl } = useRenderContext();
   const url = resolveMediaUrl(block.payload.mediaId);
   const poster = block.payload.posterMediaId
     ? resolveMediaUrl(block.payload.posterMediaId)
@@ -34,7 +34,16 @@ function VideoView({ block }: { block: VideoBlock }): ReactElement {
   return (
     <div className="fb-multimedia fb-multimedia-video">
       {url ? (
-        <video controls className="fb-multimedia-video-player" poster={poster}>
+        <video
+          controls
+          className="fb-multimedia-video-player"
+          poster={poster}
+          // courseSettings.videoPlaybackSpeedControl (absent means true):
+          // suppress the native speed menu where controlsList is supported.
+          {...(videoPlaybackSpeedControl === false
+            ? { controlsList: "noplaybackrate" }
+            : {})}
+        >
           <source src={url} />
           {block.payload.captions.map((caption) => {
             const trackUrl = resolveMediaUrl(caption.mediaId);

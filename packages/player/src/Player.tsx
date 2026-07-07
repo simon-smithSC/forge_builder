@@ -5,12 +5,22 @@ import type { RenderContext } from "@forge/blocks";
 import type { CourseDoc, Lesson } from "@forge/schema";
 // Type-only import: the tracker object arrives via props (R3, SPEC 6).
 import type { TrackingPort } from "@forge/xapi";
-import { LessonFooter, UntrackedBanner, themeStyleOf } from "./chrome.js";
+import {
+  LessonFooter,
+  LessonHeader,
+  PlayerTopbar,
+  UntrackedBanner,
+  themeStyleOf,
+} from "./chrome.js";
 import { Cover } from "./Cover.js";
+import { resolveEntranceKind } from "./entrance.js";
+import { useBatchStagger, useContinueReveal } from "./lessonReveal.js";
+import { PlayerBlock } from "./PlayerBlock.js";
 import {
   buildCourseSnapshot,
   computeLessonPercent,
   consumesByInteraction,
+  visibleBlocks,
 } from "./progress.js";
 import type { CourseProgressSnapshot } from "./progress.js";
 import { QuizLessonView } from "./quiz/QuizLessonView.js";
@@ -46,6 +56,17 @@ export interface PlayerProps {
 type NavigableLesson = Exclude<Lesson, { type: "section" }>;
 
 const EMPTY_SET: ReadonlySet<string> = new Set<string>();
+
+/** Breakpoint at which the sidebar becomes an overlay drawer (U4). */
+const MOBILE_QUERY = "(max-width: 768px)";
+
+function isMobileViewport(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia(MOBILE_QUERY).matches
+  );
+}
 
 function isNavigable(lesson: Lesson): lesson is NavigableLesson {
   return lesson.type !== "section";
@@ -84,8 +105,10 @@ export function Player({
     }
     return seeded;
   });
+  // defaultOpen governs the desktop initial state; the mobile drawer always
+  // starts closed (it overlays the lesson).
   const [sidebarOpen, setSidebarOpen] = useState(
-    course.settings.sidebar.defaultOpen,
+    () => course.settings.sidebar.defaultOpen && !isMobileViewport(),
   );
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [prefersReducedMotion] = useState(
@@ -193,6 +216,15 @@ export function Player({
     [navigable, isLockedAt],
   );
 
+  // Sidebar selection also dismisses the mobile overlay drawer (U4).
+  const selectFromSidebar = useCallback(
+    (lessonId: string) => {
+      goToLesson(lessonId);
+      if (isMobileViewport()) setSidebarOpen(false);
+    },
+    [goToLesson],
+  );
+
   // Move focus to the lesson heading on lesson change (not on initial mount).
   const headingRef = useRef<HTMLHeadingElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
@@ -209,8 +241,24 @@ export function Player({
     lastLessonIdRef.current = currentLesson.id;
   }, [started, currentLesson]);
 
+  // U2 progressive reveal: only blocks up to the first unconsumed continue
+  // divider mount; consuming a gate (divider.tsx -> onCompleted ->
+  // markConsumed) grows this list, which re-renders and re-observes.
+  const shownBlocks = useMemo(
+    () =>
+      currentLesson && currentLesson.type === "blocks"
+        ? visibleBlocks(currentLesson, currentConsumed)
+        : [],
+    [currentLesson, currentConsumed],
+  );
+  // Stable identity for the rendered set: effects re-run only when the set
+  // of mounted blocks changes, not on every consumption.
+  const shownIdsKey = shownBlocks.map((block) => block.id).join("\n");
+
   // Scroll consumption: every gating block that is not interaction-gated is
   // consumed once ~40% visible (IntersectionObserver on [data-block-id]).
+  // shownIdsKey re-attaches the observer when a continue reveal mounts new
+  // [data-block-id] nodes; the DOM query below only ever finds rendered ones.
   useEffect(() => {
     if (!started || !currentLesson || currentLesson.type !== "blocks") return;
     const rootEl = mainRef.current;
@@ -239,7 +287,20 @@ export function Player({
       if (id && scrollIds.has(id)) observer.observe(el);
     }
     return () => observer.disconnect();
-  }, [started, currentLesson, markConsumed]);
+  }, [started, currentLesson, markConsumed, shownIdsKey]);
+
+  // Continue reveal (U2): when the visible set grows within a lesson, smooth
+  // scroll to the first newly mounted block (auto under reduced motion) and
+  // announce "Continued" politely, matching Rise. Stagger indexes reset per
+  // revealing batch (Rise --idx semantics).
+  const revealAnnouncement = useContinueReveal({
+    started,
+    lessonId: currentLesson?.id,
+    shownIdsKey,
+    prefersReducedMotion,
+    mainRef,
+  });
+  const staggerIndexFor = useBatchStagger(currentLesson?.id);
 
   const resolveMedia = useMemo(
     () => resolveMediaUrl ?? (() => undefined),
@@ -272,11 +333,15 @@ export function Player({
         onNavigateToLesson: goToLesson,
       },
       consumedBlockIds: currentConsumed,
+      // U5: the multimedia video renderer hides the playback speed menu
+      // (controlsList="noplaybackrate") when this course setting is false.
+      videoPlaybackSpeedControl: course.settings.videoPlaybackSpeedControl,
     }),
     [
       course.theme,
       course.labelSet,
       course.media,
+      course.settings.videoPlaybackSpeedControl,
       resolveMedia,
       currentLessonIdForEvents,
       currentConsumed,
@@ -298,6 +363,7 @@ export function Player({
           course={course}
           lessonCount={navigable.length}
           resuming={resume?.lessonId !== undefined}
+          resolveMediaUrl={resolveMedia}
           onStart={() => setStarted(true)}
         />
       </div>
@@ -311,64 +377,96 @@ export function Player({
   const nextLesson = navIndex >= 0 ? navigable[navIndex + 1] : undefined;
   const currentComplete = currentLesson ? isLessonComplete(currentLesson) : false;
   const nextBlocked = sequential && !currentComplete;
-  const animate =
-    course.settings.blockEntranceAnimation !== "none" && !prefersReducedMotion;
+  const courseEntrance = course.settings.blockEntranceAnimation;
 
   const sidebarEnabled = course.settings.sidebar.enabled;
   const navigableIds = navigable.map((lesson) => lesson.id);
 
+  // "Lesson n of m" (teardown 236-239); showLessonCount hides the total.
+  const lessonCounter =
+    navIndex >= 0
+      ? course.settings.showLessonCount
+        ? `Lesson ${navIndex + 1} of ${navigable.length}`
+        : `Lesson ${navIndex + 1}`
+      : undefined;
+  const headerImageUrl =
+    currentLesson &&
+    currentLesson.type === "blocks" &&
+    currentLesson.headerImage !== undefined
+      ? resolveMedia(currentLesson.headerImage)
+      : undefined;
+
   return (
     <div className="fp-player" style={themeStyle}>
       {banner}
-      <header className="fp-topbar">
-        {sidebarEnabled ? (
-          <button
-            type="button"
-            className="fp-button fp-topbar-toggle"
-            aria-expanded={sidebarOpen}
-            aria-controls="fp-sidebar-nav"
-            onClick={() => setSidebarOpen((open) => !open)}
-          >
-            <span aria-hidden="true">≡</span>
-            <span className="fp-sr-only">Toggle lesson navigation</span>
-          </button>
-        ) : null}
-        <span className="fp-topbar-title">{course.title}</span>
-        {onExit ? (
-          <button
-            type="button"
-            className="fp-button fp-topbar-exit"
-            onClick={onExit}
-          >
-            {course.labelSet.exitCourse}
-          </button>
-        ) : null}
-      </header>
+      <PlayerTopbar
+        courseTitle={course.title}
+        lessonCounter={lessonCounter}
+        lessonTitle={currentLesson?.title}
+        sidebarEnabled={sidebarEnabled}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen((open) => !open)}
+        exitLabel={course.labelSet.exitCourse}
+        onExit={onExit}
+      />
       <div className="fp-body">
         {sidebarEnabled && sidebarOpen ? (
-          <SidebarNav
-            lessons={course.lessons}
-            navigableIds={navigableIds}
-            currentLessonId={currentLesson?.id}
-            isLocked={isLockedAt}
-            isComplete={isLessonComplete}
-            onSelect={goToLesson}
-          />
+          <>
+            {/* Mobile-only scrim (display: none on desktop); the hamburger
+                stays the keyboard-operable close control. */}
+            <div
+              className="fp-sidebar-backdrop"
+              aria-hidden="true"
+              onClick={() => setSidebarOpen(false)}
+            />
+            <SidebarNav
+              courseTitle={course.title}
+              percentComplete={snapshot.percent}
+              lessons={course.lessons}
+              navigableIds={navigableIds}
+              currentLessonId={currentLesson?.id}
+              searchEnabled={course.settings.searchEnabled}
+              searchPlaceholder={course.labelSet.searchPlaceholder}
+              isLocked={isLockedAt}
+              isComplete={isLessonComplete}
+              onSelect={selectFromSidebar}
+            />
+          </>
         ) : null}
         <main className="fp-main" ref={mainRef}>
+          {/* Rise announces "Continued" on gate reveal via a hidden region. */}
+          <div className="fp-sr-only" role="status" aria-live="polite">
+            {revealAnnouncement}
+          </div>
           {currentLesson ? (
-            <article
-              key={currentLesson.id}
-              className={`fp-lesson${animate ? " fp-anim-fade" : ""}`}
-            >
-              <h1 className="fp-lesson-title" tabIndex={-1} ref={headingRef}>
-                {currentLesson.title}
-              </h1>
+            <article key={currentLesson.id} className="fp-lesson-article">
+              <LessonHeader
+                title={currentLesson.title}
+                counter={lessonCounter}
+                author={course.author}
+                imageUrl={headerImageUrl}
+                headingRef={headingRef}
+              />
+              <div className="fp-lesson">
               {currentLesson.type === "blocks" ? (
                 <BlockRenderContext.Provider value={renderContext}>
                   <div className="fp-lesson-blocks">
-                    {currentLesson.blocks.map((block) => (
-                      <BlockView key={block.id} block={block} />
+                    {shownBlocks.map((block) => (
+                      <PlayerBlock
+                        key={block.id}
+                        kind={
+                          prefersReducedMotion
+                            ? "none"
+                            : resolveEntranceKind(
+                                courseEntrance,
+                                block.settings.entranceAnimation,
+                              )
+                        }
+                        staggerIndex={staggerIndexFor(block.id)}
+                        initiallyVisible={currentConsumed.has(block.id)}
+                      >
+                        <BlockView block={block} />
+                      </PlayerBlock>
                     ))}
                   </div>
                 </BlockRenderContext.Provider>
@@ -409,6 +507,7 @@ export function Player({
                 nextBlocked={nextBlocked}
                 onNavigate={goToLesson}
               />
+              </div>
             </article>
           ) : (
             <p className="fp-empty">This course has no lessons yet.</p>

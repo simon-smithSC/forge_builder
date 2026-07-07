@@ -52,6 +52,12 @@ export interface RenderContext {
   events: BlockEvents;
   /** Block ids already consumed (player resume); renderers may reflect state. */
   consumedBlockIds: ReadonlySet<string>;
+  /**
+   * courseSettings.videoPlaybackSpeedControl passed through by the player;
+   * absent means true. When false, video renderers suppress the playback
+   * speed menu (controlsList="noplaybackrate"). The editor canvas passes true.
+   */
+  videoPlaybackSpeedControl?: boolean;
 }
 
 export const defaultRenderContext: RenderContext = {
@@ -62,6 +68,7 @@ export const defaultRenderContext: RenderContext = {
   resolveMediaUrl: () => undefined,
   events: {},
   consumedBlockIds: new Set<string>(),
+  videoPlaybackSpeedControl: true,
 };
 
 export const BlockRenderContext = createContext<RenderContext>(defaultRenderContext);
