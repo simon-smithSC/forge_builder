@@ -80,7 +80,9 @@ export class StateClient {
     if (!fetchImpl) {
       throw new Error("StateClient requires a fetch implementation.");
     }
-    this.fetchFn = fetchImpl;
+    // Bind: calling an unbound window.fetch through `this.fetchFn(...)` sets
+    // `this` to the client instance and browsers throw "Illegal invocation".
+    this.fetchFn = fetchImpl.bind(globalThis) as typeof fetch;
     this.debounceMs = config.debounceMs ?? 5000;
     this.stateId = config.stateId ?? DEFAULT_STATE_ID;
     this.courseId = config.courseId ?? deriveCourseId(launch.activityId);

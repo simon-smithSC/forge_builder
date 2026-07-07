@@ -108,7 +108,9 @@ export class StatementQueue {
     if (!fetchImpl) {
       throw new Error("StatementQueue requires a fetch implementation.");
     }
-    this.fetchFn = fetchImpl;
+    // Bind: calling an unbound window.fetch through `this.fetchFn(...)` sets
+    // `this` to the queue instance and browsers throw "Illegal invocation".
+    this.fetchFn = fetchImpl.bind(globalThis) as typeof fetch;
     this.backoffBaseMs = config.backoffBaseMs ?? 1000;
     this.backoffCapMs = config.backoffCapMs ?? 30_000;
     this.maxRetriesPerFlush = config.maxRetriesPerFlush ?? 5;
