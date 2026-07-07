@@ -1,5 +1,6 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+// Browser-safe module: no node builtins here. File emission lives in
+// generate-json-schema.ts (CLI only, not exported from the package index),
+// so bundlers can include the public API without externalization failures.
 import { zodToJsonSchema } from "zod-to-json-schema";
 import {
   courseDocSchema,
@@ -68,19 +69,3 @@ export function generateJsonSchemas(): Record<JsonSchemaFileName, JsonSchemaDocu
   };
 }
 
-export async function writeJsonSchemas(
-  outputDirectory: string | URL = new URL("./json/", import.meta.url),
-): Promise<void> {
-  const outDir =
-    typeof outputDirectory === "string"
-      ? outputDirectory
-      : fileURLToPath(outputDirectory);
-  await mkdir(outDir, { recursive: true });
-
-  const schemas = generateJsonSchemas();
-  await Promise.all(
-    Object.entries(schemas).map(([fileName, schema]) =>
-      writeFile(`${outDir}/${fileName}`, `${JSON.stringify(schema, null, 2)}\n`),
-    ),
-  );
-}
