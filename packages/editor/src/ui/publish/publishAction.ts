@@ -55,7 +55,11 @@ export async function runPublish(
   const css = await fetchRuntimeAsset("player.css");
   if (js !== null) playerAssets.push({ path: "player.js", data: js });
   if (css !== null) playerAssets.push({ path: "player.css", data: css });
-  const playerRuntimeMissing = js === null || css === null;
+  // Only the JS is load-bearing: without it the package cannot play. A
+  // missing stylesheet ships unstyled but functional, so it degrades to a
+  // warning inside the result panel instead of the runtime-missing alert.
+  const playerRuntimeMissing = js === null;
+  const playerCssMissing = js !== null && css === null;
 
   // "local:<mediaId>" storage keys resolve through the store's object URLs;
   // data:/url: keys never reach the resolver (exporter passthrough).
@@ -80,12 +84,23 @@ export async function runPublish(
   });
   const zipData = buildZip(files);
 
+  const allWarnings = playerCssMissing
+    ? [
+        ...warnings,
+        {
+          code: "player_css_missing",
+          message:
+            "player.css was not found in the runtime bundle; the package will play unstyled. Rebuild with: pnpm --filter @forge/player build:runtime",
+        },
+      ]
+    : warnings;
+
   return {
     fileName: sanitizeFileName(course.title),
     zipData,
     zipBytes: zipData.byteLength,
     entryCount: files.length,
-    warnings,
+    warnings: allWarnings,
     playerRuntimeMissing,
   };
 }

@@ -18,6 +18,10 @@ export default defineConfig({
   build: {
     outDir: "../editor/public/player-runtime",
     emptyOutDir: true,
+    // With a raw JS entry (no HTML) + IIFE output, Vite's per-chunk CSS
+    // splitting can skip emitting the entry stylesheet. Force all imported
+    // CSS into a single asset so player.css reliably appears.
+    cssCodeSplit: false,
     rollupOptions: {
       input: fileURLToPath(new URL("src/standalone.tsx", import.meta.url)),
       output: {
