@@ -53,9 +53,15 @@ This recovery pass ran in a sandbox without npm registry access and with darwin-
 - Editor Publish: settings dialog per SPEC 6.5/7 (tracking, reporting, exit link, hide cover, strict launch; forge-v1 only), in-browser package build + zip download, warning report panel. Server-side publish worker (Python, deterministic zip in the API) remains the R4 deployment path; the in-browser build is the local-MVP bridge.
 - Git: repository initialized, baseline + R3 commits on `main`, remote `https://github.com/simon-smithSC/forge_builder.git` (push requires owner credentials).
 
+### Rise parity waves (2026-07-07)
+
+- Stream Curatr manual gate PASSED: published package launched from Curatr, tracked mode confirmed, statements delivered to Learning Locker (after the fetch-binding fix). SPEC 13.2 answered: Curatr passes registration and overrides activity_id with its resource IRI.
+- Authoring parity (teardown-driven): schema 1.1.0 (text audio, button title/description, author), full-bleed band envelope, per-family visual rebuild (process/timeline/labeled graphic/statement bands/sorting/flashcards), in-place TipTap editing via inlineEditing port, contextual block rail, variant-titled drawer. Proof: `pnpm contract-check`, `pnpm smoke`, docs/visual-parity-checklist.md.
+- Learner parity (U1-U5): Rise-spec entrance animations, continue gating with progressive reveal, hero cover + lesson header images + font stacks, sidebar % COMPLETE chrome + mobile drawer, settings honoring. Proof: `node e2e/player/gating-run.mjs`.
+
 ## In Progress
 
-- None. Next: R4 (Postgres/GCS persistence, SSE presence + lesson locks, Static Sites + Cloud Run deploy, publish worker, Stream Curatr manual gate).
+- None. Next: R4 (Postgres/GCS persistence, SSE presence + lesson locks, Static Sites + Cloud Run deploy, server-side publish worker), U6 font pipeline, remaining parity packages P4/P6/P7.
 
 ## Blocked
 
