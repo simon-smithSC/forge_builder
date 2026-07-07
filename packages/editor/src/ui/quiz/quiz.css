@@ -1,0 +1,261 @@
+/* Quiz lesson editor (R2). Prefix: fq-. Reuses fe- variables/fields from
+   ui/styles.css for inputs, labels, and inline errors. */
+
+.fq-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 860px;
+}
+
+.fq-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fq-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 12px;
+}
+
+.fq-section-title {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.fq-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.fq-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fq-hint {
+  margin: 0;
+  font-size: 12px;
+}
+
+.fq-time-limit {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.fq-time-limit input {
+  width: 64px;
+}
+
+.fq-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fq-card {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.fq-card-open {
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.fq-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fq-card-toggle {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: none;
+  padding: 2px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.fq-badge {
+  flex: none;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(31, 111, 235, 0.12);
+  color: #1f6feb;
+  white-space: nowrap;
+}
+
+.fq-card-excerpt {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.fq-card-points {
+  flex: none;
+  font-size: 12px;
+  color: var(--fe-muted);
+  white-space: nowrap;
+}
+
+.fq-row-controls {
+  display: inline-flex;
+  gap: 4px;
+  flex: none;
+}
+
+.fq-question-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+.fq-subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+}
+
+.fq-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.fq-item-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fq-item-fields-row {
+  flex-direction: row;
+  gap: 8px;
+}
+
+.fq-item-fields-row > .fe-field {
+  flex: 1;
+}
+
+.fq-order-index {
+  flex: none;
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--fe-muted);
+}
+
+.fq-correct {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  margin-top: 20px;
+}
+
+.fq-mode {
+  display: flex;
+  gap: 14px;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fq-mode .fq-correct {
+  margin-top: 0;
+}
+
+.fq-mode legend {
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+.fq-add {
+  position: relative;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.fq-add-btn,
+.fq-add-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px dashed rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  background: none;
+  padding: 5px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.fq-add-btn:hover,
+.fq-add-inline:hover {
+  border-color: #1f6feb;
+  color: #1f6feb;
+}
+
+.fq-add-menu {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  padding: 4px;
+}
+
+.fq-add-menu button {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.fq-add-menu button:hover {
+  background: rgba(31, 111, 235, 0.1);
+}

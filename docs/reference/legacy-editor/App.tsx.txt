@@ -1,0 +1,3752 @@
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowDown,
+  ArrowUp,
+  BookOpen,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  Copy,
+  Download,
+  Eye,
+  FileText,
+  Image,
+  LayoutPanelLeft,
+  ListChecks,
+  Monitor,
+  PanelRight,
+  Play,
+  Plus,
+  Redo2,
+  Save,
+  Search,
+  Settings,
+  Sparkles,
+  Smartphone,
+  Tablet,
+  Type,
+  Trash2,
+  Undo2,
+  X,
+} from "lucide-react";
+import { getPreviewDeviceWidth, type PreviewDevice } from "@forge/player";
+import { createElement, useEffect, useMemo, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
+
+import type { BlockFamily } from "@forge/schema";
+// ADR 0003: the parallel content model (domain/courseModel.ts) was deleted
+// outright. This monolith is condemned and being rebuilt on CourseDoc from
+// @forge/schema (docs/RECOVERY-PLAN.md R1); these imports are dead references
+// kept only until the rebuild replaces this file.
+import {
+  addBlock,
+  addLesson,
+  createInitialCourse,
+  deleteBlock,
+  deleteLesson,
+  duplicateBlock,
+  findBlock,
+  getCourseStats,
+  moveLesson,
+  moveBlock,
+  renameLesson,
+  updateBlock,
+} from "../domain/courseModel.js";
+import type { Course, CourseBlock, Lesson } from "../domain/courseModel.js";
+import {
+  createPublishSnapshot,
+  createXapiPackagePayload,
+  estimatePackageSize,
+  validatePublishReadiness,
+  type DownloadPayload,
+  type PublishCompletion,
+  type PublishCourse,
+  type PublishFinding,
+  type PublishLesson,
+  type PublishMediaAsset,
+  type PublishReadiness,
+} from "../publish/publishModel.js";
+
+type ApiState = "checking" | "online" | "offline";
+type SaveState = "saved" | "saving" | "dirty";
+type ModalState = "none" | "publish";
+type RouteState = { mode: "editor" } | { mode: "preview"; lessonId: string; device: PreviewDevice };
+type BlockLibraryState = { lessonId: string; insertAtIndex: number };
+
+type HistoryState = {
+  past: Course[];
+  present: Course;
+  future: Course[];
+};
+
+const storageKey = "forge.editor.local-course.v1";
+const blockFamilies: Array<{
+  family: BlockFamily;
+  label: string;
+  group: "Text" | "Statement" | "List" | "Media" | "Interactive" | "Data";
+  description: string;
+  icon: typeof FileText;
+}> = [
+  {
+    family: "text",
+    label: "Text with heading",
+    group: "Text",
+    description: "Headings and paragraph copy with learner typography.",
+    icon: Type,
+  },
+  {
+    family: "heading",
+    label: "Heading",
+    group: "Text",
+    description: "A large section heading.",
+    icon: Type,
+  },
+  {
+    family: "subheading",
+    label: "Subheading",
+    group: "Text",
+    description: "A compact heading with supporting copy.",
+    icon: Type,
+  },
+  {
+    family: "twoColumnText",
+    label: "Two column text",
+    group: "Text",
+    description: "Two side-by-side text panels.",
+    icon: FileText,
+  },
+  {
+    family: "statement",
+    label: "Statement",
+    group: "Statement",
+    description: "A high-impact statement block.",
+    icon: Sparkles,
+  },
+  {
+    family: "quote",
+    label: "Quote",
+    group: "Statement",
+    description: "A quotation with attribution.",
+    icon: Sparkles,
+  },
+  {
+    family: "callout",
+    label: "Callout",
+    group: "Statement",
+    description: "A focused aside for emphasis, warnings, and key ideas.",
+    icon: Sparkles,
+  },
+  {
+    family: "list",
+    label: "List",
+    group: "List",
+    description: "Bulleted, numbered, or compact list content.",
+    icon: ListChecks,
+  },
+  {
+    family: "image",
+    label: "Image",
+    group: "Media",
+    description: "A responsive image block with alt text and caption.",
+    icon: Image,
+  },
+  {
+    family: "gallery",
+    label: "Gallery",
+    group: "Media",
+    description: "A carousel or grid of image cards.",
+    icon: Image,
+  },
+  {
+    family: "multimedia",
+    label: "Multimedia",
+    group: "Media",
+    description: "Video, embed, attachment, or code presentation.",
+    icon: Play,
+  },
+  {
+    family: "audio",
+    label: "Audio",
+    group: "Media",
+    description: "Standalone audio with transcript.",
+    icon: Play,
+  },
+  {
+    family: "divider",
+    label: "Divider",
+    group: "List",
+    description: "Line, spacer, or continue break.",
+    icon: FileText,
+  },
+  {
+    family: "interactive",
+    label: "Accordion / tabs",
+    group: "Interactive",
+    description: "Stacked reveal panels or tabs.",
+    icon: BookOpen,
+  },
+  {
+    family: "process",
+    label: "Process",
+    group: "Interactive",
+    description: "Step-by-step process or timeline.",
+    icon: BookOpen,
+  },
+  {
+    family: "flashcard",
+    label: "Flashcards",
+    group: "Interactive",
+    description: "Prompt and answer cards.",
+    icon: BookOpen,
+  },
+  {
+    family: "buttons",
+    label: "Buttons",
+    group: "Interactive",
+    description: "Single button or button stack.",
+    icon: Play,
+  },
+  {
+    family: "checklist",
+    label: "Checklist",
+    group: "Interactive",
+    description: "A scannable list learners can work through.",
+    icon: ListChecks,
+  },
+  {
+    family: "scenario",
+    label: "Scenario",
+    group: "Interactive",
+    description: "Branching decision prompt with outcomes.",
+    icon: BookOpen,
+  },
+  {
+    family: "knowledgeCheck",
+    label: "Knowledge check",
+    group: "Interactive",
+    description: "A single-question check with selectable answers.",
+    icon: BookOpen,
+  },
+  {
+    family: "quiz",
+    label: "Quiz",
+    group: "Interactive",
+    description: "Local graded quiz placeholder.",
+    icon: BookOpen,
+  },
+  {
+    family: "chart",
+    label: "Chart",
+    group: "Data",
+    description: "Bar, line, or pie-style data block.",
+    icon: FileText,
+  },
+  {
+    family: "table",
+    label: "Table",
+    group: "Data",
+    description: "Basic data table with headers.",
+    icon: FileText,
+  },
+];
+
+const previewDevices: Array<{ device: PreviewDevice; label: string; icon: typeof Monitor }> = [
+  { device: "desktop", label: "Desktop", icon: Monitor },
+  { device: "tablet", label: "Tablet", icon: Tablet },
+  { device: "phone", label: "Mobile", icon: Smartphone },
+];
+
+export function App() {
+  const [history, setHistory] = useState<HistoryState>(() => ({
+    past: [],
+    present: loadCourse(),
+    future: [],
+  }));
+  const [selectedLessonId, setSelectedLessonId] = useState(() => history.present.lessons[0]?.id ?? "");
+  const [selectedBlockId, setSelectedBlockId] = useState(() => history.present.lessons[0]?.blocks[0]?.id ?? "");
+  const [apiState, setApiState] = useState<ApiState>("checking");
+  const [saveState, setSaveState] = useState<SaveState>("saved");
+  const [query, setQuery] = useState("");
+  const [modal, setModal] = useState<ModalState>("none");
+  const [route, setRoute] = useState<RouteState>(() => readRouteState());
+  const [blockLibrary, setBlockLibrary] = useState<BlockLibraryState | null>(null);
+  const [blockLibraryQuery, setBlockLibraryQuery] = useState("");
+  const [settingsPanelOpen, setSettingsPanelOpen] = useState(false);
+  const [publishReadiness, setPublishReadiness] = useState<PublishReadiness | null>(null);
+  const [downloadPayload, setDownloadPayload] = useState<DownloadPayload | null>(null);
+  const [packageSize, setPackageSize] = useState(0);
+
+  const course = history.present;
+  const stats = useMemo(() => getCourseStats(course), [course]);
+  const visibleLessons = useMemo(
+    () =>
+      course.lessons.filter((lesson) =>
+        lesson.title.toLowerCase().includes(query.trim().toLowerCase()),
+      ),
+    [course.lessons, query],
+  );
+  const selectedLesson = course.lessons.find((lesson) => lesson.id === selectedLessonId) ?? course.lessons[0];
+  const selectedBlock = selectedLesson ? findBlock(course, selectedLesson.id, selectedBlockId) : undefined;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkApi() {
+      setApiState("checking");
+      try {
+        const response = await fetch("/api/healthz");
+        if (!cancelled) {
+          setApiState(response.ok ? "online" : "offline");
+        }
+      } catch {
+        if (!cancelled) {
+          setApiState("offline");
+        }
+      }
+    }
+
+    checkApi();
+    const timer = window.setInterval(checkApi, 10000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    setSaveState("saving");
+    const timer = window.setTimeout(() => {
+      // ADR 0003: localStorage course persistence is banned. Persistence goes
+      // through services/api; the write-ahead journal (IndexedDB) is the only
+      // allowed local fallback. The rebuild (RECOVERY-PLAN.md R1) wires this.
+      setSaveState("saved");
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [course]);
+
+  useEffect(() => {
+    const handlePopState = () => setRoute(readRouteState());
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (modal === "none") {
+      return undefined;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setModal("none");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [modal]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setBlockLibrary(null);
+        setSettingsPanelOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  function selectLesson(lessonId: string, nextCourse = course) {
+    const lesson = nextCourse.lessons.find((item) => item.id === lessonId) ?? nextCourse.lessons[0];
+    setSelectedLessonId(lesson?.id ?? "");
+    setSelectedBlockId(lesson?.blocks[0]?.id ?? "");
+    setSettingsPanelOpen(false);
+    setBlockLibrary(null);
+  }
+
+  function commit(
+    nextCourse: Course,
+    nextSelection?: { lessonId?: string | undefined; blockId?: string | undefined },
+  ) {
+    setHistory((current) => ({
+      past: [...current.past, current.present].slice(-30),
+      present: nextCourse,
+      future: [],
+    }));
+    setSaveState("dirty");
+    if (nextSelection?.lessonId) {
+      setSelectedLessonId(nextSelection.lessonId);
+    }
+    if (nextSelection?.blockId !== undefined) {
+      setSelectedBlockId(nextSelection.blockId);
+    }
+    setDownloadPayload(null);
+    setPublishReadiness(null);
+  }
+
+  function undo() {
+    setHistory((current) => {
+      const previous = current.past.at(-1);
+      if (!previous) {
+        return current;
+      }
+      setSelectedLessonId(previous.lessons[0]?.id ?? "");
+      setSelectedBlockId(previous.lessons[0]?.blocks[0]?.id ?? "");
+      setSettingsPanelOpen(false);
+      setBlockLibrary(null);
+      return {
+        past: current.past.slice(0, -1),
+        present: previous,
+        future: [current.present, ...current.future],
+      };
+    });
+  }
+
+  function redo() {
+    setHistory((current) => {
+      const next = current.future[0];
+      if (!next) {
+        return current;
+      }
+      setSelectedLessonId(next.lessons[0]?.id ?? "");
+      setSelectedBlockId(next.lessons[0]?.blocks[0]?.id ?? "");
+      setSettingsPanelOpen(false);
+      setBlockLibrary(null);
+      return {
+        past: [...current.past, current.present],
+        present: next,
+        future: current.future.slice(1),
+      };
+    });
+  }
+
+  function handleAddLesson() {
+    const nextCourse = addLesson(course, `Lesson ${course.lessons.length + 1}`);
+    const nextLesson = nextCourse.lessons.at(-1);
+    commit(nextCourse, { lessonId: nextLesson?.id, blockId: "" });
+  }
+
+  function handleAddVariantQaLesson() {
+    let nextCourse = addLesson(course, `Variant QA ${course.lessons.length + 1}`);
+    const nextLesson = nextCourse.lessons.at(-1);
+    if (!nextLesson) {
+      return;
+    }
+
+    let insertAtIndex = 0;
+    for (const family of blockFamilies) {
+      for (const option of variantOptions[family.family]) {
+        nextCourse = addBlock(nextCourse, nextLesson.id, family.family, insertAtIndex);
+        const insertedBlock = nextCourse.lessons.find((lesson) => lesson.id === nextLesson.id)?.blocks[insertAtIndex];
+        if (insertedBlock) {
+          nextCourse = updateBlock(nextCourse, nextLesson.id, insertedBlock.id, {
+            title: `${family.label}: ${option.label}`,
+            content: variantQaContent(family.family, option.label),
+            settings: variantSettingsPatch(family.family, option.value),
+          });
+        }
+        insertAtIndex += 1;
+      }
+    }
+
+    const firstBlockId = nextCourse.lessons.find((lesson) => lesson.id === nextLesson.id)?.blocks[0]?.id ?? "";
+    commit(nextCourse, { lessonId: nextLesson.id, blockId: firstBlockId });
+    setSettingsPanelOpen(false);
+  }
+
+  function handleAddBlock(family: BlockFamily, insertAtIndex?: number, lessonId = selectedLesson?.id) {
+    if (!lessonId) {
+      return;
+    }
+    const nextCourse = addBlock(course, lessonId, family, insertAtIndex);
+    const nextLesson = nextCourse.lessons.find((lesson) => lesson.id === lessonId);
+    const nextBlockIndex =
+      nextLesson && insertAtIndex !== undefined ? clamp(insertAtIndex, 0, Math.max(0, nextLesson.blocks.length - 1)) : undefined;
+    const nextBlock = nextBlockIndex === undefined ? nextLesson?.blocks.at(-1) : nextLesson?.blocks[nextBlockIndex];
+    commit(nextCourse, { lessonId, blockId: nextBlock?.id });
+    setBlockLibrary(null);
+    setSettingsPanelOpen(false);
+  }
+
+  function handleMoveLesson(lessonId: string, direction: "up" | "down") {
+    const nextCourse = moveLesson(course, lessonId, direction);
+    const movedLesson = nextCourse.lessons.find((lesson) => lesson.id === lessonId);
+    commit(nextCourse, { lessonId, blockId: movedLesson?.blocks[0]?.id ?? "" });
+    setSettingsPanelOpen(false);
+    setBlockLibrary(null);
+  }
+
+  function handleDeleteLesson(lessonId: string) {
+    const lessonIndex = course.lessons.findIndex((lesson) => lesson.id === lessonId);
+    const nextCourse = deleteLesson(course, lessonId);
+    const nextLesson = nextCourse.lessons[Math.max(0, lessonIndex - 1)] ?? nextCourse.lessons[0];
+    commit(nextCourse, { lessonId: nextLesson?.id, blockId: nextLesson?.blocks[0]?.id ?? "" });
+  }
+
+  function handlePublish() {
+    const publishCourse = toPublishCourse(course);
+    const readiness = validatePublishReadiness(publishCourse, {
+      apiState,
+      publishState: "draft",
+    });
+    setPublishReadiness(readiness);
+
+    if (!readiness.ok) {
+      setDownloadPayload(null);
+      setPackageSize(0);
+      setModal("publish");
+      return;
+    }
+
+    const snapshot = createPublishSnapshot(publishCourse, {
+      tracking: "xapi",
+    });
+    setDownloadPayload(createXapiPackagePayload(snapshot));
+    setPackageSize(estimatePackageSize(snapshot));
+    setModal("publish");
+  }
+
+  function openBlockSettings(blockId: string) {
+    setSelectedBlockId(blockId);
+    setBlockLibrary(null);
+    setSettingsPanelOpen(true);
+  }
+
+  function openBlockLibrary(lessonId: string, insertAtIndex: number) {
+    setSettingsPanelOpen(false);
+    setBlockLibrary({ lessonId, insertAtIndex });
+  }
+
+  function selectBlock(blockId: string) {
+    setSelectedBlockId(blockId);
+  }
+
+  function openPreview() {
+    const url = new URL(window.location.href);
+    url.pathname = "/preview";
+    url.searchParams.set("lessonId", selectedLesson?.id ?? course.lessons[0]?.id ?? "");
+    url.searchParams.set("device", route.mode === "preview" ? route.device : "desktop");
+    window.history.pushState({}, "", url);
+    setRoute(readRouteState());
+  }
+
+  function closePreview() {
+    const url = new URL(window.location.href);
+    url.pathname = "/";
+    url.search = "";
+    window.history.pushState({}, "", url);
+    setRoute({ mode: "editor" });
+  }
+
+  function setPreviewDevice(device: PreviewDevice) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("device", device);
+    window.history.replaceState({}, "", url);
+    setRoute((current) => (current.mode === "preview" ? { ...current, device } : current));
+  }
+
+  function setPreviewLesson(lessonId: string) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("lessonId", lessonId);
+    window.history.replaceState({}, "", url);
+    setRoute((current) => (current.mode === "preview" ? { ...current, lessonId } : current));
+  }
+
+  if (route.mode === "preview") {
+    return (
+      <PreviewRoute
+        course={course}
+        device={route.device}
+        lessonId={route.lessonId}
+        onBack={closePreview}
+        onDeviceChange={setPreviewDevice}
+        onLessonChange={setPreviewLesson}
+      />
+    );
+  }
+
+  return (
+    <main className="forge-shell">
+      <header className="topbar">
+        <div className="brand">
+          <div className="brand-mark">F</div>
+          <div>
+            <p>Forge</p>
+            <input
+              aria-label="Course title"
+              className="title-input"
+              value={course.title}
+              onChange={(event) => commit({ ...course, title: event.target.value })}
+            />
+          </div>
+        </div>
+        <div className="topbar-actions" aria-label="Editor actions">
+          <label className="lesson-jump">
+            <BookOpen size={16} />
+            <select
+              aria-label="Current lesson"
+              value={selectedLesson?.id ?? ""}
+              onChange={(event) => {
+                selectLesson(event.target.value);
+              }}
+            >
+              {course.lessons.map((lesson) => (
+                <option key={lesson.id} value={lesson.id}>
+                  {lesson.title}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={16} />
+          </label>
+          <StatusPill state={apiState} />
+          <button className="icon-button" aria-label="Undo" disabled={history.past.length === 0} onClick={undo}>
+            <Undo2 size={18} />
+          </button>
+          <button className="icon-button" aria-label="Redo" disabled={history.future.length === 0} onClick={redo}>
+            <Redo2 size={18} />
+          </button>
+          <button className="icon-button" aria-label="Preview" onClick={openPreview}>
+            <Eye size={18} />
+          </button>
+          <button className="primary-button" onClick={handlePublish}>
+            <Play size={18} />
+            Publish
+          </button>
+        </div>
+      </header>
+
+      <section className={settingsPanelOpen ? "workspace settings-open" : "workspace"} aria-label="Forge editor workspace">
+        <aside className="outline" aria-label="Course outline">
+          <div className="panel-heading">
+            <LayoutPanelLeft size={18} />
+            <span>Outline</span>
+          </div>
+          <label className="search-box">
+            <Search size={16} />
+            <input
+              aria-label="Search lessons"
+              placeholder="Search lessons"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </label>
+          <div className="stats-strip" aria-label="Course stats">
+            <span>{stats.lessons} lessons</span>
+            <span>{stats.blocks} blocks</span>
+            <span>{stats.estimatedMinutes} min</span>
+          </div>
+          <div className="lesson-list">
+            {visibleLessons.map((lesson) => {
+              const lessonIndex = course.lessons.findIndex((item) => item.id === lesson.id);
+              return (
+                <div className={`lesson-row ${lesson.id === selectedLessonId ? "selected" : ""}`} key={lesson.id}>
+                  <button
+                    className="lesson-row-main"
+                    onClick={() => {
+                      selectLesson(lesson.id);
+                    }}
+                  >
+                    <BookOpen size={15} />
+                    <span>{lesson.title}</span>
+                    <span className={lesson.blocks.length > 0 ? "dot ready" : "dot draft"} />
+                  </button>
+                  <div className="lesson-row-actions" aria-label={`Lesson actions for ${lesson.title}`}>
+                    <button
+                      aria-label="Move lesson up"
+                      disabled={lessonIndex <= 0}
+                      onClick={() => handleMoveLesson(lesson.id, "up")}
+                    >
+                      <ArrowUp size={14} />
+                    </button>
+                    <button
+                      aria-label="Move lesson down"
+                      disabled={lessonIndex === -1 || lessonIndex >= course.lessons.length - 1}
+                      onClick={() => handleMoveLesson(lesson.id, "down")}
+                    >
+                      <ArrowDown size={14} />
+                    </button>
+                    <button
+                      aria-label="Delete lesson"
+                      disabled={course.lessons.length <= 1}
+                      onClick={() => handleDeleteLesson(lesson.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <button className="secondary-button wide" onClick={handleAddLesson}>
+            <Plus size={18} />
+            Add lesson
+          </button>
+          <button className="secondary-button wide" onClick={handleAddVariantQaLesson}>
+            <ListChecks size={18} />
+            Add variant QA lesson
+          </button>
+        </aside>
+
+        <section className="canvas" aria-label="Lesson canvas">
+          <div className="canvas-header">
+            <div>
+              <p>Live authoring canvas</p>
+              <h2>{selectedLesson?.title ?? "Untitled lesson"}</h2>
+            </div>
+            <div className={`save-state ${saveState}`}>
+              <Save size={16} />
+              {saveState === "saved" ? "All changes saved" : saveState === "saving" ? "Saving" : "Unsaved changes"}
+            </div>
+          </div>
+
+          <div className="lesson-surface">
+            <InlineText
+              ariaLabel="Lesson title"
+              as="h1"
+              className="lesson-title-display"
+              value={selectedLesson?.title ?? "Untitled lesson"}
+              onFocus={() => {
+                setSelectedBlockId("");
+                setSettingsPanelOpen(false);
+              }}
+              onCommit={(value) => {
+                if (selectedLesson) {
+                  commit(renameLesson(course, selectedLesson.id, value || "Untitled lesson"));
+                  setSettingsPanelOpen(false);
+                }
+              }}
+            />
+            {selectedLesson?.blocks.length ? (
+              <>
+                <InlineAddSlot
+                  id={`${selectedLesson.id}-slot-0`}
+                  onOpen={() => openBlockLibrary(selectedLesson.id, 0)}
+                />
+                {selectedLesson.blocks.map((block, index) => {
+                  const isSelectedBlock = block.id === selectedBlock?.id;
+                  const showBlockSettings = settingsPanelOpen && isSelectedBlock;
+                  return (
+                  <div className={`block-stack-item ${showBlockSettings ? "settings-active" : ""}`} key={block.id}>
+                    <EditableBlock
+                      block={block}
+                      index={index}
+                      isActive={isSelectedBlock}
+                      totalBlocks={selectedLesson.blocks.length}
+                      onSelect={() => selectBlock(block.id)}
+                      onOpenSettings={() => openBlockSettings(block.id)}
+                      onChange={(patch) => commit(updateBlock(course, selectedLesson.id, block.id, patch), { blockId: block.id })}
+                      onDelete={() => {
+                        const nextCourse = deleteBlock(course, selectedLesson.id, block.id);
+                        const nextLesson = nextCourse.lessons.find((lesson) => lesson.id === selectedLesson.id);
+                        const nextBlock = nextLesson?.blocks[index] ?? nextLesson?.blocks[index - 1] ?? nextLesson?.blocks[0];
+                        commit(nextCourse, {
+                          lessonId: selectedLesson.id,
+                          blockId: nextBlock?.id ?? "",
+                        });
+                      }}
+                      onDuplicate={() => {
+                        const nextCourse = duplicateBlock(course, selectedLesson.id, block.id);
+                        const nextLesson = nextCourse.lessons.find((lesson) => lesson.id === selectedLesson.id);
+                        commit(nextCourse, { lessonId: selectedLesson.id, blockId: nextLesson?.blocks[index + 1]?.id });
+                      }}
+                      onMove={(direction) => commit(moveBlock(course, selectedLesson.id, block.id, direction), { blockId: block.id })}
+                    />
+                    {showBlockSettings ? (
+                      <SettingsPanel
+                        apiState={apiState}
+                        block={block}
+                        course={course}
+                        onChange={(patch) => commit(updateBlock(course, selectedLesson.id, block.id, patch), { blockId: block.id })}
+                        onClose={() => setSettingsPanelOpen(false)}
+                      />
+                    ) : null}
+                    <InlineAddSlot
+                      id={`${selectedLesson.id}-slot-${index + 1}`}
+                      onOpen={() => openBlockLibrary(selectedLesson.id, index + 1)}
+                    />
+                  </div>
+                  );
+                })}
+              </>
+            ) : selectedLesson ? (
+              <div className="empty-state">
+                <Sparkles size={28} />
+                <h3>Build this lesson</h3>
+                <p>Add a text, image, callout, checklist, or quiz block to start shaping the learner experience.</p>
+                <InlineAddSlot
+                  id={`${selectedLesson.id}-empty-slot`}
+                  onOpen={() => openBlockLibrary(selectedLesson.id, 0)}
+                />
+              </div>
+            ) : (
+              <div className="empty-state">
+                <Sparkles size={28} />
+                <h3>No lesson selected</h3>
+                <p>Add a lesson from the outline to start building.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+      </section>
+
+      {blockLibrary ? (
+        <BlockLibraryDrawer
+          query={blockLibraryQuery}
+          onAdd={(family) => handleAddBlock(family, blockLibrary.insertAtIndex, blockLibrary.lessonId)}
+          onClose={() => setBlockLibrary(null)}
+          onQueryChange={setBlockLibraryQuery}
+        />
+      ) : null}
+      {modal === "publish" ? (
+        <PublishModal
+          downloadPayload={downloadPayload}
+          packageSize={packageSize}
+          readiness={publishReadiness}
+          onClose={() => setModal("none")}
+        />
+      ) : null}
+    </main>
+  );
+}
+
+function SettingsPanel({
+  apiState,
+  block,
+  course,
+  onChange,
+  onClose,
+}: {
+  apiState: ApiState;
+  block: CourseBlock;
+  course: Course;
+  onChange: (patch: Parameters<typeof updateBlock>[3]) => void;
+  onClose: () => void;
+}) {
+  return (
+    <aside className="settings-panel" aria-label="Settings panel">
+      <div className="panel-heading">
+        <PanelRight size={18} />
+        <span>Settings</span>
+        <button aria-label="Close settings" className="panel-close" onClick={onClose} type="button">
+          <X size={16} />
+        </button>
+      </div>
+      <section className="settings-card">
+        <div className="settings-card-title">
+          <Settings size={17} />
+          <h2>{block.family}</h2>
+        </div>
+        <div className="settings-stack">
+          <BlockSettings block={block} onChange={onChange} />
+        </div>
+      </section>
+      <section className="settings-card">
+        <div className="settings-card-title">
+          <CheckCircle2 size={17} />
+          <h2>Publish readiness</h2>
+        </div>
+        <ReadinessSummary readiness={validatePublishReadiness(toPublishCourse(course), { apiState, publishState: "draft" })} />
+      </section>
+    </aside>
+  );
+}
+
+function EditableBlock({
+  block,
+  index,
+  isActive,
+  onChange,
+  onDelete,
+  onDuplicate,
+  onMove,
+  onOpenSettings,
+  onSelect,
+  totalBlocks,
+}: {
+  block: CourseBlock;
+  index: number;
+  isActive: boolean;
+  onChange: (patch: Parameters<typeof updateBlock>[3]) => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onMove: (direction: "up" | "down") => void;
+  onOpenSettings: () => void;
+  onSelect: () => void;
+  totalBlocks: number;
+}) {
+  return (
+    <article className={`content-block ${block.family} ${isActive ? "active" : ""}`} data-block-id={block.id} onClick={onSelect}>
+      <div className="block-rail" aria-label={`${block.title} block actions`}>
+        <button aria-label="Open settings" title="Open settings" onClick={stopClick(onOpenSettings)}>
+          <Settings size={15} />
+        </button>
+        <span aria-hidden="true" />
+        <button aria-label="Move block up" disabled={index === 0} onClick={stopClick(() => onMove("up"))}>
+          <ArrowUp size={15} />
+        </button>
+        <button
+          aria-label="Move block down"
+          disabled={index >= totalBlocks - 1}
+          onClick={stopClick(() => onMove("down"))}
+        >
+          <ArrowDown size={15} />
+        </button>
+        <button aria-label="Duplicate block" onClick={stopClick(onDuplicate)}>
+          <Copy size={15} />
+        </button>
+        <button aria-label="Delete block" onClick={stopClick(onDelete)}>
+          <Trash2 size={15} />
+        </button>
+      </div>
+      <EditableBlockContent block={block} onChange={onChange} />
+    </article>
+  );
+}
+
+function InlineAddSlot({
+  id,
+  onOpen,
+}: {
+  id: string;
+  onOpen: () => void;
+}) {
+  return (
+    <div className="inline-add">
+      <button
+        aria-label="Add block here"
+        className="inline-add-trigger"
+        onClick={onOpen}
+        type="button"
+      >
+        <Plus size={16} />
+      </button>
+    </div>
+  );
+}
+
+function BlockLibraryDrawer({
+  onAdd,
+  onClose,
+  onQueryChange,
+  query,
+}: {
+  onAdd: (family: BlockFamily) => void;
+  onClose: () => void;
+  onQueryChange: (query: string) => void;
+  query: string;
+}) {
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredFamilies = blockFamilies.filter((item) =>
+    `${item.label} ${item.group} ${item.description}`.toLowerCase().includes(normalizedQuery),
+  );
+  const groups = Array.from(new Set(filteredFamilies.map((item) => item.group)));
+
+  return (
+    <aside aria-label="Block library" className="block-library-sheet">
+      <div className="sheet-header">
+        <div>
+          <p>Block library</p>
+          <h2>Add content</h2>
+        </div>
+        <button aria-label="Close block library" className="icon-button" onClick={onClose}>
+          <X size={18} />
+        </button>
+      </div>
+      <label className="search-box block-search">
+        <Search size={16} />
+        <input
+          aria-label="Search blocks"
+          placeholder="Search blocks"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+        />
+      </label>
+      <div className="library-groups">
+        {groups.map((group) => (
+          <section className="library-group" key={group}>
+            <h3>{group}</h3>
+            <div className="library-grid">
+              {filteredFamilies
+                .filter((item) => item.group === group)
+                .map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button className="library-card" key={item.family} onClick={() => onAdd(item.family)} type="button">
+                      <span className="library-thumb">
+                        <Icon size={22} />
+                      </span>
+                      <strong>{item.label}</strong>
+                      <span>{item.description}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          </section>
+        ))}
+      </div>
+    </aside>
+  );
+}
+
+function PreviewRoute({
+  course,
+  device,
+  lessonId,
+  onBack,
+  onDeviceChange,
+  onLessonChange,
+}: {
+  course: Course;
+  device: PreviewDevice;
+  lessonId: string;
+  onBack: () => void;
+  onDeviceChange: (device: PreviewDevice) => void;
+  onLessonChange: (lessonId: string) => void;
+}) {
+  const activeLesson = course.lessons.find((lesson) => lesson.id === lessonId) ?? course.lessons[0];
+  const totalMinutes = course.lessons.reduce(
+    (courseTotal, lesson) => courseTotal + lesson.blocks.reduce((lessonTotal, block) => lessonTotal + block.estimatedMinutes, 0),
+    0,
+  );
+
+  return (
+    <main className="preview-route">
+      <header className="preview-toolbar">
+        <button className="secondary-button" onClick={onBack}>
+          <ArrowLeft size={18} />
+          Edit
+        </button>
+        <div>
+          <p>Course Preview</p>
+          <h1>{course.title}</h1>
+        </div>
+        <div className="device-toggle" aria-label="Preview device">
+          {previewDevices.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                aria-pressed={device === item.device}
+                className={device === item.device ? "selected" : ""}
+                key={item.device}
+                onClick={() => onDeviceChange(item.device)}
+                title={item.label}
+                type="button"
+              >
+                <Icon size={18} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </header>
+      <section className="preview-stage">
+        <div className="preview-frame" style={{ maxWidth: getPreviewDeviceWidth(device) }}>
+          <aside className="learner-toc" aria-label="Course contents">
+            <div className="learner-toc-title">
+              <BookOpen size={18} />
+              <span>{course.title}</span>
+            </div>
+            <div className="learner-progress">
+              <span>Preview</span>
+              <strong>{totalMinutes} min</strong>
+            </div>
+            {course.lessons.map((lesson, lessonIndex) => (
+              <button
+                className={lesson.id === activeLesson?.id ? "active" : ""}
+                key={lesson.id}
+                onClick={() => onLessonChange(lesson.id)}
+                type="button"
+              >
+                <span>{lessonIndex + 1}</span>
+                {lesson.title}
+              </button>
+            ))}
+          </aside>
+          <article className="learner-player-page">
+            <p className="eyebrow">Lesson preview</p>
+            <h2>{activeLesson?.title ?? "Untitled lesson"}</h2>
+            <div className="player-blocks">
+              {activeLesson?.blocks.map((block) => <BlockPreview block={block} key={block.id} />)}
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function EditableBlockContent({
+  block,
+  onChange,
+}: {
+  block: CourseBlock;
+  onChange: (patch: Parameters<typeof updateBlock>[3]) => void;
+}) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+
+  function handleImageFile(file: File | undefined) {
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      onChange({
+        content: {
+          src: String(reader.result ?? ""),
+          alt: stringValue(block.content.alt) || file.name.replace(/\.[^.]+$/, ""),
+          mediaId: `local-${file.name}-${file.size}`,
+        },
+      });
+    });
+    reader.readAsDataURL(file);
+  }
+
+  function handleGalleryFile(imageIndex: number, file: File | undefined) {
+    if (!file) {
+      return;
+    }
+
+    const images = objectArray(block.content.images);
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const currentImage = images[imageIndex] ?? {};
+      onChange({
+        content: {
+          images: replaceAt(images, imageIndex, {
+            ...currentImage,
+            src: String(reader.result ?? ""),
+            alt: stringValue(currentImage.alt) || file.name.replace(/\.[^.]+$/, ""),
+          }),
+        },
+      });
+    });
+    reader.readAsDataURL(file);
+  }
+
+  if (block.family === "heading") {
+    return (
+      <section className={`learner-heading-block ${variantClass}`}>
+        <InlineText
+          ariaLabel="Heading"
+          as="h3"
+          className="display-heading"
+          value={stringValue(block.content.heading) || block.title}
+          onCommit={(value) => onChange({ title: value || "Heading", content: { heading: value || "Heading" } })}
+        />
+      </section>
+    );
+  }
+
+  if (block.family === "subheading") {
+    return (
+      <section className={`learner-subheading-block ${variantClass}`}>
+        <InlineText
+          ariaLabel="Subheading"
+          as="h3"
+          value={stringValue(block.content.heading) || block.title}
+          onCommit={(value) => onChange({ title: value || "Subheading", content: { heading: value || "Subheading" } })}
+        />
+        {variant !== "compact" ? (
+          <InlineText
+            ariaLabel="Subheading copy"
+            as="p"
+            value={stringValue(block.content.text)}
+            onCommit={(value) => onChange({ content: { text: value } })}
+          />
+        ) : null}
+      </section>
+    );
+  }
+
+  if (block.family === "twoColumnText") {
+    return (
+      <section className={`learner-two-column ${variantClass}`}>
+        <div>
+          <InlineText
+            ariaLabel="Left column heading"
+            as="h3"
+            value={stringValue(block.content.leftHeading)}
+            onCommit={(value) => onChange({ content: { leftHeading: value } })}
+          />
+          <InlineText
+            ariaLabel="Left column copy"
+            as="p"
+            value={stringValue(block.content.leftText)}
+            onCommit={(value) => onChange({ content: { leftText: value } })}
+          />
+        </div>
+        <div>
+          <InlineText
+            ariaLabel="Right column heading"
+            as="h3"
+            value={stringValue(block.content.rightHeading)}
+            onCommit={(value) => onChange({ content: { rightHeading: value } })}
+          />
+          <InlineText
+            ariaLabel="Right column copy"
+            as="p"
+            value={stringValue(block.content.rightText)}
+            onCommit={(value) => onChange({ content: { rightText: value } })}
+          />
+        </div>
+      </section>
+    );
+  }
+
+  if (block.family === "statement" || block.family === "quote") {
+    return (
+      <figure className={`learner-statement ${block.family} ${variantClass}`}>
+        <InlineText
+          ariaLabel={`${block.family} text`}
+          as="p"
+          value={stringValue(block.content.text)}
+          onCommit={(value) => onChange({ content: { text: value } })}
+        />
+        {variant !== "note" ? (
+          <InlineText
+            ariaLabel={`${block.family} attribution`}
+            as="span"
+            value={stringValue(block.content.attribution)}
+            onCommit={(value) => onChange({ content: { attribution: value } })}
+          />
+        ) : null}
+      </figure>
+    );
+  }
+
+  if (block.family === "list") {
+    const items = arrayValue(block.content.items);
+    const ListTag = variant === "numbered" ? "ol" : "ul";
+    return (
+      <section className={`learner-list-block ${variantClass}`}>
+        <InlineText
+          ariaLabel="List title"
+          as="h3"
+          value={block.title}
+          onCommit={(value) => onChange({ title: value || "List" })}
+        />
+        <ListTag>
+          {items.map((item, itemIndex) => (
+            <li key={`${item}-${itemIndex}`}>
+              {variant === "checkboxes" ? <Check size={16} /> : null}
+              <InlineText
+                ariaLabel={`List item ${itemIndex + 1}`}
+                as="span"
+                value={item}
+                onCommit={(value) => onChange({ content: { items: replaceAt(items, itemIndex, value || item) } })}
+              />
+              <button
+                aria-label="Remove list item"
+                className="inline-edit-action"
+                disabled={items.length <= 1}
+                onClick={stopClick(() => onChange({ content: { items: items.filter((_, currentIndex) => currentIndex !== itemIndex) } }))}
+                type="button"
+              >
+                <X size={13} />
+              </button>
+            </li>
+          ))}
+        </ListTag>
+        <button className="inline-add-row" onClick={stopClick(() => onChange({ content: { items: [...items, "New list item"] } }))} type="button">
+          <Plus size={15} />
+          Add item
+        </button>
+      </section>
+    );
+  }
+
+  if (block.family === "image") {
+    return (
+      <div className={`learner-image editable-media ${variantClass} ${booleanValue(block.content.zoomOnClick) ? "zoomable" : ""}`}>
+        <label className={stringValue(block.content.src) ? "image-picker has-image" : "image-picker"}>
+          <input
+            accept="image/*"
+            className="visually-hidden-file"
+            type="file"
+            onChange={(event) => handleImageFile(event.target.files?.[0])}
+          />
+          {stringValue(block.content.src) ? (
+            <>
+              <img alt={stringValue(block.content.alt)} src={stringValue(block.content.src)} />
+              <span className="replace-media">Replace image</span>
+            </>
+          ) : (
+            <span className="image-placeholder">
+              <Image size={24} />
+              <strong>Choose image</strong>
+              <em>{stringValue(block.content.alt) || "Add a course image"}</em>
+            </span>
+          )}
+        </label>
+        <InlineText
+          ariaLabel="Image caption"
+          as="p"
+          className="editable-caption"
+          value={stringValue(block.content.caption)}
+          onCommit={(value) => onChange({ content: { caption: value } })}
+        />
+      </div>
+    );
+  }
+
+  if (block.family === "gallery") {
+    const images = objectArray(block.content.images);
+    const columns = galleryColumns(block);
+    return (
+      <section className={`learner-gallery ${variantClass}`}>
+        <InlineText ariaLabel="Gallery title" as="h3" value={block.title} onCommit={(value) => onChange({ title: value || "Gallery" })} />
+        <div className="gallery-grid" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+          {images.map((image, imageIndex) => (
+            <div className="gallery-card" key={imageIndex}>
+              <label className={stringValue(image.src) ? "image-picker has-image" : "image-picker"}>
+                <input
+                  accept="image/*"
+                  className="visually-hidden-file"
+                  type="file"
+                  onChange={(event) => handleGalleryFile(imageIndex, event.target.files?.[0])}
+                />
+                {stringValue(image.src) ? (
+                  <>
+                    <img alt={stringValue(image.alt)} src={stringValue(image.src)} />
+                    <span className="replace-media">Replace image</span>
+                  </>
+                ) : (
+                  <span className="image-placeholder compact">
+                    <Image size={20} />
+                    <strong>Choose image</strong>
+                    <em>{stringValue(image.alt) || `Gallery image ${imageIndex + 1}`}</em>
+                  </span>
+                )}
+              </label>
+              {block.settings.showCaptions !== false ? (
+                <InlineText
+                  ariaLabel={`Gallery caption ${imageIndex + 1}`}
+                  as="p"
+                  value={stringValue(image.caption)}
+                  onCommit={(value) => onChange({ content: { images: replaceAt(images, imageIndex, { ...image, caption: value }) } })}
+                />
+              ) : null}
+            </div>
+          ))}
+        </div>
+        <button className="inline-add-row" onClick={stopClick(() => onChange({ content: { images: [...images, { src: "", alt: "Gallery image", caption: "Caption" }] } }))} type="button">
+          <Plus size={15} />
+          Add image
+        </button>
+      </section>
+    );
+  }
+
+  if (block.family === "divider") {
+    if (variant === "spacer") {
+      return <section aria-label="Spacer divider" className={`learner-divider ${variantClass}`} />;
+    }
+    return (
+      <section className={`learner-divider ${variantClass}`}>
+        <span />
+        {variant === "continue" ? (
+          <span className="editable-button-shell">
+            <InlineText ariaLabel="Divider button label" as="span" value={stringValue(block.content.label)} onCommit={(value) => onChange({ content: { label: value } })} />
+          </span>
+        ) : (
+          <InlineText ariaLabel="Divider label" as="p" value={variant === "numbered" ? `01 ${stringValue(block.content.label)}` : stringValue(block.content.label)} onCommit={(value) => onChange({ content: { label: value.replace(/^01\\s+/, "") } })} />
+        )}
+        <span />
+      </section>
+    );
+  }
+
+  if (block.family === "multimedia") {
+    return (
+      <section className={`learner-multimedia ${variantClass}`}>
+        <div className="media-frame">
+          {variant === "video" ? (
+            <>
+              {stringValue(block.content.url) ? <video controls src={stringValue(block.content.url)} /> : <Play size={26} />}
+              <InlineText ariaLabel="Video label" as="h3" value={stringValue(block.content.label)} onCommit={(value) => onChange({ content: { label: value } })} />
+              <span>{stringValue(block.content.url) || "Add a video source in settings"}</span>
+            </>
+          ) : variant === "attachment" ? (
+            <>
+              <Download size={26} />
+              <InlineText ariaLabel="Attachment label" as="h3" value={stringValue(block.content.attachmentLabel) || stringValue(block.content.label)} onCommit={(value) => onChange({ content: { attachmentLabel: value } })} />
+              <span>{stringValue(block.content.url) || "Add an attachment URL in settings"}</span>
+            </>
+          ) : variant === "code" ? (
+            <>
+              <FileText size={26} />
+              <InlineText ariaLabel="Code language" as="h3" value={stringValue(block.content.language) || "javascript"} onCommit={(value) => onChange({ content: { language: value || "text" } })} />
+              <EditableCodeBlock value={stringValue(block.content.code)} onCommit={(value) => onChange({ content: { code: value } })} />
+            </>
+          ) : (
+            <>
+              {stringValue(block.content.url) ? <iframe src={stringValue(block.content.url)} title={stringValue(block.content.label) || "Embedded media"} /> : <Play size={26} />}
+              <InlineText ariaLabel="Embed label" as="h3" value={stringValue(block.content.label)} onCommit={(value) => onChange({ content: { label: value } })} />
+              <span>{stringValue(block.content.url) || "Add an embed URL in settings"}</span>
+            </>
+          )}
+        </div>
+        <InlineText ariaLabel="Multimedia caption" as="p" value={stringValue(block.content.caption)} onCommit={(value) => onChange({ content: { caption: value } })} />
+      </section>
+    );
+  }
+
+  if (block.family === "audio") {
+    return (
+      <section className={`learner-audio ${variantClass}`}>
+        <div className="audio-player">
+          <Play size={18} />
+          <InlineText ariaLabel="Audio title" as="h3" value={stringValue(block.content.title)} onCommit={(value) => onChange({ content: { title: value } })} />
+          {stringValue(block.content.url) ? <audio controls src={stringValue(block.content.url)} /> : <span>Add an audio source in settings</span>}
+        </div>
+        {block.settings.showTranscript !== false ? (
+          <InlineText ariaLabel="Audio transcript" as="p" value={stringValue(block.content.transcript)} onCommit={(value) => onChange({ content: { transcript: value } })} />
+        ) : null}
+      </section>
+    );
+  }
+
+  if (block.family === "interactive" || block.family === "process") {
+    const key = block.family === "process" ? "steps" : "items";
+    const items = objectArray(block.content[key]);
+    return (
+      <section className={`learner-interactive ${block.family} ${variantClass}`}>
+        <InlineText ariaLabel={`${block.family} title`} as="h3" value={block.title} onCommit={(value) => onChange({ title: value || block.title })} />
+        <div className="interactive-list">
+          {items.map((item, itemIndex) => (
+            <div className="interactive-item" key={itemIndex}>
+              {block.settings.showNumbers !== false ? <span>{itemIndex + 1}</span> : null}
+              <div>
+                <InlineText
+                  ariaLabel={`${block.family} item ${itemIndex + 1} title`}
+                  as="h3"
+                  value={stringValue(item.title)}
+                  onCommit={(value) => onChange({ content: { [key]: replaceAt(items, itemIndex, { ...item, title: value }) } })}
+                />
+                <InlineText
+                  ariaLabel={`${block.family} item ${itemIndex + 1} text`}
+                  as="p"
+                  value={stringValue(item.text)}
+                  onCommit={(value) => onChange({ content: { [key]: replaceAt(items, itemIndex, { ...item, text: value }) } })}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="inline-add-row" onClick={stopClick(() => onChange({ content: { [key]: [...items, { title: "New item", text: "Add details." }] } }))} type="button">
+          <Plus size={15} />
+          Add item
+        </button>
+      </section>
+    );
+  }
+
+  if (block.family === "flashcard") {
+    const cards = objectArray(block.content.cards);
+    const visibleCards = variant === "single-card" ? cards.slice(0, 1) : cards;
+    return (
+      <section className={`learner-flashcards ${variantClass}`}>
+        <InlineText ariaLabel="Flashcard title" as="h3" value={block.title} onCommit={(value) => onChange({ title: value || "Flashcards" })} />
+        <div className="flashcard-grid">
+          {visibleCards.map((card, cardIndex) => (
+            <div className="flashcard" key={cardIndex}>
+              <InlineText ariaLabel={`Flashcard ${cardIndex + 1} front`} as="p" value={stringValue(card.front)} onCommit={(value) => onChange({ content: { cards: replaceAt(cards, cardIndex, { ...card, front: value }) } })} />
+              <InlineText ariaLabel={`Flashcard ${cardIndex + 1} back`} as="p" value={stringValue(card.back)} onCommit={(value) => onChange({ content: { cards: replaceAt(cards, cardIndex, { ...card, back: value }) } })} />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (block.family === "buttons") {
+    const buttons = objectArray(block.content.buttons);
+    const visibleButtons = variant === "single" ? buttons.slice(0, 1) : buttons;
+    return (
+      <section className={`learner-buttons ${variantClass}`}>
+        {visibleButtons.map((button, buttonIndex) => (
+          <div className="learner-button editable-button-shell" key={buttonIndex}>
+            <InlineText ariaLabel={`Button ${buttonIndex + 1} label`} as="span" value={stringValue(button.label)} onCommit={(value) => onChange({ content: { buttons: replaceAt(buttons, buttonIndex, { ...button, label: value }) } })} />
+          </div>
+        ))}
+      </section>
+    );
+  }
+
+  if (block.family === "chart") {
+    const items = objectArray(block.content.items);
+    const maxValue = Math.max(1, ...items.map((item) => numberValue(item.value)));
+    return (
+      <section className={`learner-chart ${variantClass}`}>
+        <InlineText ariaLabel="Chart title" as="h3" value={block.title} onCommit={(value) => onChange({ title: value || "Chart" })} />
+        <div className="chart-visual">
+          {items.map((item, itemIndex) => (
+            <div className="chart-row" key={itemIndex}>
+              <InlineText ariaLabel={`Chart label ${itemIndex + 1}`} as="span" value={stringValue(item.label)} onCommit={(value) => onChange({ content: { items: replaceAt(items, itemIndex, { ...item, label: value }) } })} />
+              <span style={{ width: `${Math.max(8, (numberValue(item.value) / maxValue) * 100)}%` }} />
+              <strong>{numberValue(item.value)}</strong>
+            </div>
+          ))}
+        </div>
+        {block.settings.showDataTable !== false ? <p className="chart-axis-label">{stringValue(block.settings.valueAxisLabel) || "Accessible data table shown in publish"}</p> : null}
+      </section>
+    );
+  }
+
+  if (block.family === "table") {
+    const headers = arrayValue(block.content.headers);
+    const rows = tableRows(block.content.rows);
+    return (
+      <section className={`learner-table ${variantClass}`}>
+        <InlineText ariaLabel="Table title" as="h3" value={block.title} onCommit={(value) => onChange({ title: value || "Table" })} />
+        <table>
+          {block.settings.headerRow !== false ? (
+            <thead>
+              <tr>{headers.map((header, index) => <th key={index}>{header}</th>)}</tr>
+            </thead>
+          ) : null}
+          <tbody>
+            {rows.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell, cellIndex) =>
+                  booleanValue(block.settings.headerColumn) && cellIndex === 0 ? <th key={cellIndex}>{cell}</th> : <td key={cellIndex}>{cell}</td>,
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    );
+  }
+
+  if (block.family === "scenario") {
+    const choices = objectArray(block.content.choices);
+    return (
+      <section className={`learner-scenario ${variantClass}`}>
+        <InlineText ariaLabel="Scenario prompt" as="h3" value={stringValue(block.content.prompt)} onCommit={(value) => onChange({ content: { prompt: value } })} />
+        <div className="scenario-choices">
+          {choices.map((choice, choiceIndex) => (
+            <div className="editable-choice-shell" key={choiceIndex}>
+              <InlineText ariaLabel={`Scenario choice ${choiceIndex + 1}`} as="span" value={stringValue(choice.label)} onCommit={(value) => onChange({ content: { choices: replaceAt(choices, choiceIndex, { ...choice, label: value }) } })} />
+              {variant === "branching" ? <small>{stringValue(choice.outcome)}</small> : null}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  if (block.family === "checklist") {
+    const items = arrayValue(block.content.items);
+    return (
+      <section className={`learner-checklist ${variantClass}`}>
+        <InlineText
+          ariaLabel="Checklist heading"
+          as="h3"
+          value={block.title}
+          onCommit={(value) => onChange({ title: value || "Checklist" })}
+        />
+        <ul>
+          {items.map((item, itemIndex) => (
+            <li key={`${item}-${itemIndex}`}>
+              {block.settings.allowMultiple === false ? <span className="single-check" /> : <Check size={16} />}
+              <InlineText
+                ariaLabel={`Checklist item ${itemIndex + 1}`}
+                as="span"
+                value={item}
+                onCommit={(value) => {
+                  const nextItems = items.map((current, currentIndex) =>
+                    currentIndex === itemIndex ? value || current : current,
+                  );
+                  onChange({ content: { items: nextItems } });
+                }}
+              />
+              <button
+                aria-label="Remove checklist item"
+                className="inline-edit-action"
+                disabled={items.length <= 1}
+                onClick={stopClick(() => onChange({ content: { items: items.filter((_, currentIndex) => currentIndex !== itemIndex) } }))}
+                type="button"
+              >
+                <X size={13} />
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          className="inline-add-row"
+          onClick={stopClick(() => onChange({ content: { items: [...items, "New checklist item"] } }))}
+          type="button"
+        >
+          <Plus size={15} />
+          Add item
+        </button>
+      </section>
+    );
+  }
+
+  if (block.family === "quiz" || block.family === "knowledgeCheck") {
+    const options = arrayValue(block.content.options);
+    const correctOption = clamp(numberValue(block.content.correctOption), 0, Math.max(0, options.length - 1));
+    const correctOptions = correctOptionSet(block);
+    const acceptedAnswers = acceptedAnswerValues(block);
+    const matches = quizMatchPairs(block);
+    return (
+      <section className={`learner-quiz ${variantClass}`}>
+        <p className="eyebrow">{block.family === "quiz" ? "Quiz" : "Knowledge check"} · {variantOptions[block.family].find((option) => option.value === variant)?.label ?? variant}</p>
+        <InlineText
+          ariaLabel="Quiz question"
+          as="h3"
+          value={stringValue(block.content.question) || block.title}
+          onCommit={(value) => onChange({ content: { question: value || "Question" } })}
+        />
+        {variant === "fill-blank" ? (
+          <div className="answer-list fill-blank-preview">
+            {acceptedAnswers.map((answer, answerIndex) => (
+              <label key={`${answer}-${answerIndex}`}>
+                <span>Accepted answer {answerIndex + 1}</span>
+                <InlineText ariaLabel={`Accepted answer ${answerIndex + 1}`} as="p" value={answer} onCommit={(value) => onChange({ content: { acceptedAnswers: replaceAt(acceptedAnswers, answerIndex, value || answer) } })} />
+                <button
+                  aria-label="Remove accepted answer"
+                  className="inline-edit-action"
+                  disabled={acceptedAnswers.length <= 1}
+                  onClick={stopClick(() => onChange({ content: { acceptedAnswers: acceptedAnswers.filter((_, currentIndex) => currentIndex !== answerIndex) } }))}
+                  type="button"
+                >
+                  <X size={13} />
+                </button>
+              </label>
+            ))}
+            <button className="inline-add-row" onClick={stopClick(() => onChange({ content: { acceptedAnswers: [...acceptedAnswers, "New accepted answer"] } }))} type="button">
+              <Plus size={15} />
+              Add accepted answer
+            </button>
+          </div>
+        ) : variant === "matching" ? (
+          <div className="answer-list matching-list">
+            {matches.map((match, matchIndex) => (
+              <div className="matching-row" key={`${match.prompt}-${matchIndex}`}>
+                <InlineText ariaLabel={`Matching prompt ${matchIndex + 1}`} as="p" value={stringValue(match.prompt)} onCommit={(value) => onChange({ content: { matches: replaceAt(matches, matchIndex, { ...match, prompt: value || stringValue(match.prompt) }) } })} />
+                <span aria-hidden="true">→</span>
+                <InlineText ariaLabel={`Matching answer ${matchIndex + 1}`} as="p" value={stringValue(match.match)} onCommit={(value) => onChange({ content: { matches: replaceAt(matches, matchIndex, { ...match, match: value || stringValue(match.match) }) } })} />
+                <button
+                  aria-label="Remove matching pair"
+                  className="inline-edit-action"
+                  disabled={matches.length <= 1}
+                  onClick={stopClick(() => onChange({ content: { matches: matches.filter((_, currentIndex) => currentIndex !== matchIndex) } }))}
+                  type="button"
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ))}
+            <button className="inline-add-row" onClick={stopClick(() => onChange({ content: { matches: [...matches, { prompt: "New prompt", match: "New match" }] } }))} type="button">
+              <Plus size={15} />
+              Add pair
+            </button>
+          </div>
+        ) : (
+          <div className={`answer-list ${variantClass}`}>
+            {options.map((option, optionIndex) => (
+            <div className={correctOptions.has(optionIndex) ? "answer correct" : "answer"} key={`${option}-${optionIndex}`}>
+              <button
+                aria-label={`Mark option ${String.fromCharCode(65 + optionIndex)} correct`}
+                className="answer-marker"
+                onClick={stopClick(() => {
+                  if (variant === "multiple-response") {
+                    const nextOptions = correctOptions.has(optionIndex)
+                      ? Array.from(correctOptions).filter((value) => value !== optionIndex)
+                      : [...Array.from(correctOptions), optionIndex];
+                    onChange({ content: { correctOptions: nextOptions.length > 0 ? nextOptions : [optionIndex], correctOption: optionIndex } });
+                    return;
+                  }
+                  onChange({ content: { correctOption: optionIndex, correctOptions: [optionIndex] } });
+                })}
+                type="button"
+              >
+                {variant === "multiple-response" ? <Check size={14} /> : String.fromCharCode(65 + optionIndex)}
+              </button>
+              <InlineText
+                ariaLabel={`Answer option ${optionIndex + 1}`}
+                as="p"
+                value={option}
+                onCommit={(value) => {
+                  const nextOptions = options.map((current, currentIndex) =>
+                    currentIndex === optionIndex ? value || current : current,
+                  );
+                  onChange({ content: { options: nextOptions } });
+                }}
+              />
+              <button
+                aria-label="Remove answer option"
+                className="inline-edit-action"
+                disabled={options.length <= 2}
+                onClick={stopClick(() =>
+                  onChange({
+                    content: {
+                      options: options.filter((_, currentIndex) => currentIndex !== optionIndex),
+                      correctOption: clamp(correctOption, 0, Math.max(0, options.length - 2)),
+                      correctOptions: Array.from(correctOptions)
+                        .filter((currentOption) => currentOption !== optionIndex)
+                        .map((currentOption) => (currentOption > optionIndex ? currentOption - 1 : currentOption)),
+                    },
+                  }),
+                )}
+                type="button"
+              >
+                <X size={13} />
+              </button>
+            </div>
+            ))}
+          </div>
+        )}
+        {variant !== "fill-blank" && variant !== "matching" ? (
+          <button
+            className="inline-add-row"
+            onClick={stopClick(() => onChange({ content: { options: [...options, "New option"] } }))}
+            type="button"
+          >
+            <Plus size={15} />
+            Add option
+          </button>
+        ) : null}
+        {block.settings.showFeedback !== false ? (
+          <div className="quiz-feedback-grid">
+            <InlineText ariaLabel="Correct feedback" as="p" value={stringValue(block.content.correctFeedback) || "Correct feedback"} onCommit={(value) => onChange({ content: { correctFeedback: value } })} />
+            <InlineText ariaLabel="Incorrect feedback" as="p" value={stringValue(block.content.incorrectFeedback) || "Incorrect feedback"} onCommit={(value) => onChange({ content: { incorrectFeedback: value } })} />
+          </div>
+        ) : null}
+      </section>
+    );
+  }
+
+  if (block.family === "callout") {
+    return (
+      <aside className={`learner-callout ${stringValue(block.settings.tone)} ${variantClass}`}>
+        <Sparkles size={20} />
+        <div>
+          <InlineText
+            ariaLabel="Callout title"
+            as="h3"
+            value={block.title}
+            onCommit={(value) => onChange({ title: value || "Callout" })}
+          />
+          <InlineText
+            ariaLabel="Callout copy"
+            as="p"
+            value={stringValue(block.content.text)}
+            onCommit={(value) => onChange({ content: { text: value } })}
+          />
+        </div>
+      </aside>
+    );
+  }
+
+  return (
+    <section className={`learner-copy ${variantClass}`}>
+      {variant !== "paragraph" ? (
+        <InlineText
+          ariaLabel="Text heading"
+          as="h3"
+          value={block.title}
+          onCommit={(value) => onChange({ title: value || "Text" })}
+        />
+      ) : null}
+      <InlineText
+        ariaLabel="Text body"
+        as="p"
+        value={stringValue(block.content.text)}
+        onCommit={(value) => onChange({ content: { text: value } })}
+      />
+    </section>
+  );
+}
+
+function InlineText({
+  ariaLabel,
+  as,
+  className,
+  onCommit,
+  onFocus,
+  value,
+}: {
+  ariaLabel: string;
+  as: "h1" | "h3" | "p" | "span";
+  className?: string;
+  onCommit: (value: string) => void;
+  onFocus?: () => void;
+  value: string;
+}) {
+  return createElement(as, {
+    "aria-label": ariaLabel,
+    className: className ? `editable-text ${className}` : "editable-text",
+    contentEditable: true,
+    role: "textbox",
+    suppressContentEditableWarning: true,
+    tabIndex: 0,
+    onBlur: (event: ReactFocusEvent<HTMLElement>) => {
+      const nextValue = (event.currentTarget.textContent ?? "").trim();
+      if (nextValue !== value.trim()) {
+        onCommit(nextValue);
+      }
+    },
+    onFocus,
+    onKeyDown: (event: ReactKeyboardEvent<HTMLElement>) => {
+      if (event.key === "Enter" && as !== "p") {
+        event.preventDefault();
+        event.currentTarget instanceof HTMLElement && event.currentTarget.blur();
+      }
+    },
+    children: value,
+  });
+}
+
+function EditableCodeBlock({ onCommit, value }: { onCommit: (value: string) => void; value: string }) {
+  return (
+    <pre
+      aria-label="Code sample"
+      className="editable-code"
+      contentEditable
+      role="textbox"
+      suppressContentEditableWarning
+      tabIndex={0}
+      onBlur={(event) => {
+        const nextValue = event.currentTarget.textContent ?? "";
+        if (nextValue !== value) {
+          onCommit(nextValue);
+        }
+      }}
+    >
+      {value || "// Add code sample"}
+    </pre>
+  );
+}
+
+function BlockPreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+
+  if (block.family === "text") {
+    return (
+      <section className={`learner-copy ${variantClass}`}>
+        {variant !== "paragraph" ? <h3>{block.title}</h3> : null}
+        <p>{stringValue(block.content.text)}</p>
+      </section>
+    );
+  }
+
+  if (block.family === "heading") {
+    return (
+      <section className={`learner-heading-block ${variantClass}`}>
+        <h3 className="display-heading">{stringValue(block.content.heading) || block.title}</h3>
+      </section>
+    );
+  }
+
+  if (block.family === "subheading") {
+    return (
+      <section className={`learner-subheading-block ${variantClass}`}>
+        <h3>{stringValue(block.content.heading) || block.title}</h3>
+        {variant !== "compact" ? <p>{stringValue(block.content.text)}</p> : null}
+      </section>
+    );
+  }
+
+  if (block.family === "twoColumnText") {
+    return (
+      <section className={`learner-two-column ${variantClass}`}>
+        <div>
+          <h3>{stringValue(block.content.leftHeading)}</h3>
+          <p>{stringValue(block.content.leftText)}</p>
+        </div>
+        <div>
+          <h3>{stringValue(block.content.rightHeading)}</h3>
+          <p>{stringValue(block.content.rightText)}</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (block.family === "statement" || block.family === "quote") {
+    return (
+      <figure className={`learner-statement ${block.family} ${variantClass}`}>
+        <p>{stringValue(block.content.text)}</p>
+        {variant !== "note" ? <span>{stringValue(block.content.attribution)}</span> : null}
+      </figure>
+    );
+  }
+
+  if (block.family === "list") {
+    const items = arrayValue(block.content.items);
+    const ListTag = variant === "numbered" ? "ol" : "ul";
+    return (
+      <section className={`learner-list-block ${variantClass}`}>
+        <h3>{block.title}</h3>
+        <ListTag>
+          {items.map((item, itemIndex) => (
+            <li key={`${item}-${itemIndex}`}>
+              {variant === "checkboxes" ? <Check size={16} /> : null}
+              <span>{item}</span>
+            </li>
+          ))}
+        </ListTag>
+      </section>
+    );
+  }
+
+  if (block.family === "divider") {
+    return <DividerPreview block={block} />;
+  }
+
+  if (block.family === "image") {
+    return <ImagePreview block={block} />;
+  }
+
+  if (block.family === "gallery") {
+    return <GalleryPreview block={block} />;
+  }
+
+  if (block.family === "multimedia") {
+    return <MultimediaPreview block={block} />;
+  }
+
+  if (block.family === "audio") {
+    return (
+      <section className={`learner-audio ${variantClass}`}>
+        <div className="audio-player">
+          <Play size={18} />
+          <h3>{stringValue(block.content.title) || block.title}</h3>
+          {stringValue(block.content.url) ? <audio controls src={stringValue(block.content.url)} /> : <span>Add an audio source in settings</span>}
+        </div>
+        {block.settings.showTranscript !== false ? <p>{stringValue(block.content.transcript)}</p> : null}
+      </section>
+    );
+  }
+
+  if (block.family === "interactive" || block.family === "process") {
+    return <InteractivePreview block={block} />;
+  }
+
+  if (block.family === "flashcard") {
+    return <FlashcardPreview block={block} />;
+  }
+
+  if (block.family === "buttons") {
+    const buttons = objectArray(block.content.buttons);
+    const visibleButtons = variant === "single" ? buttons.slice(0, 1) : buttons;
+    const newTab = block.settings.newTab !== false;
+    return (
+      <section className={`learner-buttons ${variantClass}`}>
+        {visibleButtons.map((button, buttonIndex) => {
+          const href = normalizeHref(stringValue(button.destination));
+          const label = stringValue(button.label) || `Button ${buttonIndex + 1}`;
+          return href ? (
+            <a className="learner-button" href={href} key={buttonIndex} rel={newTab ? "noreferrer" : undefined} target={newTab ? "_blank" : undefined}>
+              {label}
+            </a>
+          ) : (
+            <span aria-disabled="true" className="learner-button disabled" key={buttonIndex}>
+              {label}
+            </span>
+          );
+        })}
+      </section>
+    );
+  }
+
+  if (block.family === "chart") {
+    const items = objectArray(block.content.items);
+    const maxValue = Math.max(1, ...items.map((item) => numberValue(item.value)));
+    return (
+      <section className={`learner-chart ${variantClass}`}>
+        <h3>{block.title}</h3>
+        <div className="chart-visual">
+          {items.map((item, itemIndex) => (
+            <div className="chart-row" key={itemIndex}>
+              <span>{stringValue(item.label)}</span>
+              <span style={{ width: `${Math.max(8, (numberValue(item.value) / maxValue) * 100)}%` }} />
+              <strong>{numberValue(item.value)}</strong>
+            </div>
+          ))}
+        </div>
+        {block.settings.showDataTable !== false ? <p className="chart-axis-label">{stringValue(block.settings.valueAxisLabel) || "Accessible data table shown in publish"}</p> : null}
+      </section>
+    );
+  }
+
+  if (block.family === "table") {
+    const headers = arrayValue(block.content.headers);
+    const rows = tableRows(block.content.rows);
+    return (
+      <section className={`learner-table ${variantClass}`}>
+        <h3>{block.title}</h3>
+        <table>
+          {block.settings.headerRow !== false ? (
+            <thead>
+              <tr>{headers.map((header, index) => <th key={index}>{header}</th>)}</tr>
+            </thead>
+          ) : null}
+          <tbody>
+            {rows.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell, cellIndex) =>
+                  booleanValue(block.settings.headerColumn) && cellIndex === 0 ? <th key={cellIndex}>{cell}</th> : <td key={cellIndex}>{cell}</td>,
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    );
+  }
+
+  if (block.family === "scenario") {
+    return <ScenarioPreview block={block} />;
+  }
+
+  if (block.family === "checklist") {
+    return <ChecklistPreview block={block} />;
+  }
+
+  if (block.family === "quiz") {
+    return <QuizPreview block={block} />;
+  }
+
+  if (block.family === "knowledgeCheck") {
+    return <QuizPreview block={block} />;
+  }
+
+  if (block.family === "callout") {
+    return (
+      <aside className={`learner-callout ${stringValue(block.settings.tone)} ${variantClass}`}>
+        <Sparkles size={20} />
+        <div>
+          <h3>{block.title}</h3>
+          <p>{stringValue(block.content.text)}</p>
+        </div>
+      </aside>
+    );
+  }
+
+  return (
+    <section className={`learner-preview-block ${block.family} ${variantClass}`}>
+      <p className="eyebrow">{String(block.family).replace(/([A-Z])/g, " $1")} · {variant}</p>
+      <h3>{previewTitle(block)}</h3>
+      <p>{blockSummary(block)}</p>
+    </section>
+  );
+}
+
+function QuizPreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+  const options = arrayValue(block.content.options);
+  const correctOptions = correctOptionSet(block);
+  const acceptedAnswers = acceptedAnswerValues(block);
+  const matches = quizMatchPairs(block);
+  const maxAttempts = Math.max(1, numberValue(block.settings.attempts) || 1);
+  const shuffledOptions = useMemo(
+    () => (booleanValue(block.settings.shuffleAnswers) ? stableShuffle(options.map((option, index) => ({ option, index })), block.id) : options.map((option, index) => ({ option, index }))),
+    [block.id, block.settings.shuffleAnswers, options.join("\u0000")],
+  );
+  const shuffledMatches = useMemo(
+    () => stableShuffle(matches.map((match) => stringValue(match.match)), `${block.id}:matches`),
+    [block.id, matches.map((match) => stringValue(match.match)).join("\u0000")],
+  );
+  const [selectedOptions, setSelectedOptions] = useState<Set<number>>(new Set());
+  const [blankAnswer, setBlankAnswer] = useState("");
+  const [matchingAnswers, setMatchingAnswers] = useState<Record<number, string>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const [attemptsUsed, setAttemptsUsed] = useState(0);
+  const isCorrect =
+    variant === "fill-blank"
+      ? acceptedAnswers.some((answer) => answer.trim().toLowerCase() === blankAnswer.trim().toLowerCase())
+      : variant === "matching"
+        ? matches.every((match, index) => matchingAnswers[index] === stringValue(match.match))
+        : setsEqual(selectedOptions, correctOptions);
+  const attemptsRemaining = Math.max(0, maxAttempts - attemptsUsed);
+  const locked = submitted && (isCorrect || attemptsRemaining <= 0);
+
+  function toggleOption(optionIndex: number) {
+    if (locked) {
+      return;
+    }
+    setSubmitted(false);
+    setSelectedOptions((current) => {
+      if (variant !== "multiple-response") {
+        return new Set([optionIndex]);
+      }
+      const next = new Set(current);
+      if (next.has(optionIndex)) {
+        next.delete(optionIndex);
+      } else {
+        next.add(optionIndex);
+      }
+      return next;
+    });
+  }
+
+  function resetAttempt() {
+    setSubmitted(false);
+    setSelectedOptions(new Set());
+    setBlankAnswer("");
+    setMatchingAnswers({});
+  }
+
+  function submitAttempt() {
+    if (!submitted) {
+      setAttemptsUsed((current) => Math.min(maxAttempts, current + 1));
+    }
+    setSubmitted(true);
+  }
+
+  function canSubmit() {
+    if (variant === "fill-blank") {
+      return blankAnswer.trim().length > 0;
+    }
+    if (variant === "matching") {
+      return matches.every((_, index) => Boolean(matchingAnswers[index]));
+    }
+    return selectedOptions.size > 0;
+  }
+
+  if (variant === "fill-blank") {
+    return (
+      <section className={`learner-quiz ${variantClass}`}>
+        <p className="eyebrow">{block.family === "quiz" ? "Quiz" : "Knowledge check"} · Fill in the blank</p>
+        <h3>{stringValue(block.content.question) || block.title}</h3>
+        <div className="answer-list fill-blank-preview">
+          <label>
+            <span>Learner answer</span>
+            <input disabled={locked} value={blankAnswer} onChange={(event) => {
+              setBlankAnswer(event.target.value);
+              setSubmitted(false);
+            }} placeholder="Type your answer" />
+          </label>
+        </div>
+        <QuizSubmit attemptsRemaining={attemptsRemaining} disabled={!canSubmit() || locked} isCorrect={isCorrect} maxAttempts={maxAttempts} onRetry={resetAttempt} submitted={submitted} onSubmit={submitAttempt} />
+        {submitted && block.settings.showFeedback !== false ? <FeedbackPreview block={block} isCorrect={isCorrect} /> : null}
+      </section>
+    );
+  }
+
+  if (variant === "matching") {
+    return (
+      <section className={`learner-quiz ${variantClass}`}>
+        <p className="eyebrow">{block.family === "quiz" ? "Quiz" : "Knowledge check"} · Matching</p>
+        <h3>{stringValue(block.content.question) || block.title}</h3>
+        <div className="answer-list matching-list">
+          {matches.map((match, matchIndex) => (
+            <div className="matching-row" key={`${match.prompt}-${matchIndex}`}>
+              <p>{stringValue(match.prompt)}</p>
+              <span aria-hidden="true">→</span>
+              <div className="matching-options" role="group" aria-label={`Match options for ${stringValue(match.prompt)}`}>
+                {shuffledMatches.map((candidate) => {
+                  const usedElsewhere = Object.entries(matchingAnswers).some(([index, value]) => Number(index) !== matchIndex && value === candidate);
+                  const selected = matchingAnswers[matchIndex] === candidate;
+                  return (
+                    <button
+                      aria-pressed={selected}
+                      disabled={locked || usedElsewhere}
+                      key={candidate}
+                      onClick={() => {
+                        setSubmitted(false);
+                        setMatchingAnswers((current) => ({ ...current, [matchIndex]: selected ? "" : candidate }));
+                      }}
+                      type="button"
+                    >
+                      {candidate}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        <QuizSubmit attemptsRemaining={attemptsRemaining} disabled={!canSubmit() || locked} isCorrect={isCorrect} maxAttempts={maxAttempts} onRetry={resetAttempt} submitted={submitted} onSubmit={submitAttempt} />
+        {submitted && block.settings.showFeedback !== false ? <FeedbackPreview block={block} isCorrect={isCorrect} /> : null}
+      </section>
+    );
+  }
+
+  return (
+    <section className={`learner-quiz ${variantClass}`}>
+      <p className="eyebrow">{block.family === "quiz" ? "Quiz" : "Knowledge check"} · {variant}</p>
+      <h3>{stringValue(block.content.question) || block.title}</h3>
+      <div className={`answer-list ${variantClass}`}>
+        {shuffledOptions.map(({ option, index: optionIndex }, displayIndex) => (
+          <button
+            aria-pressed={selectedOptions.has(optionIndex)}
+            className={[
+              "answer",
+              selectedOptions.has(optionIndex) ? "selected" : "",
+              submitted && correctOptions.has(optionIndex) ? "correct" : "",
+              submitted && selectedOptions.has(optionIndex) && !correctOptions.has(optionIndex) ? "incorrect" : "",
+            ].filter(Boolean).join(" ")}
+            disabled={locked}
+            key={`${option}-${optionIndex}`}
+            onClick={() => toggleOption(optionIndex)}
+            type="button"
+          >
+            <span>{variant === "multiple-response" ? (selectedOptions.has(optionIndex) ? "✓" : "") : String.fromCharCode(65 + displayIndex)}</span>
+            <p>{option}</p>
+          </button>
+        ))}
+      </div>
+      <QuizSubmit attemptsRemaining={attemptsRemaining} disabled={!canSubmit() || locked} isCorrect={isCorrect} maxAttempts={maxAttempts} onRetry={resetAttempt} submitted={submitted} onSubmit={submitAttempt} />
+      {submitted && block.settings.showFeedback !== false ? <FeedbackPreview block={block} isCorrect={isCorrect} /> : null}
+    </section>
+  );
+}
+
+function QuizSubmit({
+  attemptsRemaining,
+  disabled,
+  isCorrect,
+  maxAttempts,
+  onRetry,
+  onSubmit,
+  submitted,
+}: {
+  attemptsRemaining: number;
+  disabled: boolean;
+  isCorrect: boolean;
+  maxAttempts: number;
+  onRetry: () => void;
+  onSubmit: () => void;
+  submitted: boolean;
+}) {
+  const canRetry = submitted && !isCorrect && attemptsRemaining > 0;
+  return (
+    <div className="quiz-submit-row">
+      <button disabled={disabled} onClick={onSubmit} type="button">Submit</button>
+      {canRetry ? <button className="secondary-quiz-action" onClick={onRetry} type="button">Try again</button> : null}
+      {submitted ? <strong>{isCorrect ? "Correct" : attemptsRemaining > 0 ? "Try again" : "Attempts used"}</strong> : null}
+      {maxAttempts > 1 ? <span>{attemptsRemaining} attempt{attemptsRemaining === 1 ? "" : "s"} remaining</span> : null}
+    </div>
+  );
+}
+
+function FeedbackPreview({ block, isCorrect }: { block: CourseBlock; isCorrect: boolean }) {
+  return (
+    <div className="quiz-feedback-grid">
+      <p>{isCorrect ? stringValue(block.content.correctFeedback) || stringValue(block.content.feedback) || "Correct." : stringValue(block.content.incorrectFeedback) || "Not quite."}</p>
+    </div>
+  );
+}
+
+function ImagePreview({ block }: { block: CourseBlock }) {
+  const variantClass = blockVariantClass(block);
+  const imageSrc = stringValue(block.content.src);
+  const imageAlt = stringValue(block.content.alt);
+  const zoomable = booleanValue(block.content.zoomOnClick);
+  const [zoomOpen, setZoomOpen] = useState(false);
+
+  return (
+    <div className={`learner-image ${variantClass} ${zoomable ? "zoomable" : ""}`}>
+      {imageSrc ? (
+        zoomable ? (
+          <button aria-label="Zoom image" className="image-zoom-trigger" onClick={() => setZoomOpen(true)} type="button">
+            <img alt={imageAlt} src={imageSrc} />
+            <span>Zoom image</span>
+          </button>
+        ) : (
+          <img alt={imageAlt} src={imageSrc} />
+        )
+      ) : (
+        <div className="image-placeholder">
+          <Image size={24} />
+          <span>{imageAlt || "Image placeholder"}</span>
+        </div>
+      )}
+      <p>{stringValue(block.content.caption)}</p>
+      {zoomOpen ? (
+        <div aria-modal="true" className="image-lightbox" role="dialog">
+          <button aria-label="Close zoomed image" className="image-lightbox-backdrop" onClick={() => setZoomOpen(false)} type="button" />
+          <figure>
+            <img alt={imageAlt} src={imageSrc} />
+            <figcaption>{stringValue(block.content.caption) || imageAlt}</figcaption>
+            <button aria-label="Close zoomed image" onClick={() => setZoomOpen(false)} type="button">
+              <X size={18} />
+            </button>
+          </figure>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function GalleryPreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+  const images = objectArray(block.content.images);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  if (variant !== "carousel") {
+    return (
+      <section className={`learner-gallery ${variantClass}`}>
+        <h3>{block.title}</h3>
+        <div className="gallery-grid" style={{ gridTemplateColumns: `repeat(${galleryColumns(block)}, minmax(0, 1fr))` }}>
+          {images.map((image, imageIndex) => (
+            <GalleryCard image={image} imageIndex={imageIndex} key={imageIndex} showCaptions={block.settings.showCaptions !== false} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  const activeImage = images[activeIndex] ?? {};
+  return (
+    <section className={`learner-gallery ${variantClass}`}>
+      <h3>{block.title}</h3>
+      <div className="gallery-carousel" aria-live="polite">
+        <GalleryCard image={activeImage} imageIndex={activeIndex} showCaptions={block.settings.showCaptions !== false} />
+        <div className="carousel-controls">
+          <button onClick={() => setActiveIndex((current) => (current - 1 + images.length) % images.length)} disabled={images.length <= 1} type="button">
+            Previous
+          </button>
+          <span>{images.length ? `${activeIndex + 1} / ${images.length}` : "0 / 0"}</span>
+          <button onClick={() => setActiveIndex((current) => (current + 1) % images.length)} disabled={images.length <= 1} type="button">
+            Next
+          </button>
+        </div>
+        <div className="carousel-dots" role="tablist">
+          {images.map((image, imageIndex) => (
+            <button
+              aria-label={`Show image ${imageIndex + 1}`}
+              aria-selected={activeIndex === imageIndex}
+              key={`${stringValue(image.alt)}-${imageIndex}`}
+              onClick={() => setActiveIndex(imageIndex)}
+              role="tab"
+              type="button"
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GalleryCard({
+  image,
+  imageIndex,
+  showCaptions,
+}: {
+  image: Record<string, unknown>;
+  imageIndex: number;
+  showCaptions: boolean;
+}) {
+  return (
+    <div className="gallery-card">
+      {stringValue(image.src) ? (
+        <img alt={stringValue(image.alt)} src={stringValue(image.src)} />
+      ) : (
+        <span className="image-placeholder compact">
+          <Image size={20} />
+          <em>{stringValue(image.alt) || `Gallery image ${imageIndex + 1}`}</em>
+        </span>
+      )}
+      {showCaptions ? <p>{stringValue(image.caption)}</p> : null}
+    </div>
+  );
+}
+
+function DividerPreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+  const [continued, setContinued] = useState(false);
+
+  if (variant === "spacer") {
+    return <section aria-label="Spacer divider" className={`learner-divider ${variantClass}`} />;
+  }
+
+  return (
+    <section className={`learner-divider ${variantClass} ${continued ? "complete" : ""}`}>
+      <span />
+      {variant === "continue" ? (
+        <button onClick={() => setContinued(true)} type="button">{continued ? "Continued" : stringValue(block.content.label) || "Continue"}</button>
+      ) : (
+        <p>{variant === "numbered" ? `01 ${stringValue(block.content.label)}` : stringValue(block.content.label)}</p>
+      )}
+      <span />
+    </section>
+  );
+}
+
+function InteractivePreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+  const key = block.family === "process" ? "steps" : "items";
+  const items = objectArray(block.content[key]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [openIndexes, setOpenIndexes] = useState<Set<number>>(new Set([0]));
+
+  if (variant === "tabs") {
+    const activeItem = items[activeIndex] ?? {};
+    return (
+      <section className={`learner-interactive ${block.family} ${variantClass}`}>
+        <h3>{block.title}</h3>
+        <div className="interactive-tabs" role="tablist">
+          {items.map((item, itemIndex) => (
+            <button aria-selected={activeIndex === itemIndex} key={itemIndex} onClick={() => setActiveIndex(itemIndex)} role="tab" type="button">
+              {stringValue(item.title) || `Tab ${itemIndex + 1}`}
+            </button>
+          ))}
+        </div>
+        <div className="interactive-panel" role="tabpanel">
+          <h3>{stringValue(activeItem.title)}</h3>
+          <p>{stringValue(activeItem.text)}</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (block.family === "process" || variant === "timeline" || variant === "labeled-graphic" || variant === "sorting") {
+    const activeItem = items[activeIndex] ?? {};
+    if (variant === "timeline") {
+      return (
+        <section className={`learner-interactive ${block.family} ${variantClass}`}>
+          <h3>{block.title}</h3>
+          <ol className="timeline-list">
+            {items.map((item, itemIndex) => (
+              <li className={activeIndex === itemIndex ? "active" : ""} key={itemIndex}>
+                <button onClick={() => setActiveIndex(itemIndex)} type="button">
+                  <span>{itemIndex + 1}</span>
+                  <strong>{stringValue(item.title)}</strong>
+                </button>
+                <p>{stringValue(item.text)}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      );
+    }
+
+    if (variant === "labeled-graphic") {
+      return (
+        <section className={`learner-interactive ${block.family} ${variantClass}`}>
+          <h3>{block.title}</h3>
+          <div className="labeled-graphic-stage">
+            <div className="labeled-graphic-canvas">
+              {items.map((item, itemIndex) => (
+                <button
+                  aria-pressed={activeIndex === itemIndex}
+                  key={itemIndex}
+                  onClick={() => setActiveIndex(itemIndex)}
+                  style={{
+                    left: `${18 + (itemIndex % 3) * 30}%`,
+                    top: `${22 + Math.floor(itemIndex / 3) * 28}%`,
+                  }}
+                  type="button"
+                >
+                  {itemIndex + 1}
+                </button>
+              ))}
+            </div>
+            <div className="interactive-panel">
+              <h3>{stringValue(activeItem.title)}</h3>
+              <p>{stringValue(activeItem.text)}</p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (variant === "sorting") {
+      return <SortingPreview block={block} items={items} variantClass={variantClass} />;
+    }
+
+    return (
+      <section className={`learner-interactive ${block.family} ${variantClass}`}>
+        <h3>{block.title}</h3>
+        <div className="process-steps">
+          {items.map((item, itemIndex) => (
+            <button aria-current={activeIndex === itemIndex ? "step" : undefined} key={itemIndex} onClick={() => setActiveIndex(itemIndex)} type="button">
+              <span>{itemIndex + 1}</span>
+              {stringValue(item.title)}
+            </button>
+          ))}
+        </div>
+        <div className="interactive-panel">
+          <h3>{stringValue(activeItem.title)}</h3>
+          <p>{stringValue(activeItem.text)}</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className={`learner-interactive ${block.family} ${variantClass}`}>
+      <h3>{block.title}</h3>
+      <div className="interactive-list">
+        {items.map((item, itemIndex) => {
+          const isOpen = openIndexes.has(itemIndex);
+          return (
+            <div className={`interactive-item ${isOpen ? "open" : ""}`} key={itemIndex}>
+              <button aria-expanded={isOpen} onClick={() => {
+                setOpenIndexes((current) => {
+                  const next = new Set(current);
+                  if (next.has(itemIndex)) {
+                    next.delete(itemIndex);
+                  } else {
+                    next.add(itemIndex);
+                  }
+                  return next;
+                });
+              }} type="button">
+                {block.settings.showNumbers !== false ? <span>{itemIndex + 1}</span> : null}
+                <strong>{stringValue(item.title)}</strong>
+              </button>
+              {isOpen ? <p>{stringValue(item.text)}</p> : null}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function SortingPreview({
+  block,
+  items,
+  variantClass,
+}: {
+  block: CourseBlock;
+  items: Array<Record<string, unknown>>;
+  variantClass: string;
+}) {
+  const shuffledItems = useMemo(() => stableShuffle(items.map((item, index) => ({ item, index })), block.id), [block.id, items.map((item) => stringValue(item.title)).join("\u0000")]);
+  const [selectedOrder, setSelectedOrder] = useState<number[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const complete = selectedOrder.length === items.length;
+  const isCorrect = complete && selectedOrder.every((itemIndex, orderIndex) => itemIndex === orderIndex);
+
+  function addItem(itemIndex: number) {
+    setSubmitted(false);
+    setSelectedOrder((current) => (current.includes(itemIndex) ? current : [...current, itemIndex]));
+  }
+
+  function removeItem(itemIndex: number) {
+    setSubmitted(false);
+    setSelectedOrder((current) => current.filter((currentIndex) => currentIndex !== itemIndex));
+  }
+
+  return (
+    <section className={`learner-interactive ${block.family} ${variantClass}`}>
+      <h3>{block.title}</h3>
+      <div className="sorting-workspace">
+        <div className="sorting-pool" aria-label="Items to sort">
+          <h4>Choose the sequence</h4>
+          {shuffledItems.map(({ item, index }) => (
+            <button disabled={selectedOrder.includes(index)} key={index} onClick={() => addItem(index)} type="button">
+              <strong>{stringValue(item.title)}</strong>
+              <span>{selectedOrder.includes(index) ? "Placed" : "Add"}</span>
+            </button>
+          ))}
+        </div>
+        <ol className="sorting-target" aria-label="Selected order">
+          {selectedOrder.map((itemIndex, orderIndex) => {
+            const item = items[itemIndex] ?? {};
+            return (
+              <li key={`${itemIndex}-${orderIndex}`}>
+                <span>{orderIndex + 1}</span>
+                <button onClick={() => removeItem(itemIndex)} type="button">
+                  <strong>{stringValue(item.title)}</strong>
+                  <small>Remove</small>
+                </button>
+              </li>
+            );
+          })}
+          {!selectedOrder.length ? <li className="sorting-empty">Add items here</li> : null}
+        </ol>
+      </div>
+      <div className="quiz-submit-row">
+        <button disabled={!complete} onClick={() => setSubmitted(true)} type="button">Check order</button>
+        <button className="secondary-quiz-action" disabled={!selectedOrder.length} onClick={() => {
+          setSelectedOrder([]);
+          setSubmitted(false);
+        }} type="button">Reset</button>
+        {submitted ? <strong>{isCorrect ? "Correct order" : "Review the order"}</strong> : null}
+      </div>
+      {submitted ? (
+        <div className="interactive-panel">
+          <h3>{isCorrect ? "That sequence works" : "Correct sequence"}</h3>
+          <p>{items.map((item, index) => `${index + 1}. ${stringValue(item.title)}`).join("  ")}</p>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function FlashcardPreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+  const cards = objectArray(block.content.cards);
+  const visibleCards = variant === "single-card" ? cards.slice(0, 1) : cards;
+  const [flippedCards, setFlippedCards] = useState<Set<number>>(new Set());
+
+  return (
+    <section className={`learner-flashcards ${variantClass}`}>
+      <h3>{block.title}</h3>
+      <div className="flashcard-grid">
+        {visibleCards.map((card, cardIndex) => {
+          const isFlipped = flippedCards.has(cardIndex);
+          return (
+            <button className={`flashcard ${isFlipped ? "flipped" : ""}`} key={cardIndex} onClick={() => {
+              setFlippedCards((current) => {
+                const next = new Set(current);
+                if (next.has(cardIndex)) {
+                  next.delete(cardIndex);
+                } else {
+                  next.add(cardIndex);
+                }
+                return next;
+              });
+            }} type="button">
+              <p>{isFlipped ? stringValue(card.back) : stringValue(card.front)}</p>
+              <small>{isFlipped ? "Back" : "Front"}</small>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function ScenarioPreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+  const choices = objectArray(block.content.choices);
+  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
+  const [path, setPath] = useState<number[]>([]);
+  const choice = selectedChoice === null ? undefined : choices[selectedChoice];
+
+  return (
+    <section className={`learner-scenario ${variantClass}`}>
+      <h3>{stringValue(block.content.prompt)}</h3>
+      {variant === "branching" && path.length ? (
+        <ol className="scenario-path" aria-label="Selected path">
+          {path.map((choiceIndex, pathIndex) => (
+            <li key={`${choiceIndex}-${pathIndex}`}>{stringValue(choices[choiceIndex]?.label)}</li>
+          ))}
+        </ol>
+      ) : null}
+      <div className="scenario-choices">
+        {choices.map((currentChoice, choiceIndex) => (
+          <button aria-pressed={selectedChoice === choiceIndex} key={choiceIndex} onClick={() => {
+            setSelectedChoice(choiceIndex);
+            setPath((current) => [...current, choiceIndex]);
+          }} type="button">
+            <span>{stringValue(currentChoice.label)}</span>
+            {variant === "branching" ? <small>{selectedChoice === choiceIndex ? "Selected" : "Choose this path"}</small> : null}
+          </button>
+        ))}
+      </div>
+      {choice ? (
+        <div className="scenario-outcome">
+          <p>{stringValue(choice.outcome)}</p>
+          {variant === "branching" ? (
+            <div className="scenario-actions">
+              <button onClick={() => setSelectedChoice(null)} type="button">Try another response</button>
+              <button onClick={() => {
+                setSelectedChoice(null);
+                setPath([]);
+              }} type="button">Restart scenario</button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function ChecklistPreview({ block }: { block: CourseBlock }) {
+  const variantClass = blockVariantClass(block);
+  const items = arrayValue(block.content.items);
+  const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
+
+  return (
+    <section className={`learner-checklist ${variantClass}`}>
+      <h3>{block.title}</h3>
+      <ul>
+        {items.map((item, itemIndex) => {
+          const checked = checkedItems.has(itemIndex);
+          return (
+            <li className={checked ? "checked" : ""} key={`${item}-${itemIndex}`}>
+              <button aria-pressed={checked} onClick={() => {
+                setCheckedItems((current) => {
+                  const next = new Set(current);
+                  if (next.has(itemIndex)) {
+                    next.delete(itemIndex);
+                  } else {
+                    next.add(itemIndex);
+                  }
+                  return next;
+                });
+              }} type="button">
+                {checked ? <Check size={16} /> : null}
+              </button>
+              <span>{item}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function MultimediaPreview({ block }: { block: CourseBlock }) {
+  const variant = blockVariant(block);
+  const variantClass = blockVariantClass(block);
+  const [copied, setCopied] = useState(false);
+  const mediaUrl = normalizeHref(stringValue(block.content.url));
+  const codeSample = stringValue(block.content.code) || "// Add code sample";
+
+  return (
+    <section className={`learner-multimedia ${variantClass}`}>
+      <div className="media-frame">
+        {variant === "video" ? (
+          <>
+            {mediaUrl ? <video controls src={mediaUrl} /> : <Play size={26} />}
+            <h3>{stringValue(block.content.label) || block.title}</h3>
+            <span>{mediaUrl || "Video source missing"}</span>
+          </>
+        ) : variant === "attachment" ? (
+          <>
+            <Download size={26} />
+            <h3>{stringValue(block.content.attachmentLabel) || stringValue(block.content.label) || block.title}</h3>
+            {mediaUrl ? (
+              <a className="media-action" download href={mediaUrl}>
+                Download attachment
+              </a>
+            ) : (
+              <span>Attachment source missing</span>
+            )}
+          </>
+        ) : variant === "code" ? (
+          <>
+            <FileText size={26} />
+            <h3>{stringValue(block.content.language) || "Code sample"}</h3>
+            <button
+              className="media-action"
+              onClick={() => {
+                void navigator.clipboard?.writeText(codeSample).then(() => {
+                  setCopied(true);
+                  window.setTimeout(() => setCopied(false), 1400);
+                });
+              }}
+              type="button"
+            >
+              <Copy size={15} />
+              {copied ? "Copied" : "Copy code"}
+            </button>
+            <pre className="editable-code">{codeSample}</pre>
+          </>
+        ) : (
+          <>
+            {mediaUrl ? <iframe src={mediaUrl} title={stringValue(block.content.label) || "Embedded media"} /> : <Play size={26} />}
+            <h3>{stringValue(block.content.label) || block.title}</h3>
+            <span>{mediaUrl || "Embed URL missing"}</span>
+          </>
+        )}
+      </div>
+      <p>{stringValue(block.content.caption)}</p>
+    </section>
+  );
+}
+
+function BlockSettings({
+  block,
+  onChange,
+}: {
+  block: CourseBlock;
+  onChange: (patch: Parameters<typeof updateBlock>[3]) => void;
+}) {
+  const variant = blockVariant(block);
+
+  return (
+    <div className="settings-form">
+      <NumberSetting
+        label="Estimated minutes"
+        min={1}
+        value={block.estimatedMinutes}
+        onChange={(value) => onChange({ estimatedMinutes: value })}
+      />
+      <SelectSetting
+        label={variantLabel(block.family)}
+        options={variantOptions[block.family]}
+        value={variant}
+        onChange={(value) => onChange({ settings: variantSettingsPatch(block.family, value) })}
+      />
+      <BlockSpecificSettings block={block} variant={variant} onChange={onChange} />
+    </div>
+  );
+}
+
+type SettingOption = { value: string; label: string };
+
+const variantOptions: Record<BlockFamily, SettingOption[]> = {
+  text: [
+    { value: "body", label: "Heading and paragraph" },
+    { value: "paragraph", label: "Paragraph" },
+  ],
+  heading: [
+    { value: "heading", label: "Large heading" },
+    { value: "section-heading", label: "Section heading" },
+  ],
+  subheading: [
+    { value: "subheading", label: "Subheading and copy" },
+    { value: "compact", label: "Compact subheading" },
+  ],
+  twoColumnText: [
+    { value: "two-column", label: "Balanced columns" },
+    { value: "comparison", label: "Comparison" },
+  ],
+  statement: [
+    { value: "impact", label: "Impact statement" },
+    { value: "note", label: "Note" },
+    { value: "pullquote", label: "Pull quote" },
+  ],
+  quote: [
+    { value: "quote", label: "Quote" },
+    { value: "testimonial", label: "Testimonial" },
+  ],
+  list: [
+    { value: "bulleted", label: "Bulleted" },
+    { value: "numbered", label: "Numbered" },
+    { value: "checkboxes", label: "Checkboxes" },
+  ],
+  image: [
+    { value: "wide", label: "Wide" },
+    { value: "hero", label: "Hero" },
+    { value: "centered", label: "Centered" },
+    { value: "text-aside", label: "Text aside" },
+    { value: "banner", label: "Banner" },
+  ],
+  gallery: [
+    { value: "grid", label: "Grid" },
+    { value: "carousel", label: "Carousel" },
+    { value: "two-column", label: "Two columns" },
+    { value: "four-column", label: "Four columns" },
+  ],
+  divider: [
+    { value: "line", label: "Line" },
+    { value: "numbered", label: "Numbered" },
+    { value: "spacer", label: "Spacer" },
+    { value: "continue", label: "Continue button" },
+  ],
+  multimedia: [
+    { value: "embed", label: "Embed" },
+    { value: "video", label: "Video" },
+    { value: "attachment", label: "Attachment" },
+    { value: "code", label: "Code sample" },
+  ],
+  interactive: [
+    { value: "accordion", label: "Accordion" },
+    { value: "tabs", label: "Tabs" },
+  ],
+  process: [
+    { value: "process", label: "Process" },
+    { value: "timeline", label: "Timeline" },
+    { value: "labeled-graphic", label: "Labeled graphic" },
+    { value: "sorting", label: "Sorting" },
+  ],
+  flashcard: [
+    { value: "grid", label: "Grid" },
+    { value: "single-card", label: "Single card" },
+    { value: "stack", label: "Stack" },
+  ],
+  buttons: [
+    { value: "stack", label: "Button stack" },
+    { value: "single", label: "Single button" },
+    { value: "inline", label: "Inline buttons" },
+  ],
+  knowledgeCheck: [
+    { value: "multiple-choice", label: "Multiple choice" },
+    { value: "multiple-response", label: "Multiple response" },
+    { value: "fill-blank", label: "Fill in the blank" },
+    { value: "matching", label: "Matching" },
+  ],
+  chart: [
+    { value: "bar", label: "Bar" },
+    { value: "line", label: "Line" },
+    { value: "pie", label: "Pie" },
+  ],
+  table: [
+    { value: "basic", label: "Basic" },
+    { value: "comparison", label: "Comparison" },
+    { value: "compact", label: "Compact" },
+  ],
+  audio: [
+    { value: "standalone", label: "Standalone audio" },
+    { value: "narration", label: "Narration" },
+  ],
+  scenario: [
+    { value: "branching", label: "Branching scenario" },
+    { value: "single-decision", label: "Single decision" },
+  ],
+  callout: [
+    { value: "info", label: "Info" },
+    { value: "warning", label: "Warning" },
+    { value: "success", label: "Success" },
+    { value: "danger", label: "Danger" },
+  ],
+  checklist: [
+    { value: "task-checklist", label: "Task checklist" },
+    { value: "reflection", label: "Reflection checklist" },
+  ],
+  quiz: [
+    { value: "multiple-choice", label: "Multiple choice" },
+    { value: "multiple-response", label: "Multiple response" },
+    { value: "fill-blank", label: "Fill in the blank" },
+    { value: "matching", label: "Matching" },
+  ],
+};
+
+function variantLabel(family: BlockFamily) {
+  if (family === "multimedia") {
+    return "Media type";
+  }
+  if (family === "chart") {
+    return "Chart type";
+  }
+  if (family === "knowledgeCheck" || family === "quiz") {
+    return "Question type";
+  }
+  if (family === "callout") {
+    return "Tone";
+  }
+  return "Variant";
+}
+
+function blockVariant(block: CourseBlock) {
+  return stringValue(block.settings.variant ?? block.settings.style ?? block.settings.layout ?? block.settings.tone ?? "standard");
+}
+
+function variantSettingsPatch(family: BlockFamily, value: string) {
+  if (family === "image" || family === "gallery") {
+    return { variant: value, layout: value, ...(family === "image" ? { zoomOnClick: true } : {}) };
+  }
+  if (family === "knowledgeCheck" || family === "quiz") {
+    return { variant: value, style: value, attempts: 2, showFeedback: true, shuffleAnswers: true };
+  }
+  if (family === "callout") {
+    return { variant: value, tone: value };
+  }
+  return { variant: value, style: value };
+}
+
+const qaImageSrc =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 540'%3E%3Crect width='960' height='540' fill='%23f4f7fb'/%3E%3Cpath d='M120 392 328 184l130 130 94-94 288 288H120z' fill='%231d4ed8' opacity='.85'/%3E%3Ccircle cx='696' cy='156' r='68' fill='%23ff6b1a'/%3E%3C/svg%3E";
+
+function variantQaContent(family: BlockFamily, variantLabelText: string): CourseBlock["content"] {
+  const label = `${variantLabelText} variant`;
+  switch (family) {
+    case "text":
+      return { heading: label, text: `Readable body copy for the ${label}.` };
+    case "heading":
+      return { heading: label };
+    case "subheading":
+      return { heading: label, text: "Supporting copy should wrap cleanly at every preview size." };
+    case "twoColumnText":
+      return {
+        leftHeading: "Before",
+        leftText: `Left column copy for ${label}.`,
+        rightHeading: "After",
+        rightText: "Right column copy checks balance and spacing.",
+      };
+    case "statement":
+    case "quote":
+      return { text: `This is the ${label} sample for visual review.`, attribution: "Forge QA" };
+    case "list":
+      return { items: [`${label} item one`, "Item two wraps without collision", "Item three remains readable"] };
+    case "image":
+      return { src: qaImageSrc, alt: `${label} image description`, caption: "Image captions should not overlap media.", zoomOnClick: true };
+    case "gallery":
+      return {
+        images: [
+          { src: qaImageSrc, alt: `${label} first image`, caption: "First caption" },
+          { src: qaImageSrc, alt: `${label} second image`, caption: "Second caption" },
+          { src: qaImageSrc, alt: `${label} third image`, caption: "Third caption" },
+        ],
+      };
+    case "divider":
+      return { label: variantLabelText };
+    case "multimedia":
+      return {
+        label,
+        url: "https://example.com/embed",
+        attachmentLabel: "Download QA resource",
+        code: "const variant = \"Forge QA\";\nconsole.log(variant);",
+        language: "javascript",
+        caption: "Media caption checks wrapping and spacing.",
+      };
+    case "interactive":
+      return {
+        items: [
+          { title: `${label} item one`, text: "First reveal content." },
+          { title: "Second item", text: "Second reveal content should remain readable." },
+        ],
+      };
+    case "process":
+      return {
+        steps: [
+          { title: `${label} step one`, text: "Start the process." },
+          { title: "Step two", text: "Continue with a concise instruction." },
+          { title: "Step three", text: "Finish with a clear outcome." },
+        ],
+      };
+    case "flashcard":
+      return { cards: [{ front: `${label} front`, back: "Back face content" }, { front: "Second front", back: "Second back" }] };
+    case "buttons":
+      return { buttons: [{ label: `${variantLabelText} resource`, destination: "https://example.com" }, { label: "Contact team", destination: "mailto:team@example.com" }] };
+    case "knowledgeCheck":
+    case "quiz":
+      return {
+        question: `${label}: which option is correct?`,
+        options: ["Correct option", "Distractor option", "Another distractor"],
+        correctOption: 0,
+        correctOptions: [0],
+        acceptedAnswers: ["Correct option"],
+        matches: [
+          { prompt: "Term", match: "Definition" },
+          { prompt: "Concept", match: "Example" },
+        ],
+        correctFeedback: "Correct. The variant submitted cleanly.",
+        incorrectFeedback: "Not quite. Feedback remains readable.",
+      };
+    case "chart":
+      return { items: [{ label: "Alpha", value: 42 }, { label: "Beta", value: 68 }, { label: "Gamma", value: 54 }] };
+    case "table":
+      return { headers: ["Feature", "Result"], rows: [[label, "Readable"], ["Mobile wrapping", "Checked"]] };
+    case "audio":
+      return { title: label, url: "", transcript: "Transcript text should remain readable below the audio shell." };
+    case "scenario":
+      return {
+        prompt: `${label}: choose a response.`,
+        choices: [
+          { label: "Choice A", outcome: "Outcome A remains legible." },
+          { label: "Choice B", outcome: "Outcome B remains legible." },
+        ],
+      };
+    case "callout":
+      return { text: `${label} callout text checks tone styling and spacing.` };
+    case "checklist":
+      return { items: [`${label} first task`, "Second task", "Third task"] };
+    default:
+      return {};
+  }
+}
+
+function BlockSpecificSettings({
+  block,
+  onChange,
+  variant,
+}: {
+  block: CourseBlock;
+  onChange: (patch: Parameters<typeof updateBlock>[3]) => void;
+  variant: string;
+}) {
+  if (block.family === "image") {
+    return (
+      <>
+        <TextSetting label="Alt text" value={stringValue(block.content.alt)} onChange={(value) => onChange({ content: { alt: value } })} />
+        <BooleanSetting label="Zoom on click" value={booleanValue(block.content.zoomOnClick)} onChange={(value) => onChange({ content: { zoomOnClick: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "gallery") {
+    return (
+      <>
+        <NumberSetting label="Columns" min={2} max={4} value={numberValue(block.settings.columns) || 3} onChange={(value) => onChange({ settings: { columns: value } })} />
+        <BooleanSetting label="Show captions" value={block.settings.showCaptions !== false} onChange={(value) => onChange({ settings: { showCaptions: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "multimedia") {
+    return (
+      <>
+        {variant === "code" ? (
+          <TextSetting label="Language" value={stringValue(block.content.language)} onChange={(value) => onChange({ content: { language: value } })} />
+        ) : (
+          <TextSetting label={variant === "embed" ? "Embed URL" : variant === "video" ? "Video URL" : "Attachment URL"} value={stringValue(block.content.url)} onChange={(value) => onChange({ content: { url: value } })} />
+        )}
+        {variant === "attachment" ? (
+          <TextSetting label="Attachment label" value={stringValue(block.content.attachmentLabel)} onChange={(value) => onChange({ content: { attachmentLabel: value } })} />
+        ) : null}
+        <TextSetting label="Caption" value={stringValue(block.content.caption)} onChange={(value) => onChange({ content: { caption: value } })} />
+        {variant === "video" ? (
+          <BooleanSetting label="Show playback speed" value={block.settings.playbackSpeed !== false} onChange={(value) => onChange({ settings: { playbackSpeed: value } })} />
+        ) : null}
+      </>
+    );
+  }
+
+  if (block.family === "audio") {
+    return (
+      <>
+        <TextSetting label="Audio source" value={stringValue(block.content.url)} onChange={(value) => onChange({ content: { url: value } })} />
+        <BooleanSetting label="Show transcript" value={block.settings.showTranscript !== false} onChange={(value) => onChange({ settings: { showTranscript: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "chart") {
+    return (
+      <>
+        <BooleanSetting label="Show data table" value={block.settings.showDataTable !== false} onChange={(value) => onChange({ settings: { showDataTable: value } })} />
+        <TextSetting label="Value axis label" value={stringValue(block.settings.valueAxisLabel)} onChange={(value) => onChange({ settings: { valueAxisLabel: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "table") {
+    return (
+      <>
+        <BooleanSetting label="Header row" value={block.settings.headerRow !== false} onChange={(value) => onChange({ settings: { headerRow: value } })} />
+        <BooleanSetting label="Header column" value={booleanValue(block.settings.headerColumn)} onChange={(value) => onChange({ settings: { headerColumn: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "knowledgeCheck" || block.family === "quiz") {
+    return (
+      <>
+        <NumberSetting label="Attempts" min={1} max={10} value={numberValue(block.settings.attempts) || 1} onChange={(value) => onChange({ settings: { attempts: value } })} />
+        <BooleanSetting label="Show feedback" value={block.settings.showFeedback !== false} onChange={(value) => onChange({ settings: { showFeedback: value } })} />
+        <BooleanSetting label="Shuffle answers" value={booleanValue(block.settings.shuffleAnswers)} onChange={(value) => onChange({ settings: { shuffleAnswers: value } })} />
+        <TextSetting label="Correct feedback" value={stringValue(block.content.correctFeedback)} onChange={(value) => onChange({ content: { correctFeedback: value } })} />
+        <TextSetting label="Incorrect feedback" value={stringValue(block.content.incorrectFeedback)} onChange={(value) => onChange({ content: { incorrectFeedback: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "interactive" || block.family === "process") {
+    return (
+      <>
+        <BooleanSetting label="Require interaction" value={block.settings.required !== false} onChange={(value) => onChange({ settings: { required: value } })} />
+        <BooleanSetting label="Show item numbers" value={block.settings.showNumbers !== false} onChange={(value) => onChange({ settings: { showNumbers: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "scenario") {
+    return <BooleanSetting label="Track choices with xAPI" value={block.settings.trackChoices !== false} onChange={(value) => onChange({ settings: { trackChoices: value } })} />;
+  }
+
+  if (block.family === "checklist") {
+    return (
+      <>
+        <BooleanSetting label="Learner can check items" value={block.settings.allowMultiple !== false} onChange={(value) => onChange({ settings: { allowMultiple: value } })} />
+        <BooleanSetting label="Required for completion" value={booleanValue(block.settings.requiredForCompletion)} onChange={(value) => onChange({ settings: { requiredForCompletion: value } })} />
+      </>
+    );
+  }
+
+  if (block.family === "divider") {
+    return <BooleanSetting label="Gate progress" value={booleanValue(block.settings.required)} onChange={(value) => onChange({ settings: { required: value } })} />;
+  }
+
+  if (block.family === "buttons") {
+    const buttons = objectArray(block.content.buttons);
+    return (
+      <>
+        <BooleanSetting label="Open links in new tab" value={block.settings.newTab !== false} onChange={(value) => onChange({ settings: { newTab: value } })} />
+        {buttons.map((button, buttonIndex) => (
+          <TextSetting
+            key={buttonIndex}
+            label={`${stringValue(button.label) || `Button ${buttonIndex + 1}`} destination`}
+            value={stringValue(button.destination)}
+            onChange={(value) => onChange({ content: { buttons: replaceAt(buttons, buttonIndex, { ...button, destination: value }) } })}
+          />
+        ))}
+      </>
+    );
+  }
+
+  return null;
+}
+
+function SelectSetting({
+  label,
+  onChange,
+  options,
+  value,
+}: {
+  label: string;
+  onChange: (value: string) => void;
+  options: SettingOption[];
+  value: string;
+}) {
+  return (
+    <label className="field compact">
+      <span>{label}</span>
+      <select value={value} onChange={(event) => onChange(event.target.value)}>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function NumberSetting({
+  label,
+  max,
+  min,
+  onChange,
+  value,
+}: {
+  label: string;
+  max?: number;
+  min?: number;
+  onChange: (value: number) => void;
+  value: number;
+}) {
+  return (
+    <label className="field compact">
+      <span>{label}</span>
+      <input max={max} min={min} type="number" value={value} onChange={(event) => onChange(Number(event.target.value) || min || 0)} />
+    </label>
+  );
+}
+
+function TextSetting({
+  label,
+  onChange,
+  value,
+}: {
+  label: string;
+  onChange: (value: string) => void;
+  value: string;
+}) {
+  return (
+    <label className="field compact">
+      <span>{label}</span>
+      <input type="text" value={value} onChange={(event) => onChange(event.target.value)} />
+    </label>
+  );
+}
+
+function BooleanSetting({
+  label,
+  onChange,
+  value,
+}: {
+  label: string;
+  onChange: (value: boolean) => void;
+  value: boolean;
+}) {
+  return (
+    <label className="settings-toggle">
+      <input checked={value} type="checkbox" onChange={(event) => onChange(event.target.checked)} />
+      <span>{label}</span>
+    </label>
+  );
+}
+
+function PublishModal({
+  downloadPayload,
+  onClose,
+  packageSize,
+  readiness,
+}: {
+  downloadPayload: DownloadPayload | null;
+  onClose: () => void;
+  packageSize: number;
+  readiness: PublishReadiness | null;
+}) {
+  const findings = readiness ? [...readiness.issues, ...readiness.warnings] : [];
+
+  return (
+    <div className="modal-backdrop" role="presentation">
+      <section aria-label="Publish package" aria-modal="true" className="modal" role="dialog">
+        <ModalHeader title="Publish package" onClose={onClose} />
+        <ReadinessSummary readiness={readiness} />
+        {findings.length > 0 ? <FindingList findings={findings} /> : null}
+        {downloadPayload ? (
+          <div className="publish-ready">
+            <p>xAPI package is ready. Estimated size: {formatBytes(packageSize)}.</p>
+            <button className="primary-button wide" onClick={() => downloadFile(downloadPayload)}>
+              <Download size={18} />
+              Download xAPI ZIP
+            </button>
+          </div>
+        ) : (
+          <p className="muted">Fix publish issues, then run Publish again.</p>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function ModalHeader({ onClose, title }: { onClose: () => void; title: string }) {
+  return (
+    <div className="modal-header">
+      <h2>{title}</h2>
+      <button aria-label="Close dialog" className="icon-button" onClick={onClose}>
+        <X size={18} />
+      </button>
+    </div>
+  );
+}
+
+function ReadinessSummary({ readiness }: { readiness: PublishReadiness | null }) {
+  if (!readiness) {
+    return <p className="muted">Run publish to validate this course.</p>;
+  }
+
+  return (
+    <div className={`readiness ${readiness.ok ? "ok" : "blocked"}`}>
+      {readiness.ok ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
+      <span>
+        {readiness.ok
+          ? `${readiness.warnings.length} warnings, ready to publish locally`
+          : `${readiness.issues.length} issues blocking publish`}
+      </span>
+    </div>
+  );
+}
+
+function FindingList({ findings }: { findings: PublishFinding[] }) {
+  return (
+    <ul className="finding-list">
+      {findings.map((finding) => (
+        <li key={`${finding.code}-${finding.path}`}>
+          <strong>{finding.code.replaceAll("_", " ")}</strong>
+          <span>{finding.message}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function StatusPill({ state }: { state: ApiState }) {
+  const label =
+    state === "online" ? "API online" : state === "offline" ? "API offline" : "Checking API";
+
+  return <div className={`status-pill ${state}`}>{label}</div>;
+}
+
+function loadCourse(): Course {
+  const stored = window.localStorage.getItem(storageKey);
+  if (!stored) {
+    return createInitialCourse();
+  }
+
+  try {
+    return normalizeCourse(JSON.parse(stored) as Course);
+  } catch {
+    return createInitialCourse();
+  }
+}
+
+function normalizeCourse(course: Course): Course {
+  return {
+    ...course,
+    lessons: course.lessons.map((lesson) => ({
+      ...lesson,
+      blocks: lesson.blocks.map((block) => {
+        const variant = normalizedVariant(block);
+        return {
+          ...block,
+          settings: {
+            ...defaultSettingsForFamily(block.family),
+            ...block.settings,
+            ...variantSettingsPatch(block.family, variant),
+          },
+        };
+      }),
+    })),
+  };
+}
+
+function normalizedVariant(block: CourseBlock): string {
+  const candidates = [
+    block.settings.variant,
+    block.settings.style,
+    block.settings.layout,
+    block.settings.tone,
+  ].map(stringValue);
+  const validOptions = new Set(variantOptions[block.family].map((option) => option.value));
+  return candidates.find((candidate) => validOptions.has(candidate)) ?? variantOptions[block.family][0]?.value ?? "standard";
+}
+
+function defaultSettingsForFamily(family: BlockFamily): Record<string, unknown> {
+  if (family === "knowledgeCheck" || family === "quiz") {
+    return { attempts: 1, showFeedback: true };
+  }
+  if (family === "chart") {
+    return { showDataTable: true };
+  }
+  if (family === "table") {
+    return { headerRow: true, headerColumn: false };
+  }
+  if (family === "audio") {
+    return { showTranscript: true };
+  }
+  if (family === "checklist") {
+    return { allowMultiple: true, requiredForCompletion: false };
+  }
+  if (family === "scenario") {
+    return { trackChoices: true };
+  }
+  return {};
+}
+
+function readRouteState(): RouteState {
+  const url = new URL(window.location.href);
+  if (!url.pathname.endsWith("/preview")) {
+    return { mode: "editor" };
+  }
+
+  const rawDevice = url.searchParams.get("device");
+  const device: PreviewDevice = rawDevice === "tablet" || rawDevice === "phone" ? rawDevice : "desktop";
+  return {
+    mode: "preview",
+    lessonId: url.searchParams.get("lessonId") ?? "",
+    device,
+  };
+}
+
+function toPublishCourse(course: Course): PublishCourse {
+  return {
+    id: course.id,
+    title: course.title,
+    state: "draft",
+    lessons: course.lessons.map((lesson): PublishLesson => ({
+      id: lesson.id,
+      type: "blocks",
+      title: lesson.title,
+      status: "draft",
+      blocks: lesson.blocks.map((block) => {
+        const completion = publishCompletionForBlock(block);
+        const publishBlock = {
+          id: block.id,
+          family: block.family,
+          variant: blockVariant(block),
+          title: block.title,
+          body: blockSummary(block),
+          estimatedMinutes: block.estimatedMinutes,
+          content: block.content,
+          settings: block.settings,
+          media: publishMediaForBlock(block),
+          ...(completion ? { completion } : {}),
+        };
+
+        return {
+          ...publishBlock,
+          ...(block.family === "image"
+            ? { image: { src: stringValue(block.content.src), alt: stringValue(block.content.alt) } }
+            : {}),
+          ...(completion
+            ? { completionMarker: block.family }
+            : {}),
+        };
+      }),
+    })),
+  };
+}
+
+function publishCompletionForBlock(block: CourseBlock): PublishCompletion | undefined {
+  if (block.family === "quiz" || block.family === "knowledgeCheck") {
+    return { kind: block.family, required: true, criterion: "answer" };
+  }
+  if (block.family === "divider" && blockVariant(block) === "continue") {
+    return { kind: "divider", required: booleanValue(block.settings.required), criterion: "continue" };
+  }
+  if (block.family === "checklist") {
+    return { kind: "checklist", required: booleanValue(block.settings.requiredForCompletion), criterion: "complete" };
+  }
+  if (block.family === "scenario" && booleanValue(block.settings.trackChoices)) {
+    return { kind: "scenario", required: false, criterion: "choice" };
+  }
+  if (block.family === "interactive" || block.family === "process" || block.family === "flashcard") {
+    return { kind: block.family, required: false, criterion: "interact" };
+  }
+  return undefined;
+}
+
+function publishMediaForBlock(block: CourseBlock): PublishMediaAsset[] {
+  if (block.family === "image") {
+    return [
+      {
+        kind: "image",
+        src: stringValue(block.content.src),
+        alt: stringValue(block.content.alt),
+        caption: stringValue(block.content.caption),
+      },
+    ];
+  }
+  if (block.family === "gallery") {
+    return objectArray(block.content.images).map((image) => ({
+      kind: "gallery-image",
+      src: stringValue(image.src),
+      alt: stringValue(image.alt),
+      caption: stringValue(image.caption),
+    }));
+  }
+  if (block.family === "audio") {
+    return [
+      {
+        kind: "audio",
+        src: stringValue(block.content.url),
+        label: stringValue(block.content.title),
+      },
+    ];
+  }
+  if (block.family === "multimedia") {
+    const variant = blockVariant(block);
+    if (variant === "video" || variant === "embed") {
+      return [{ kind: variant, src: stringValue(block.content.url), caption: stringValue(block.content.caption) }];
+    }
+    if (variant === "attachment") {
+      return [{ kind: "attachment", src: stringValue(block.content.url), label: stringValue(block.content.label) }];
+    }
+    if (variant === "code") {
+      return [{ kind: "code", label: stringValue(block.content.language), caption: stringValue(block.content.caption) }];
+    }
+  }
+  if (block.family === "buttons") {
+    return objectArray(block.content.buttons).map((button) => ({
+      kind: "link",
+      src: stringValue(button.destination),
+      label: stringValue(button.label),
+    }));
+  }
+  return [];
+}
+
+function blockSummary(block: CourseBlock): string {
+  if (block.family === "heading") {
+    return stringValue(block.content.heading) || block.title;
+  }
+  if (block.family === "subheading") {
+    return [stringValue(block.content.heading), stringValue(block.content.text)].filter(Boolean).join(" - ");
+  }
+  if (block.family === "twoColumnText") {
+    return [stringValue(block.content.leftHeading), stringValue(block.content.rightHeading)].filter(Boolean).join(" / ");
+  }
+  if (block.family === "statement" || block.family === "quote" || block.family === "audio" || block.family === "divider") {
+    return stringValue(block.content.text) || stringValue(block.content.transcript) || stringValue(block.content.label);
+  }
+  if (block.family === "list") {
+    return arrayValue(block.content.items).join(", ");
+  }
+  if (block.family === "image") {
+    return stringValue(block.content.caption) || stringValue(block.content.alt);
+  }
+  if (block.family === "gallery") {
+    return objectArray(block.content.images).map((image) => stringValue(image.caption) || stringValue(image.alt)).filter(Boolean).join(", ");
+  }
+  if (block.family === "multimedia") {
+    return stringValue(block.content.caption) || stringValue(block.content.label);
+  }
+  if (block.family === "interactive") {
+    return objectArray(block.content.items).map((item) => stringValue(item.title)).filter(Boolean).join(", ");
+  }
+  if (block.family === "process") {
+    return objectArray(block.content.steps).map((item) => stringValue(item.title)).filter(Boolean).join(", ");
+  }
+  if (block.family === "flashcard") {
+    return objectArray(block.content.cards).map((card) => stringValue(card.front)).filter(Boolean).join(", ");
+  }
+  if (block.family === "buttons") {
+    return objectArray(block.content.buttons).map((button) => stringValue(button.label)).filter(Boolean).join(", ");
+  }
+  if (block.family === "chart") {
+    return objectArray(block.content.items).map((item) => `${stringValue(item.label)} ${numberValue(item.value)}`).join(", ");
+  }
+  if (block.family === "table") {
+    return tableRows(block.content.rows).flat().join(", ");
+  }
+  if (block.family === "scenario") {
+    return stringValue(block.content.prompt);
+  }
+  if (block.family === "checklist") {
+    return arrayValue(block.content.items).join(", ");
+  }
+  if (block.family === "quiz" || block.family === "knowledgeCheck") {
+    return stringValue(block.content.question);
+  }
+  return stringValue(block.content.text);
+}
+
+function previewTitle(block: CourseBlock): string {
+  if (block.family === "heading") {
+    return stringValue(block.content.heading) || block.title;
+  }
+  if (block.family === "subheading") {
+    return stringValue(block.content.heading) || block.title;
+  }
+  if (block.family === "multimedia") {
+    return stringValue(block.content.label) || block.title;
+  }
+  if (block.family === "audio") {
+    return stringValue(block.content.title) || block.title;
+  }
+  return block.title;
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function normalizeHref(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "";
+  }
+  if (/^(https?:|mailto:|tel:|#|\/)/i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
+function arrayValue(value: unknown): string[] {
+  return Array.isArray(value) ? value.map((item) => String(item)) : [];
+}
+
+function objectArray(value: unknown): Array<Record<string, unknown>> {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((item) => (item && typeof item === "object" ? { ...(item as Record<string, unknown>) } : { value: String(item) }));
+}
+
+function tableRows(value: unknown): string[][] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((row) => (Array.isArray(row) ? row.map((cell) => String(cell)) : [String(row)]));
+}
+
+function correctOptionSet(block: CourseBlock): Set<number> {
+  const correctOptions = Array.isArray(block.content.correctOptions)
+    ? block.content.correctOptions.map((value) => numberValue(value)).filter((value) => value >= 0)
+    : [];
+  if (correctOptions.length > 0) {
+    return new Set(correctOptions);
+  }
+  return new Set([Math.max(0, numberValue(block.content.correctOption))]);
+}
+
+function acceptedAnswerValues(block: CourseBlock): string[] {
+  const acceptedAnswers = arrayValue(block.content.acceptedAnswers).filter((answer) => answer.trim().length > 0);
+  if (acceptedAnswers.length > 0) {
+    return acceptedAnswers;
+  }
+  const options = arrayValue(block.content.options);
+  const correctOption = clamp(numberValue(block.content.correctOption), 0, Math.max(0, options.length - 1));
+  return [options[correctOption] || "Accepted answer"];
+}
+
+function quizMatchPairs(block: CourseBlock): Array<Record<string, unknown>> {
+  const matches = objectArray(block.content.matches).filter((match) => stringValue(match.prompt) || stringValue(match.match));
+  if (matches.length > 0) {
+    return matches;
+  }
+  return [
+    { prompt: "Term", match: "Definition" },
+    { prompt: "Concept", match: "Example" },
+  ];
+}
+
+function replaceAt<T>(items: T[], index: number, nextItem: T): T[] {
+  return items.map((item, currentIndex) => (currentIndex === index ? nextItem : item));
+}
+
+function numberValue(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+function booleanValue(value: unknown): boolean {
+  return value === true;
+}
+
+function blockVariantClass(block: CourseBlock): string {
+  return `variant-${sanitizeClassName(blockVariant(block))}`;
+}
+
+function sanitizeClassName(value: string): string {
+  const sanitized = value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return sanitized || "standard";
+}
+
+function galleryColumns(block: CourseBlock): number {
+  const variant = blockVariant(block);
+  const configuredColumns = numberValue(block.settings.columns);
+  if (configuredColumns >= 2 && configuredColumns <= 4) {
+    return configuredColumns;
+  }
+  if (variant === "four-column") {
+    return 4;
+  }
+  if (variant === "two-column" || variant === "carousel") {
+    return 2;
+  }
+  return 3;
+}
+
+function setsEqual(left: Set<number>, right: Set<number>): boolean {
+  if (left.size !== right.size) {
+    return false;
+  }
+  return Array.from(left).every((value) => right.has(value));
+}
+
+function stableShuffle<T>(items: T[], seed: string): T[] {
+  const next = [...items];
+  let hash = Array.from(seed).reduce((accumulator, character) => (accumulator * 31 + character.charCodeAt(0)) >>> 0, 2166136261);
+  for (let index = next.length - 1; index > 0; index -= 1) {
+    hash = (hash * 1664525 + 1013904223) >>> 0;
+    const swapIndex = hash % (index + 1);
+    const currentItem = next[index];
+    const swapItem = next[swapIndex];
+    if (currentItem !== undefined && swapItem !== undefined) {
+      next[index] = swapItem;
+      next[swapIndex] = currentItem;
+    }
+  }
+  return next;
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+  return `${(bytes / 1024).toFixed(1)} KB`;
+}
+
+function downloadFile(payload: DownloadPayload) {
+  const blob = new Blob([payload.content.slice()], { type: payload.mime });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = payload.filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function stopClick(action: () => void) {
+  return (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    action();
+  };
+}

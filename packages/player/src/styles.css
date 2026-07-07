@@ -1,0 +1,397 @@
+/*
+ * @forge/player chrome only (layout, sidebar, cover, quiz). Block visuals
+ * come from @forge/blocks/styles.css; hosts import both stylesheets.
+ */
+
+.fp-player {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100vh;
+  background: var(--forge-bg, #ffffff);
+  color: var(--forge-text, #1f2328);
+  font-family: var(--forge-body-font, Inter), system-ui, sans-serif;
+}
+
+.fp-player h1,
+.fp-player h2,
+.fp-player h3 {
+  font-family: var(--forge-heading-font, Inter), system-ui, sans-serif;
+}
+
+.fp-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Buttons ------------------------------------------------------------- */
+
+.fp-button {
+  appearance: none;
+  border: 1px solid var(--forge-primary, #1f6feb);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--forge-primary, #1f6feb);
+  font: inherit;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+}
+
+.fp-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--forge-primary, #1f6feb) 10%, transparent);
+}
+
+.fp-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.fp-button:focus-visible,
+.fp-nav-link:focus-visible {
+  outline: 3px solid var(--forge-accent, #dd6b20);
+  outline-offset: 2px;
+}
+
+.fp-button-primary {
+  background: var(--forge-primary, #1f6feb);
+  color: #ffffff;
+}
+
+.fp-button-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--forge-primary, #1f6feb) 85%, #000000);
+}
+
+.fp-button-small {
+  padding: 0.15rem 0.5rem;
+}
+
+/* Cover ---------------------------------------------------------------- */
+
+.fp-cover {
+  margin: auto;
+  max-width: 640px;
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+.fp-cover-title {
+  font-size: 2.25rem;
+  margin: 0 0 1rem;
+}
+
+.fp-cover-description {
+  font-size: 1.125rem;
+  margin: 0 0 0.75rem;
+}
+
+.fp-cover-count {
+  color: color-mix(in srgb, var(--forge-text, #1f2328) 65%, transparent);
+  margin: 0 0 2rem;
+}
+
+.fp-cover-start {
+  font-size: 1.125rem;
+  padding: 0.75rem 2.5rem;
+}
+
+/* Top bar -------------------------------------------------------------- */
+
+.fp-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 15%, transparent);
+  background: var(--forge-surface, #f6f8fa);
+}
+
+.fp-topbar-title {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fp-topbar-toggle {
+  border-color: transparent;
+  color: var(--forge-text, #1f2328);
+  padding: 0.35rem 0.6rem;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+/* Layout --------------------------------------------------------------- */
+
+.fp-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.fp-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  background: var(--forge-surface, #f6f8fa);
+  border-right: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 12%, transparent);
+}
+
+.fp-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.75rem 0;
+}
+
+.fp-nav-section {
+  padding: 1rem 1rem 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--forge-text, #1f2328) 60%, transparent);
+}
+
+.fp-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fp-nav-link:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--forge-primary, #1f6feb) 8%, transparent);
+}
+
+.fp-nav-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fp-nav-current {
+  background: color-mix(in srgb, var(--forge-primary, #1f6feb) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--forge-primary, #1f6feb);
+  font-weight: 600;
+}
+
+.fp-nav-status {
+  display: inline-flex;
+  width: 1.25rem;
+  justify-content: center;
+  color: var(--forge-primary, #1f6feb);
+}
+
+.fp-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.fp-lesson {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.fp-lesson-title {
+  font-size: 2rem;
+  margin: 0 0 1.5rem;
+}
+
+.fp-lesson-title:focus {
+  outline: none;
+}
+
+.fp-lesson-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 12%, transparent);
+}
+
+.fp-empty {
+  text-align: center;
+  margin-top: 4rem;
+}
+
+/* Entrance animation (suppressed under prefers-reduced-motion) --------- */
+
+@keyframes fp-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fp-anim-fade {
+  animation: fp-fade-in 350ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-anim-fade {
+    animation: none;
+  }
+}
+
+/* Quiz ------------------------------------------------------------------ */
+
+.fp-quiz {
+  background: var(--forge-surface, #f6f8fa);
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+
+.fp-quiz-progress {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--forge-text, #1f2328) 65%, transparent);
+}
+
+.fp-quiz-prompt {
+  font-size: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.fp-quiz-choices,
+.fp-quiz-likert {
+  border: 0;
+  margin: 0 0 1.25rem;
+  padding: 0;
+}
+
+.fp-quiz-choice,
+.fp-quiz-likert-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.5rem 0.25rem;
+  cursor: pointer;
+}
+
+.fp-quiz-input,
+.fp-quiz-select {
+  font: inherit;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 30%, transparent);
+  border-radius: 6px;
+  background: var(--forge-bg, #ffffff);
+  color: inherit;
+  margin-bottom: 1.25rem;
+}
+
+.fp-quiz-matching {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.fp-quiz-match-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.fp-quiz-match-row .fp-quiz-select {
+  margin-bottom: 0;
+}
+
+.fp-quiz-sequence {
+  list-style: decimal inside;
+  margin: 0 0 1.25rem;
+  padding: 0;
+}
+
+.fp-quiz-sequence-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.4rem;
+  background: var(--forge-bg, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 15%, transparent);
+  border-radius: 6px;
+}
+
+.fp-quiz-sequence-controls {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.fp-quiz-feedback {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--forge-primary, #1f6feb);
+  background: var(--forge-bg, #ffffff);
+}
+
+.fp-quiz-feedback-correct {
+  border-left-color: #1a7f37;
+}
+
+.fp-quiz-feedback-incorrect {
+  border-left-color: #cf222e;
+}
+
+.fp-quiz-feedback-verdict {
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.fp-quiz-rationale {
+  margin-top: 0.5rem;
+}
+
+.fp-quiz-feedback .fp-button {
+  margin-top: 1rem;
+}
+
+.fp-quiz-result {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.fp-quiz-result-heading {
+  font-size: 1.75rem;
+  margin: 0 0 0.5rem;
+}
+
+.fp-quiz-result-score {
+  font-size: 1.1rem;
+  margin: 0 0 1.5rem;
+}
+
+/* Narrow viewports ------------------------------------------------------ */
+
+@media (max-width: 720px) {
+  .fp-sidebar {
+    width: 230px;
+  }
+  .fp-main {
+    padding: 1.25rem 1rem 3rem;
+  }
+}

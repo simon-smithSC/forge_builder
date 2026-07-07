@@ -1,0 +1,3005 @@
+{
+  "course": {
+    "description": "<div data-editor-id=\"9669462a-d22f-4cbc-a236-99a177aad252\"><p>This is the description of the course</p></div>",
+    "lessons": [
+      {
+        "description": "",
+        "id": "zOWHM2XGIbu-e4-mKkt7QN-AioQ4RW60",
+        "items": [],
+        "settings": {},
+        "title": "This is a Section title",
+        "type": "section",
+        "author": "auth0|5874ebb773ba635cf4995c59",
+        "courseId": "Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR",
+        "createdAt": "2026-07-03T07:59:19.183Z",
+        "deleted": false,
+        "duplicatedFromId": "",
+        "experiments": null,
+        "headerImage": {},
+        "icon": null,
+        "isPartnerContentAuthor": null,
+        "lastUpdatedBy": "auth0|5874ebb773ba635cf4995c59",
+        "media": {},
+        "metadata": null,
+        "originalId": null,
+        "piles": [],
+        "position": 0,
+        "ready": true,
+        "selectedAuthorId": "auth0|5874ebb773ba635cf4995c59",
+        "transferredAt": null,
+        "updatedAt": "2026-07-03T07:59:25.741Z"
+      },
+      {
+        "description": "",
+        "id": "EVDow8tJ9g61Y00h-bJAwvoZH4Y0QmFN",
+        "items": [
+          {
+            "id": "cmr4n7nv2002l3b7pedjfdswv",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n7nv3002r3b7p3wkun3ob",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              }
+            ],
+            "family": "text",
+            "variant": "heading paragraph",
+            "globalBlockId": "af447d64-df55-49e1-8633-b97644d3c109"
+          },
+          {
+            "id": "cmr4n7vd7003n3b7pkuwh4441",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n7vd7003o3b7pdtvrhbdi",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              }
+            ],
+            "family": "text",
+            "variant": "paragraph",
+            "createdAt": "2026-07-03T07:59:56.422Z",
+            "updatedAt": "2026-07-03T07:59:56.422Z",
+            "globalBlockId": "d57873c0-5d38-4717-a360-b725c1e9c517"
+          },
+          {
+            "id": "cmr4n80by003v3b7pxmqjvl5e",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n80by003w3b7pxh074asd",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              }
+            ],
+            "family": "text",
+            "variant": "subheading paragraph",
+            "createdAt": "2026-07-03T08:00:02.877Z",
+            "updatedAt": "2026-07-03T08:00:02.877Z",
+            "globalBlockId": "0cbb3c91-7d28-4be5-b8fd-9df904b7dd12"
+          },
+          {
+            "id": "cmr4n841n00433b7pf8pqgb86",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n841n00443b7p89v3l6kt",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              }
+            ],
+            "family": "text",
+            "variant": "heading",
+            "createdAt": "2026-07-03T08:00:07.676Z",
+            "updatedAt": "2026-07-03T08:00:07.676Z",
+            "globalBlockId": "90c7bb71-e5c3-4d81-ae96-6cba62678c22"
+          },
+          {
+            "id": "cmr4n894f004b3b7pf7f0h15z",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n894f004c3b7pq910neb1",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              }
+            ],
+            "family": "text",
+            "variant": "subheading",
+            "createdAt": "2026-07-03T08:00:14.259Z",
+            "updatedAt": "2026-07-03T08:00:14.259Z",
+            "globalBlockId": "99791bc2-2bba-4724-96a8-01bd0cdf36fc"
+          },
+          {
+            "id": "cmr4n8cfm004j3b7p58vq3b5m",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n8cfm004k3b7pfv21ry7d",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              },
+              {
+                "id": 1,
+                "paragraph": ""
+              }
+            ],
+            "family": "text",
+            "variant": "two column",
+            "createdAt": "2026-07-03T08:00:18.548Z",
+            "updatedAt": "2026-07-03T08:00:18.548Z",
+            "globalBlockId": "1fb2a84c-4ca9-4502-a0a1-ae7a549f37aa"
+          },
+          {
+            "id": "cmr4n8f2z004r3b7p3yiz0z17",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n8f2z004s3b7p2jpfnezw",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              },
+              {
+                "id": "cmr4n8f2z004t3b7pb0jg7497",
+                "paragraph": ""
+              }
+            ],
+            "family": "impact",
+            "variant": "a",
+            "createdAt": "2026-07-03T08:00:21.984Z",
+            "updatedAt": "2026-07-03T08:00:21.984Z",
+            "globalBlockId": "0d2dce20-bdc3-4c03-8cdd-fbf2eed7fdea"
+          },
+          {
+            "id": "cmr4n8iw400503b7pctv7zuqy",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n8iw400513b7pabnpuiem",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              },
+              {
+                "id": "cmr4n8iw400523b7p0qqtllng",
+                "paragraph": ""
+              }
+            ],
+            "family": "impact",
+            "variant": "b",
+            "createdAt": "2026-07-03T08:00:26.925Z",
+            "updatedAt": "2026-07-03T08:00:26.925Z",
+            "globalBlockId": "b518fbc6-b976-400f-99c5-777295506f92"
+          },
+          {
+            "id": "cmr4n8m4d00593b7p4w8s3szj",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n8m4d005a3b7psxvxnrxm",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              },
+              {
+                "id": "cmr4n8m4d005b3b7pv2zipht0",
+                "paragraph": ""
+              }
+            ],
+            "family": "impact",
+            "variant": "c",
+            "createdAt": "2026-07-03T08:00:31.105Z",
+            "updatedAt": "2026-07-03T08:00:31.105Z",
+            "globalBlockId": "559b4d7c-4367-439b-929d-a988e93ff69b"
+          },
+          {
+            "id": "cmr4n8pdj005i3b7pq4vdys2z",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n8pdj005j3b7p25rdzi6y",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              },
+              {
+                "id": "cmr4n8pdj005k3b7pvw5ks89o",
+                "paragraph": ""
+              }
+            ],
+            "family": "impact",
+            "variant": "d",
+            "createdAt": "2026-07-03T08:00:35.315Z",
+            "updatedAt": "2026-07-03T08:00:35.315Z",
+            "globalBlockId": "044ea011-b804-451e-b0de-b43ee9ea4abe"
+          },
+          {
+            "id": "cmr4n8sg2005r3b7pgrevgig6",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "text",
+            "items": [
+              {
+                "id": "cmr4n8sg2005s3b7pthc39809",
+                "heading": "<strong>Heading</strong>",
+                "paragraph": "<p>When we show up to the present moment with all of our senses, we invite the world to fill us with joy. The pains of the past are behind us. The future has yet to unfold. But the now is full of beauty simply waiting for our attention.</p>"
+              },
+              {
+                "id": "cmr4n8sg2005t3b7pcrzrq657",
+                "paragraph": ""
+              }
+            ],
+            "family": "impact",
+            "variant": "note",
+            "createdAt": "2026-07-03T08:00:39.289Z",
+            "updatedAt": "2026-07-03T08:00:39.289Z",
+            "globalBlockId": "5a23ebaa-bede-4397-9e5c-e4744f4fbbcb"
+          },
+          {
+            "id": "cmr4n7opz00313b7p6abi5rjh",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "list",
+            "items": [
+              {
+                "id": "cmr4n7opz00323b7pu7ip1nm5",
+                "paragraph": "<p>Say yes more. Yes opens doors. No closes them. Yes pushes us. No keeps us safe at home. Imagine all the opportunities waiting for a yes.</p>"
+              },
+              {
+                "id": "cmr4n7opz00333b7pw4korgwh",
+                "paragraph": "<p>Let go of expectation. You\u2019ve done your best to prepare. Now, let go. There\u2019s no one way your life should unfold. Enjoy the journey.</p>"
+              },
+              {
+                "id": "cmr4n7opz00343b7pz7mi6h9r",
+                "paragraph": "<p>Welcome diversions. The most rewarding adventures often start with an unexpected detour. Perhaps that distraction will guide you onward.</p>"
+              }
+            ],
+            "family": "list",
+            "variant": "numbered",
+            "globalBlockId": "35bd9922-33cb-487a-be06-ca965ce70025"
+          },
+          {
+            "id": "cmr4n8zkj00603b7ph0aqzurp",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "list",
+            "items": [
+              {
+                "id": "cmr4n8zkj00613b7pfvlomef2",
+                "paragraph": "<p>Say yes more. Yes opens doors. No closes them. Yes pushes us. No keeps us safe at home. Imagine all the opportunities waiting for a yes.</p>"
+              },
+              {
+                "id": "cmr4n8zkj00623b7pn62wxn11",
+                "paragraph": "<p>Let go of expectation. You\u2019ve done your best to prepare. Now, let go. There\u2019s no one way your life should unfold. Enjoy the journey.</p>"
+              },
+              {
+                "id": "cmr4n8zkj00633b7phfp3wp9g",
+                "paragraph": "<p>Welcome diversions. The most rewarding adventures often start with an unexpected detour. Perhaps that distraction will guide you onward.</p>"
+              }
+            ],
+            "family": "list",
+            "variant": "checkboxes",
+            "createdAt": "2026-07-03T08:00:48.538Z",
+            "updatedAt": "2026-07-03T08:00:48.538Z",
+            "globalBlockId": "e16ebec3-c376-45c4-ad79-9dfffa28541f"
+          },
+          {
+            "id": "cmr4n91r6006a3b7pdth86g7v",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "list",
+            "items": [
+              {
+                "id": "cmr4n91r6006b3b7pd8bglxa0",
+                "paragraph": "<p>Say yes more. Yes opens doors. No closes them. Yes pushes us. No keeps us safe at home. Imagine all the opportunities waiting for a yes.</p>"
+              },
+              {
+                "id": "cmr4n91r6006c3b7p0wd8hoeb",
+                "paragraph": "<p>Let go of expectation. You\u2019ve done your best to prepare. Now, let go. There\u2019s no one way your life should unfold. Enjoy the journey.</p>"
+              },
+              {
+                "id": "cmr4n91r6006d3b7p2mciq0ne",
+                "paragraph": "<p>Welcome diversions. The most rewarding adventures often start with an unexpected detour. Perhaps that distraction will guide you onward.</p>"
+              }
+            ],
+            "family": "list",
+            "variant": "bulleted",
+            "createdAt": "2026-07-03T08:00:51.360Z",
+            "updatedAt": "2026-07-03T08:00:51.360Z",
+            "globalBlockId": "725ffade-dc3f-408c-a019-5942ff43ad3b"
+          },
+          {
+            "id": "cmr4n7pqn003b3b7ptdv086ac",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4n7pqo003c3b7pskpig9b6",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"7fd5740d-d8cb-4b4f-915c-0cd3fe730e82\"><p>asd</p></div>",
+                "paragraph": ""
+              }
+            ],
+            "family": "image",
+            "variant": "hero",
+            "createdAt": "2026-07-03T07:59:49.143Z",
+            "updatedAt": "2026-07-03T07:59:49.143Z",
+            "globalBlockId": "601e7df5-69d4-4cce-95f3-42c29ab9d830"
+          },
+          {
+            "id": "cmr4n998i006k3b7pohcp5c0c",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4n998i006l3b7pgob0ayuu",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"bd084a93-2f1a-48a6-b65f-3abe2fa89fb9\"><p>asd</p></div>",
+                "paragraph": ""
+              }
+            ],
+            "family": "image",
+            "variant": "full",
+            "createdAt": "2026-07-03T08:01:01.062Z",
+            "updatedAt": "2026-07-03T08:01:01.062Z",
+            "globalBlockId": "eca828c3-fddd-443c-962b-c206d4e01c3e"
+          },
+          {
+            "id": "cmr4n9ch4006s3b7pbdsclcla",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4n9ch4006t3b7plu3a7nbi",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"47cf40be-ecc4-4e34-8355-2a0197150f90\"><p>asd</p></div>",
+                "paragraph": "<div data-editor-id=\"68f3cd3d-e914-4041-b5b7-7fdc4285b435\"><p>Lorem ipsum etc etc</p></div>"
+              }
+            ],
+            "family": "image",
+            "variant": "text aside",
+            "createdAt": "2026-07-03T08:01:05.256Z",
+            "updatedAt": "2026-07-03T08:01:05.256Z",
+            "globalBlockId": "24fc44cf-0a5b-49cf-97dd-8ec4877d6f8e"
+          },
+          {
+            "id": "cmr4n9nuu00703b7pex9fn3is",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4n9nuu00713b7pz6ljvgvl",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"0e3b982d-73fe-45bd-988e-5076d5f53914\"><p>asd</p></div>",
+                "paragraph": "<div data-editor-id=\"68f3cd3d-e914-4041-b5b7-7fdc4285b435\"><p>Lorem ipsum etc etc</p></div>"
+              }
+            ],
+            "family": "image",
+            "variant": "banner",
+            "createdAt": "2026-07-03T08:01:20.015Z",
+            "updatedAt": "2026-07-03T08:01:20.015Z",
+            "globalBlockId": "86bbb4f1-ea63-4c0a-a44b-2302d14bdffe"
+          },
+          {
+            "id": "cmr4n9scb00783b7pxl33vhr3",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4n9scb00793b7p9rdiwk1n",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"4e41a988-ee33-4f33-ba3e-dbd99eed3950\"><p>asd</p></div>",
+                "paragraph": "<div data-editor-id=\"68f3cd3d-e914-4041-b5b7-7fdc4285b435\"><p>Lorem ipsum etc etc</p></div>"
+              },
+              {
+                "id": "cmr4na5lr007h3b7pwi2h3b8u",
+                "media": {
+                  "image": {
+                    "key": "rise/courses/Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR/loxKujmTr9ToqfNw.jpg",
+                    "type": "image",
+                    "crushedKey": "stock-image-1.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1260
+                    },
+                    "originalUrl": "stock-image.jpg",
+                    "useCrushedKey": true
+                  }
+                },
+                "caption": "<div data-editor-id=\"c1259226-8a3f-4017-a07b-5e917b775114\"><p>asd</p></div>",
+                "isNewlyInserted": true
+              }
+            ],
+            "family": "gallery",
+            "variant": "centered",
+            "createdAt": "2026-07-03T08:01:25.814Z",
+            "updatedAt": "2026-07-03T08:01:25.814Z",
+            "globalBlockId": "1d2837ac-723b-4a57-a35b-bccf3a7d7556"
+          },
+          {
+            "id": "cmr4na82k007k3b7prfsclyd4",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4na82k007l3b7plpm8qska",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"fd02c78e-7be7-4382-9dcb-ee91e6e339fe\"><p>ads</p></div>",
+                "paragraph": "<div data-editor-id=\"68f3cd3d-e914-4041-b5b7-7fdc4285b435\"><p>Lorem ipsum etc etc</p></div>"
+              },
+              {
+                "id": "cmr4na82k007m3b7pvcs88w3p",
+                "media": {
+                  "image": {
+                    "key": "rise/courses/Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR/loxKujmTr9ToqfNw.jpg",
+                    "type": "image",
+                    "crushedKey": "stock-image-1.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1260
+                    },
+                    "originalUrl": "stock-image.jpg",
+                    "useCrushedKey": true
+                  }
+                },
+                "caption": "<div data-editor-id=\"66f2d5c6-e7c8-4bb5-9037-9bd39aa1d971\"><p>asd</p></div>",
+                "isNewlyInserted": true
+              }
+            ],
+            "family": "gallery",
+            "variant": "two column",
+            "createdAt": "2026-07-03T08:01:46.204Z",
+            "updatedAt": "2026-07-03T08:01:46.204Z",
+            "globalBlockId": "6bbc8c8d-40b7-4d76-b9af-43339f13ca11"
+          },
+          {
+            "id": "cmr4nab3w007t3b7prjt57x1t",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4nab3w007u3b7p71f5darm",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"b4d36f00-859c-4fed-9c53-199cb80d00e4\"><p>asd</p></div>",
+                "paragraph": "<div data-editor-id=\"68f3cd3d-e914-4041-b5b7-7fdc4285b435\"><p>Lorem ipsum etc etc</p></div>"
+              },
+              {
+                "id": "cmr4nab3w007v3b7p2fqiwa0x",
+                "media": {
+                  "image": {
+                    "key": "rise/courses/Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR/loxKujmTr9ToqfNw.jpg",
+                    "type": "image",
+                    "crushedKey": "stock-image-1.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1260
+                    },
+                    "originalUrl": "stock-image.jpg",
+                    "useCrushedKey": true
+                  }
+                },
+                "caption": "<div data-editor-id=\"01b5574a-dda0-4537-b9e6-b10903b2fa7b\"><p>asd</p></div>"
+              },
+              {
+                "id": "cmr4naivn00843b7pbi2t1u39",
+                "media": {
+                  "image": {
+                    "key": "rise/courses/Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR/EGQVUh2TWZgpvCDt.jpg",
+                    "type": "image",
+                    "crushedKey": "stock-image.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1260
+                    },
+                    "originalUrl": "stock-image.jpg",
+                    "useCrushedKey": true
+                  }
+                },
+                "caption": "<div data-editor-id=\"8e362c23-6f8c-489f-b3e0-61dd085cca5b\"><p>asd</p></div>",
+                "isNewlyInserted": true
+              }
+            ],
+            "family": "gallery",
+            "variant": "three column",
+            "createdAt": "2026-07-03T08:01:50.140Z",
+            "updatedAt": "2026-07-03T08:01:50.140Z",
+            "globalBlockId": "fe691f0b-50b0-4e28-a6d2-85a69f867ef4"
+          },
+          {
+            "id": "cmr4nb2iq00873b7p9g8o1271",
+            "settings": {
+              "opacity": 0.5,
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "opacityColor": "#000000",
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "image",
+            "items": [
+              {
+                "id": "cmr4nb2iq00883b7po4im6if7",
+                "media": {
+                  "image": {
+                    "key": "bike.jpg",
+                    "src": "bike.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/bike_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1120
+                    },
+                    "originalUrl": "bike.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "caption": "<div data-editor-id=\"b4d36f00-859c-4fed-9c53-199cb80d00e4\"><p>asd</p></div>",
+                "paragraph": "<div data-editor-id=\"68f3cd3d-e914-4041-b5b7-7fdc4285b435\"><p>Lorem ipsum etc etc</p></div>"
+              },
+              {
+                "id": "cmr4nb2iq00893b7plhc4g25p",
+                "media": {
+                  "image": {
+                    "key": "rise/courses/Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR/loxKujmTr9ToqfNw.jpg",
+                    "type": "image",
+                    "crushedKey": "stock-image-1.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1260
+                    },
+                    "originalUrl": "stock-image.jpg",
+                    "useCrushedKey": true
+                  }
+                },
+                "caption": "<div data-editor-id=\"01b5574a-dda0-4537-b9e6-b10903b2fa7b\"><p>asd</p></div>"
+              },
+              {
+                "id": "cmr4nb2iq008a3b7pt40my3d0",
+                "media": {
+                  "image": {
+                    "key": "rise/courses/Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR/EGQVUh2TWZgpvCDt.jpg",
+                    "type": "image",
+                    "crushedKey": "stock-image.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 1260
+                    },
+                    "originalUrl": "stock-image.jpg",
+                    "useCrushedKey": true
+                  }
+                },
+                "caption": "<div data-editor-id=\"8e362c23-6f8c-489f-b3e0-61dd085cca5b\"><p>asd</p></div>"
+              },
+              {
+                "id": "cmr4nbeuo008n3b7pfcfcojj8",
+                "media": {
+                  "image": {
+                    "key": "rise/courses/Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR/6nVFtFbl1EYuokOv.jpg",
+                    "type": "image",
+                    "crushedKey": "stock-image-2.jpg",
+                    "dimensions": {
+                      "originalWidth": 1680,
+                      "originalHeight": 2240
+                    },
+                    "originalUrl": "stock-image.jpg",
+                    "useCrushedKey": true
+                  }
+                },
+                "caption": "",
+                "isNewlyInserted": true
+              }
+            ],
+            "family": "gallery",
+            "variant": "four column",
+            "createdAt": "2026-07-03T08:02:25.669Z",
+            "updatedAt": "2026-07-03T08:02:25.669Z",
+            "globalBlockId": "53b25a81-1d19-42e1-9f06-c0929a8d1cc2"
+          },
+          {
+            "id": "cmr4nbq79008q3b7pj6wa2phf",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "divider",
+            "items": [
+              {
+                "id": "cmr4nbq79008r3b7pprmpa2qc",
+                "type": "",
+                "title": "CONTINUE",
+                "buttonColor": "brand",
+                "completeHint": "Complete the content above before moving on."
+              }
+            ],
+            "family": "continue",
+            "variant": "continue",
+            "globalBlockId": "de5a8529-724c-4cb3-9342-9232aea6935c"
+          },
+          {
+            "id": "cmr4nbstz008y3b7pz1cz9ghv",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "divider",
+            "items": [],
+            "family": "divider",
+            "variant": "divider",
+            "createdAt": "2026-07-03T08:02:59.776Z",
+            "updatedAt": "2026-07-03T08:02:59.776Z",
+            "globalBlockId": "c5016522-cddd-469d-b0d8-55845850270a"
+          },
+          {
+            "id": "cmr4nbw8k00963b7p6y66krng",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "divider",
+            "items": [],
+            "family": "divider",
+            "variant": "numbered divider",
+            "createdAt": "2026-07-03T08:03:04.172Z",
+            "updatedAt": "2026-07-03T08:03:04.172Z",
+            "globalBlockId": "bc950434-e5fa-4c50-b260-6411dab822b5"
+          },
+          {
+            "id": "cmr4nbz9o009d3b7pwqpzvdzw",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "divider",
+            "items": [],
+            "family": "divider",
+            "variant": "spacing divider",
+            "createdAt": "2026-07-03T08:03:08.112Z",
+            "updatedAt": "2026-07-03T08:03:08.112Z",
+            "globalBlockId": "4fab4879-3306-4e27-9357-06692d905bf3"
+          },
+          {
+            "id": "cmr4nc1gt009k3b7p7g91b1dz",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "divider",
+            "items": [],
+            "family": "divider",
+            "variant": "numbered divider",
+            "createdAt": "2026-07-03T08:03:08.112Z",
+            "updatedAt": "2026-07-03T08:03:08.112Z",
+            "globalBlockId": "56a4b880-3bac-4f7f-ac25-da2576d5358c"
+          },
+          {
+            "id": "cmr4nc5px009r3b7pxy425ag5",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "multimedia",
+            "items": [
+              {
+                "id": "cmr4nc5px009s3b7pl6igpz9p",
+                "media": {
+                  "video": {
+                    "key": "Coastline.mp4",
+                    "src": "Coastline.mp4",
+                    "type": "video",
+                    "poster": "Coastline.png",
+                    "duration": 20,
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/coastline_thumb.png",
+                    "originalUrl": "Coastline.mp4"
+                  }
+                },
+                "caption": ""
+              }
+            ],
+            "family": "multimedia",
+            "variant": "video",
+            "globalBlockId": "c47d8975-0014-4c01-9ae8-b5621c622a15"
+          },
+          {
+            "id": "cmr4nc9h3009z3b7peubd2skw",
+            "settings": {
+              "mediaWidth": "1",
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "backgroundColor": "#f5f5f5",
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4nc9h300a03b7p4dp1gq24",
+                "type": "intro",
+                "title": "Introduction",
+                "isHidden": false,
+                "description": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In purus velit, tincidunt ac nibh quis, sollicitudin varius libero. Nullam at mi felis. Donec a scelerisque augue, sit amet porttitor nibh. Suspendisse at lorem ut elit placerat blandit.</p>"
+              },
+              {
+                "id": "cmr4nc9h300a13b7pzabza0ip",
+                "type": "summary",
+                "title": "Summary",
+                "isHidden": false,
+                "description": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In purus velit, tincidunt ac nibh quis, sollicitudin varius libero. Nullam at mi felis. Donec a scelerisque augue, sit amet porttitor nibh. Suspendisse at lorem ut elit placerat blandit.</p>"
+              },
+              {
+                "id": "cmr4nc9h300a23b7p6nf2ioql",
+                "type": "step",
+                "media": {
+                  "image": {
+                    "key": "beach_rocks.jpg",
+                    "src": "beach_rocks.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/beach_rocks_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1480,
+                      "originalHeight": 760
+                    },
+                    "originalUrl": "beach_rocks.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "title": "Step 1 Title",
+                "isHidden": false,
+                "description": "<p>Lorem ipsum excepteur sint occaecat cupidatat non proident, in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>"
+              },
+              {
+                "id": "cmr4nc9h300a33b7p4uvy6v6l",
+                "type": "step",
+                "media": {
+                  "image": {
+                    "key": "sky_mountains.jpg",
+                    "src": "sky_mountains.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/sky_mountains_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1480,
+                      "originalHeight": 760
+                    },
+                    "originalUrl": "sky_mountains.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "title": "Step 2 Title",
+                "isHidden": false,
+                "description": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>"
+              }
+            ],
+            "family": "interactive-fullscreen",
+            "variant": "process",
+            "globalBlockId": "50d64441-a38c-46b4-a119-91bbb311445f"
+          },
+          {
+            "id": "cmr4ncdy300aa3b7puk5p2ub9",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4ncdy300ab3b7p6jfwrtih",
+                "back": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 1"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 1"
+                }
+              },
+              {
+                "id": "cmr4ncdy300ac3b7p1wbmpx6m",
+                "back": {
+                  "type": "fullimage",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 2"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 2"
+                }
+              },
+              {
+                "id": "cmr4ncdy300ad3b7pitht4s90",
+                "back": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 3"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 3"
+                }
+              }
+            ],
+            "family": "flashcard",
+            "variant": "flashcard",
+            "globalBlockId": "f75e37b8-7a36-40f6-8fba-919ab49b7cc4"
+          },
+          {
+            "id": "cmr4nceve00ak3b7pqpjm6hvx",
+            "settings": {
+              "mediaWidth": "1",
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "backgroundColor": "#f5f5f5",
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4nceve00al3b7pkzzhd6u0",
+                "title": "Item 1",
+                "pileId": 1
+              },
+              {
+                "id": "cmr4nceve00am3b7pqcfsvvc9",
+                "title": "Item 2",
+                "pileId": 2
+              }
+            ],
+            "piles": [
+              {
+                "id": 1,
+                "title": "Category 1"
+              },
+              {
+                "id": 2,
+                "title": "Category 2"
+              }
+            ],
+            "family": "interactive-fullscreen",
+            "variant": "sorting",
+            "globalBlockId": "db6eaf53-b1b0-45f7-abef-1325873ac91e"
+          },
+          {
+            "id": "cmr4ncjwp00at3b7pp562mb36",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "multimedia",
+            "items": [
+              {
+                "id": "cmr4ncjwp00au3b7pgc4wzynn",
+                "media": {
+                  "embed": {
+                    "src": "//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F113569548%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F113569548&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F516824684_1280.jpg&key=5cbac80a25df462a99e58eccd801acc0&type=text%2Fhtml&schema=vimeo",
+                    "type": "embed",
+                    "title": "Elk Mountains",
+                    "favicon": "https://f.vimeocdn.com/images_v6/favicon.ico",
+                    "provider": "Vimeo",
+                    "embedType": "video",
+                    "thumbnail": "https://i.vimeocdn.com/video/516824684_1280.jpg",
+                    "description": "There is a small window in the Colorado high country when the trail conditions are perfect. Some would call it fall, but nature is fickle here -- often the warm days of summer push up against the sting of winter. In the high country, cold winds blow and snow dusts the peaks.",
+                    "originalUrl": "https://vimeo.com/113569548",
+                    "providerUrl": "https://vimeo.com/"
+                  }
+                }
+              }
+            ],
+            "family": "multimedia",
+            "variant": "embed",
+            "globalBlockId": "f7a959d1-372c-4757-a538-6731648b73a6"
+          },
+          {
+            "id": "cmr4nclce00b13b7pccngente",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "multimedia",
+            "items": [
+              {
+                "id": "cmr4nclce00b23b7po4wof72p",
+                "media": {
+                  "attachment": {
+                    "src": "",
+                    "size": 0,
+                    "type": "attachment",
+                    "originalUrl": ""
+                  }
+                }
+              }
+            ],
+            "family": "multimedia",
+            "variant": "attachment",
+            "globalBlockId": "af7ec5e7-ba5a-4ff8-96e7-15167efc19e6"
+          },
+          {
+            "id": "cmr4ncmbo00b93b7pu0k009jc",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "multimedia",
+            "items": [
+              {
+                "id": "cmr4ncmbo00ba3b7pjs2ngezx",
+                "code": "&lt;!DOCTYPE html&gt;\n&lt;html lang=&quot;en&quot;&gt;\n  &lt;head&gt;\n    &lt;meta charset=&quot;utf-8&quot;&gt;\n    &lt;title&gt;title&lt;/title&gt;\n    &lt;link rel=&quot;stylesheet&quot; href=&quot;style.css&quot;&gt;\n    &lt;script src=&quot;script.js&quot;&gt;&lt;/script&gt;\n  &lt;/head&gt;\n  &lt;body&gt;\n    &lt;!-- page content --&gt;\n  &lt;/body&gt;\n&lt;/html&gt;",
+                "caption": ""
+              }
+            ],
+            "family": "multimedia",
+            "variant": "code",
+            "globalBlockId": "7ddebf51-a6cb-4e7d-9994-179c46def8c4"
+          },
+          {
+            "id": "cmr4ncp6000bh3b7px1r9o5sh",
+            "settings": {
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4ncp6000bi3b7pkv5m3rqq",
+                "media": {
+                  "image": {
+                    "key": "paraglide.jpg",
+                    "src": "paraglide.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/paraglide_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1681,
+                      "originalHeight": 945
+                    },
+                    "originalUrl": "paraglide.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "title": "Embracing Discovery",
+                "description": "<p>Every creative endeavor requires that you take risks. If you try and don't succeed, you've still learned something. It took Thomas Edison more than 10,000 tries to invent a viable lightbulb. You're not failing. You're discovering what doesn't work.</p>"
+              },
+              {
+                "id": "cmr4ncp6000bj3b7plrr28qv9",
+                "title": "Gaining Insight",
+                "description": "<p>To spark creativity, feed your brain material like you're cramming for a tough test. Then stop thinking about the problem you want to solve. Go surfing or take a leisurely walk. Research shows that letting your mind wander fosters creativity.<br></p><p>It\u2019s also found that meditation helps you spot and solve problems in creative ways. It promotes divergent thinking that gets novel ideas flowing. According to these studies, meditation also makes you more open to considering new solutions. Time to breathe.</p>"
+              },
+              {
+                "id": "cmr4ncp6000bk3b7prujk39a0",
+                "title": "Making It Real",
+                "description": "<p>No creative process is truly complete until it manifests a tangible reality. Whether your idea is an action or a physical creation, bringing it to life will likely involve the hard work of iteration, testing, and refinement.<br></p><p>Just be wary of perfectionism. Push yourself to share your creations with others. By maintaining an open stance, you\u2019ll be able to learn from their feedback. Consider their responses new material that you can draw from the next time you\u2019re embarking on a creative endeavor.</p>"
+              }
+            ],
+            "family": "interactive",
+            "variant": "accordion",
+            "globalBlockId": "9e3ff6dd-9e96-43b7-9b94-11b5c5076e0d"
+          },
+          {
+            "id": "cmr4ncprd00bu3b7pnqc4uvd7",
+            "settings": {
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4ncprd00bv3b7pt1pusj3i",
+                "media": {
+                  "image": {
+                    "key": "paraglide.jpg",
+                    "src": "paraglide.jpg",
+                    "type": "image",
+                    "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/paraglide_thumb.jpg",
+                    "dimensions": {
+                      "originalWidth": 1681,
+                      "originalHeight": 945
+                    },
+                    "originalUrl": "paraglide.jpg",
+                    "sourcedFrom": "DEFAULT"
+                  }
+                },
+                "title": "Embracing Discovery",
+                "description": "<p>Every creative endeavor requires that you take risks. If you try and don't succeed, you've still learned something. It took Thomas Edison more than 10,000 tries to invent a viable lightbulb. You're not failing. You're discovering what doesn't work.</p>"
+              },
+              {
+                "id": "cmr4ncprd00bw3b7pznjgvnuf",
+                "title": "Gaining Insight",
+                "description": "<p>To spark creativity, feed your brain material like you're cramming for a tough test. Then stop thinking about the problem you want to solve. Go surfing or take a leisurely walk. Research shows that letting your mind wander fosters creativity.<br></p><p>It\u2019s also found that meditation helps you spot and solve problems in creative ways. It promotes divergent thinking that gets novel ideas flowing. According to these studies, meditation also makes you more open to considering new solutions. Time to breathe.</p>"
+              },
+              {
+                "id": "cmr4ncprd00bx3b7p7cj5t8yg",
+                "title": "Making It Real",
+                "description": "<p>No creative process is truly complete until it manifests a tangible reality. Whether your idea is an action or a physical creation, bringing it to life will likely involve the hard work of iteration, testing, and refinement.<br></p><p>Just be wary of perfectionism. Push yourself to share your creations with others. By maintaining an open stance, you\u2019ll be able to learn from their feedback. Consider their responses new material that you can draw from the next time you\u2019re embarking on a creative endeavor.</p>"
+              }
+            ],
+            "family": "interactive",
+            "variant": "tabs",
+            "globalBlockId": "854ffc1b-9cb0-4ff0-9c5d-4574358403f1"
+          },
+          {
+            "id": "cmr4ncqrs00c53b7pa1law7rv",
+            "settings": {
+              "mediaWidth": "1",
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "backgroundColor": "#ffffff",
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "x": 51,
+                "y": 34,
+                "id": "cmr4ncqrs00c63b7puzz7xog9",
+                "icon": "01",
+                "title": "Item 1",
+                "isActive": false,
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In purus velit, tincidunt ac nibh quis, sollicitudin varius libero. Nullam at mi felis. Donec a scelerisque augue, sit amet porttitor nibh. Suspendisse at lorem ut elit placerat blandit. Nunc vitae neque mattis elit ullamcorper euismod vel eu quam. Vivamus et dolor sit amet justo tempus faucibus. Integer quis nulla laoreet, consectetur felis in, ullamcorper ligula."
+              },
+              {
+                "x": 83,
+                "y": 31,
+                "id": "cmr4ncqrs00c73b7ppy6tj27x",
+                "icon": "01",
+                "title": "Item 2",
+                "isActive": false,
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In purus velit, tincidunt ac nibh quis, sollicitudin varius libero. Nullam at mi felis. Donec a scelerisque augue, sit amet porttitor nibh. Suspendisse at lorem ut elit placerat blandit. Nunc vitae neque mattis elit ullamcorper euismod vel eu quam. Vivamus et dolor sit amet justo tempus faucibus. Integer quis nulla laoreet, consectetur felis in, ullamcorper ligula."
+              }
+            ],
+            "media": {
+              "image": {
+                "key": "map-balloon.jpg",
+                "src": "map-balloon.jpg",
+                "type": "image",
+                "dimensions": {
+                  "originalWidth": 1680,
+                  "originalHeight": 1137
+                },
+                "sourcedFrom": "DEFAULT"
+              }
+            },
+            "family": "interactive-fullscreen",
+            "variant": "labeledgraphic",
+            "globalBlockId": "3dd1b0c8-1ecb-4370-809b-0409d32de63d"
+          },
+          {
+            "id": "cmr4ncwx900ce3b7pzi7iq2en",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "knowledgeCheck",
+            "items": [
+              {
+                "id": "cmr4ncwx900cf3b7pkcl5n8y9",
+                "type": "MULTIPLE_CHOICE",
+                "title": "Enter a question title here\u2026",
+                "answers": [
+                  {
+                    "id": "cmr4ncwx900cg3b7p76uatltb",
+                    "title": "Choice 1",
+                    "correct": true
+                  },
+                  {
+                    "id": "cmr4ncwx900ch3b7pet1pkogr",
+                    "title": "Choice 2",
+                    "correct": false
+                  }
+                ],
+                "feedback": ""
+              }
+            ],
+            "family": "knowledgeCheck",
+            "variant": "multiple choice",
+            "globalBlockId": "b62297af-8b09-4f60-baeb-81023f86ae5c"
+          },
+          {
+            "id": "cmr4ncxi800d13b7plz8dkqcm",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "knowledgeCheck",
+            "items": [
+              {
+                "id": "cmr4ncxi800d53b7picfq4mrm",
+                "type": "MULTIPLE_RESPONSE",
+                "title": "Enter a question title here\u2026",
+                "answers": [
+                  {
+                    "id": "cmr4ncxi800d63b7peh6mnuyc",
+                    "title": "Choice 1",
+                    "correct": true
+                  },
+                  {
+                    "id": "cmr4ncxi800d73b7p9pii15wo",
+                    "title": "Choice 2",
+                    "correct": false
+                  },
+                  {
+                    "id": "cmr4ncxi800d83b7p7dg8bx5i",
+                    "title": "Choice 3",
+                    "correct": false
+                  },
+                  {
+                    "id": "cmr4ncxi800d93b7pg56jokr2",
+                    "title": "Choice 4",
+                    "correct": true
+                  }
+                ],
+                "feedback": ""
+              }
+            ],
+            "family": "knowledgeCheck",
+            "variant": "multiple response",
+            "globalBlockId": "3a446db6-18c4-459d-b4da-d1bc5c11615f"
+          },
+          {
+            "id": "cmr4ncy3i00do3b7p7mmyyups",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "knowledgeCheck",
+            "items": [
+              {
+                "id": "cmr4ncy3i00dx3b7pkgjhs80s",
+                "type": "FILL_IN_THE_BLANK",
+                "title": "Enter a question title here\u2026",
+                "answers": [
+                  {
+                    "id": "cmr4ncy3i00dy3b7pxbrywwq2",
+                    "title": "Answer 1",
+                    "correct": true
+                  }
+                ]
+              }
+            ],
+            "family": "knowledgeCheck",
+            "variant": "fillin",
+            "globalBlockId": "0d06446e-6fcc-43d3-bffd-e98e09b65bee"
+          },
+          {
+            "id": "cmr4nd9kx00eb3b7pdsk7bqdt",
+            "settings": {
+              "mediaWidth": "1",
+              "paddingTop": 3,
+              "zoomOnClick": true,
+              "quotesInline": false,
+              "audioPosition": "bottom",
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "backgroundColor": "#f5f5f5",
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4nd9kx00ec3b7ptk8s466x",
+                "date": "Date 1",
+                "title": "Event 1 Title",
+                "description": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>"
+              },
+              {
+                "id": "cmr4nd9kx00ed3b7pov6xo3ta",
+                "date": "Date 2",
+                "title": "Event 2 Title",
+                "description": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>"
+              }
+            ],
+            "family": "interactive-fullscreen",
+            "variant": "timeline",
+            "globalBlockId": "a939fba6-467e-448c-aa16-45adef5db91b"
+          },
+          {
+            "id": "cmr4ndahi00ek3b7pj2zj8x8w",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4ndahi00el3b7pkqs1syha",
+                "back": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 1"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 1"
+                }
+              },
+              {
+                "id": "cmr4ndahi00em3b7pio2wslfc",
+                "back": {
+                  "type": "fullimage",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 2"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 2"
+                }
+              },
+              {
+                "id": "cmr4ndahi00en3b7p4md926n4",
+                "back": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 3"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 3"
+                }
+              }
+            ],
+            "family": "flashcard",
+            "variant": "flashcard",
+            "globalBlockId": "111f1165-3025-4164-acc0-cd743e5710f9"
+          },
+          {
+            "id": "cmr4ndbgm00eu3b7pl0x5zsh8",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4ndbgm00ev3b7pztqkpi60",
+                "back": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 1"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 1"
+                }
+              },
+              {
+                "id": "cmr4ndbgm00ew3b7p6losr4fy",
+                "back": {
+                  "type": "fullimage",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 2"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 2"
+                }
+              },
+              {
+                "id": "cmr4ndbgm00ex3b7pp4qej8wz",
+                "back": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Back of card 3"
+                },
+                "front": {
+                  "type": "description",
+                  "media": {
+                    "image": {
+                      "key": "mountains.jpg",
+                      "src": "mountains.jpg",
+                      "type": "image",
+                      "thumbnail": "https://cdn.articulate.com/assets/rise/assets/block-defaults/mountains_thumb.jpg",
+                      "dimensions": {
+                        "originalWidth": 1680,
+                        "originalHeight": 1120
+                      },
+                      "originalUrl": "mountains.jpg",
+                      "sourcedFrom": "DEFAULT"
+                    }
+                  },
+                  "description": "Front of card 3"
+                }
+              }
+            ],
+            "family": "flashcard",
+            "variant": "stack",
+            "globalBlockId": "f4257282-8ebe-402d-aa24-de71f0ce8493"
+          },
+          {
+            "id": "cmr4ndcvg00f43b7ploa55f9d",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4ndcvg00f53b7p3ui9qacp",
+                "type": "",
+                "label": "Go to location 1",
+                "description": "<p><b>Location 1</b></p><p>This location can be a URL, another lesson, or an email address. You can type a description here.</p>",
+                "destination": ""
+              }
+            ],
+            "family": "buttons",
+            "variant": "button",
+            "globalBlockId": "5c1d336e-4e97-42d7-a116-7c15e0663d05"
+          },
+          {
+            "id": "cmr4ndddd00fe3b7plrdtpc5n",
+            "settings": {
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "type": "interactive",
+            "items": [
+              {
+                "id": "cmr4ndddd00ff3b7p0gilnaq2",
+                "type": "",
+                "label": "Go to location 1",
+                "description": "<p><b>Location 1</b></p><p>This location can be a URL, another lesson, or an email address. You can type a description here.</p>",
+                "destination": ""
+              },
+              {
+                "id": "cmr4ndddd00fg3b7pvn48vntj",
+                "type": "",
+                "label": "Go to location 2",
+                "description": "<p><b>Location 2</b></p><p>This location can be a URL, another lesson, or an email address. You can type a description here.</p>",
+                "destination": ""
+              },
+              {
+                "id": "cmr4ndddd00fh3b7p6qkkivyn",
+                "type": "",
+                "label": "Go to location 3",
+                "description": "<p><b>Location 3</b></p><p>This location can be a URL, another lesson, or an email address. You can type a description here.</p>",
+                "destination": ""
+              }
+            ],
+            "family": "buttons",
+            "variant": "button stack",
+            "globalBlockId": "5c76bd11-7e97-4234-ac06-bea32dda2e96"
+          },
+          {
+            "id": "cmr4ndiji00fo3b7prwhvwzzg",
+            "settings": {
+              "lineCurve": "linear",
+              "valueType": "numeric",
+              "chartColor": "",
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "title": "Bar Chart Title",
+            "type": "chart",
+            "items": [
+              {
+                "id": "cmr4ndiji00fp3b7pn0o5jkt4",
+                "type": "Item 1",
+                "color": "#ff631e",
+                "value": "42"
+              },
+              {
+                "id": "cmr4ndiji00fq3b7pggnlo5kr",
+                "type": "Item 2",
+                "color": "#eb524d",
+                "value": "81"
+              },
+              {
+                "id": "cmr4ndiji00fr3b7py38aj10g",
+                "type": "Item 3",
+                "color": "#730300",
+                "value": "17"
+              },
+              {
+                "id": "cmr4ndiji00fs3b7pzu6vyot6",
+                "type": "Item 4",
+                "color": "#9764ae",
+                "value": "64"
+              },
+              {
+                "id": "cmr4ndiji00ft3b7pg44uf5us",
+                "type": "Item 5",
+                "color": "#730676",
+                "value": "82"
+              }
+            ],
+            "family": "chart",
+            "variant": "bar",
+            "itemsLabel": "",
+            "valuesLabel": "",
+            "globalBlockId": "6cc03438-0e16-451b-bf56-00209a48f02e"
+          },
+          {
+            "id": "cmr4ndj2d00g03b7pkhvh1ons",
+            "settings": {
+              "lineCurve": "linear",
+              "valueType": "numeric",
+              "chartColor": "",
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "title": "Line Chart Title",
+            "type": "chart",
+            "items": [
+              {
+                "id": "cmr4ndj2d00g13b7pgt9qs8en",
+                "type": "Item 1",
+                "color": "#ff631e",
+                "value": "42"
+              },
+              {
+                "id": "cmr4ndj2d00g23b7p59ql7x7r",
+                "type": "Item 2",
+                "color": "#eb524d",
+                "value": "81"
+              },
+              {
+                "id": "cmr4ndj2d00g33b7pnrbdlsk3",
+                "type": "Item 3",
+                "color": "#730300",
+                "value": "17"
+              },
+              {
+                "id": "cmr4ndj2d00g43b7pskujjrow",
+                "type": "Item 4",
+                "color": "#9764ae",
+                "value": "64"
+              },
+              {
+                "id": "cmr4ndj2d00g53b7p8sj0vsu0",
+                "type": "Item 5",
+                "color": "#730676",
+                "value": "82"
+              }
+            ],
+            "family": "chart",
+            "variant": "line",
+            "itemsLabel": "",
+            "valuesLabel": "",
+            "globalBlockId": "3800141a-6351-49c0-83f7-b2097f41f83a"
+          },
+          {
+            "id": "cmr4ndjqd00gc3b7pev9c19vg",
+            "settings": {
+              "lineCurve": "linear",
+              "valueType": "numeric",
+              "chartColor": "",
+              "paddingTop": 3,
+              "quotesInline": false,
+              "paddingBottom": 3,
+              "paddingLinked": true,
+              "markerColorContrast": "AUTO",
+              "snippetColorContrast": "AUTO"
+            },
+            "title": "Pie Chart Title",
+            "type": "chart",
+            "items": [
+              {
+                "id": "cmr4ndjqd00gd3b7pk5bdkar7",
+                "type": "Item 1",
+                "color": "#ff631e",
+                "value": "70"
+              },
+              {
+                "id": "cmr4ndjqd00ge3b7ps220mlwp",
+                "type": "Item 2",
+                "color": "#eb524d",
+                "value": "30"
+              }
+            ],
+            "family": "chart",
+            "variant": "pie",
+            "itemsLabel": "",
+            "valuesLabel": "",
+            "globalBlockId": "8ee9a110-0a99-473e-8b00-9a9b74f80c77"
+          }
+        ],
+        "settings": {},
+        "title": "Example Lesson 1",
+        "type": "blocks",
+        "author": "auth0|5874ebb773ba635cf4995c59",
+        "courseId": "Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR",
+        "createdAt": "2026-07-03T07:59:29.924Z",
+        "deleted": false,
+        "duplicatedFromId": "",
+        "experiments": null,
+        "headerImage": {},
+        "icon": "Article",
+        "isPartnerContentAuthor": null,
+        "lastUpdatedBy": "auth0|5874ebb773ba635cf4995c59",
+        "media": {},
+        "metadata": null,
+        "originalId": null,
+        "piles": [],
+        "position": 1,
+        "ready": true,
+        "selectedAuthorId": "auth0|5874ebb773ba635cf4995c59",
+        "transferredAt": null,
+        "updatedAt": "2026-07-03T08:04:21.292Z"
+      },
+      {
+        "description": "",
+        "id": "7bi7BhdNqcVYzyMrao2OvLiwL3wEf2XS",
+        "items": [],
+        "settings": {},
+        "title": "Example Section 2",
+        "type": "section",
+        "author": "auth0|5874ebb773ba635cf4995c59",
+        "courseId": "Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR",
+        "createdAt": "2026-07-03T07:59:35.048Z",
+        "deleted": false,
+        "duplicatedFromId": "",
+        "experiments": null,
+        "headerImage": {},
+        "icon": null,
+        "isPartnerContentAuthor": null,
+        "lastUpdatedBy": null,
+        "media": {},
+        "metadata": null,
+        "originalId": null,
+        "piles": [],
+        "position": 2,
+        "ready": true,
+        "selectedAuthorId": "auth0|5874ebb773ba635cf4995c59",
+        "transferredAt": null,
+        "updatedAt": "2026-07-03T07:59:35.048Z"
+      },
+      {
+        "description": "",
+        "id": "lfMwLC5E2jMyuX7kcJELO48hKmBmlpet",
+        "items": [
+          {
+            "answers": [
+              {
+                "id": "cmr4ndy4200gm3b7p1mh6hho9",
+                "title": "Choice 1",
+                "correct": true,
+                "feedback": ""
+              },
+              {
+                "id": "cmr4ndy4200gn3b7p7285rjft",
+                "title": "Choice 2",
+                "feedback": ""
+              }
+            ],
+            "correct": "cmr4ndy4200gm3b7p1mh6hho9",
+            "corrects": [
+              "cmr4ndy4200gm3b7p1mh6hho9"
+            ],
+            "id": "cmr4ndy4200gl3b7putbp0g8u",
+            "title": "Enter a question title here\u2026",
+            "type": "MULTIPLE_CHOICE",
+            "feedback": "",
+            "globalBlockId": "1bb87d12-cd3a-49ba-8e78-8a53805b887e"
+          },
+          {
+            "answers": [
+              {
+                "id": "cmr4ndy4200gp3b7pr9vxx2gm",
+                "title": "Choice 1",
+                "correct": true,
+                "feedback": ""
+              },
+              {
+                "id": "cmr4ndy4200gr3b7pgh5jz7y0",
+                "title": "Choice 2",
+                "feedback": ""
+              },
+              {
+                "id": "cmr4ndy4200gs3b7pxtv0rf14",
+                "title": "Choice 3",
+                "feedback": ""
+              },
+              {
+                "id": "cmr4ndy4200gq3b7pkmty5qzq",
+                "title": "Choice 4",
+                "correct": true,
+                "feedback": ""
+              }
+            ],
+            "correct": "",
+            "corrects": [
+              "cmr4ndy4200gp3b7pr9vxx2gm",
+              "cmr4ndy4200gq3b7pkmty5qzq"
+            ],
+            "id": "cmr4ndy4200go3b7p2n6h4mw9",
+            "title": "Enter a question title here\u2026",
+            "type": "MULTIPLE_RESPONSE",
+            "feedback": "",
+            "globalBlockId": "1bbbde33-c87f-4e48-81c0-4f5423a36eb7"
+          },
+          {
+            "answers": [
+              {
+                "id": "cmr4ne3eu00h13b7prtiejd4h",
+                "title": "Answer 1",
+                "correct": true
+              }
+            ],
+            "id": "cmr4ne3eu00h03b7phwhzfs9s",
+            "title": "Enter a question title here\u2026",
+            "type": "FILL_IN_THE_BLANK",
+            "feedback": "",
+            "globalBlockId": "fc33fc18-dcf3-42fe-926d-274b856b01e1"
+          },
+          {
+            "answers": [
+              {
+                "id": "cmr4ne4qy00h43b7prhvyn89m",
+                "matchTitle": "First match",
+                "title": "First choice"
+              },
+              {
+                "id": "cmr4ne4qy00h53b7p9kd6pizm",
+                "matchTitle": "Second match",
+                "title": "Second choice"
+              },
+              {
+                "id": "cmr4ne4qy00h63b7p1a2q5wfr",
+                "matchTitle": "Third match",
+                "title": "Third choice"
+              }
+            ],
+            "id": "cmr4ne4qx00h33b7ptkijust1",
+            "settings": {
+              "columnBehavior": "freezeFirst"
+            },
+            "title": "Enter a question title here\u2026",
+            "type": "MATCHING",
+            "feedback": "",
+            "globalBlockId": "f4a5c32f-aafd-49dd-b101-c4165d07438d"
+          }
+        ],
+        "settings": {
+          "passingScore": 80,
+          "retryCount": -1,
+          "revealAnswers": "all",
+          "shuffleAnswerChoices": false,
+          "randomizeQuestionOrder": false
+        },
+        "title": "Example Lesson 2",
+        "type": "quiz",
+        "author": "auth0|5874ebb773ba635cf4995c59",
+        "courseId": "Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR",
+        "createdAt": "2026-07-03T07:59:41.252Z",
+        "deleted": false,
+        "duplicatedFromId": "",
+        "experiments": null,
+        "headerImage": {},
+        "icon": "Quiz",
+        "isPartnerContentAuthor": null,
+        "lastUpdatedBy": "auth0|5874ebb773ba635cf4995c59",
+        "media": {},
+        "metadata": null,
+        "originalId": null,
+        "piles": [],
+        "position": 3,
+        "ready": true,
+        "selectedAuthorId": "auth0|5874ebb773ba635cf4995c59",
+        "transferredAt": null,
+        "updatedAt": "2026-07-03T08:04:48.511Z"
+      }
+    ],
+    "title": "Example Course",
+    "exportSettings": {
+      "completeWith": "reporting",
+      "identifier": "Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise",
+      "resetLearnerData": false,
+      "quizId": "lfMwLC5E2jMyuX7kcJELO48hKmBmlpet",
+      "storylineId": null,
+      "completionPercentage": 100,
+      "reporting": "passed-incomplete",
+      "updateResumeData": true,
+      "hideLmsUi": false,
+      "title": "Example Course",
+      "format": "zip",
+      "target": "xapi",
+      "locales": [],
+      "shareId": "arMEYQcpVCnSVPxmLe2lksKTp7Rk2N39",
+      "activeLMS": 3,
+      "exportType": "lms",
+      "targetName": "xAPI",
+      "isTranslated": false,
+      "quizComplete": false,
+      "activeEdition": null,
+      "loadOnlyInLMS": true,
+      "isRemotePackage": false,
+      "disableCoverPage": false,
+      "enableExitCourse": false,
+      "storylineComplete": false,
+      "localesPackageType": "single",
+      "notifyLearnersOfUpdates": false,
+      "enableTelemetryCollection": true
+    },
+    "lmsOptions": {
+      "enableTelemetryCollection": true,
+      "disableCoverPage": false,
+      "enableExitCourse": false
+    },
+    "id": "Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR",
+    "originalId": null,
+    "author": "auth0|5874ebb773ba635cf4995c59",
+    "selectedAuthorId": "",
+    "color": "#ff631e",
+    "navigationMode": "",
+    "sharePassword": "",
+    "shareId": "arMEYQcpVCnSVPxmLe2lksKTp7Rk2N39",
+    "copyOf": "",
+    "order": "1783420072081",
+    "fonts": null,
+    "media": {},
+    "coverImage": {
+      "media": {
+        "image": {
+          "key": "15_architecture.jpg",
+          "src": "15_architecture.jpg",
+          "crushedKey": "15_architecture.jpg",
+          "useCrushedKey": true
+        }
+      }
+    },
+    "jobs": [],
+    "labelSetId": "",
+    "deleted": false,
+    "createdAt": "2026-07-03T07:58:56.154Z",
+    "updatedAt": "2026-07-07T10:27:52.081Z",
+    "markComplete": false,
+    "isDefault": false,
+    "ready": true,
+    "reviewId": "",
+    "headingTypefaceId": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+    "bodyTypefaceId": "Wstu1lVkR_rUsAuU6x1N_UImwchzygj2",
+    "uiTypefaceId": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+    "sidebarMode": "open",
+    "tenantId": "b9e34be6-0286-4e32-abc5-fb1c445c8e09",
+    "showLessonCount": true,
+    "showNavigationButtons": true,
+    "allowSearch": true,
+    "animateBlockEntrance": true,
+    "transferredAt": null,
+    "allowCopy": false,
+    "enableVideoPlaybackSpeed": null,
+    "jobType": null,
+    "partnerContentId": null,
+    "cardImage": null,
+    "theme": {
+      "themeId": "classic",
+      "coverImage": "15_architecture.jpg",
+      "navigation": true,
+      "showAuthor": true,
+      "allowSearch": true,
+      "colorAccent": "#ff631e",
+      "blockCorners": "ROUNDED",
+      "buttonScheme": "LIGHT",
+      "uiTypefaceId": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+      "coverPageType": "SPLIT_LEFT_IMAGE",
+      "accentContrast": "AUTO",
+      "bodyTypefaceId": "Wstu1lVkR_rUsAuU6x1N_UImwchzygj2",
+      "navigationType": "SIDEBAR",
+      "blockPaddingTop": 30,
+      "coverImageAlpha": 50,
+      "navigationStyle": "LIGHT",
+      "showLessonCount": true,
+      "lessonHeaderSize": "MEDIUM",
+      "buttonInlineStyle": "ROUNDED",
+      "coverImageDefault": "https://cdn.articulate.com/assets/rise/assets/themes/classic/cover-image/15_architecture.jpg",
+      "headingTypefaceId": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+      "lessonHeaderColor": null,
+      "lessonHeaderImage": "",
+      "lessonHeaderStyle": "LIGHT",
+      "sidebarStartsOpen": true,
+      "blockPaddingBottom": 30,
+      "markLessonsComplete": false,
+      "animateBlockEntrance": true,
+      "navigationRestricted": false,
+      "buttonNavigationStyle": "FULL",
+      "showNavigationButtons": true,
+      "compactShowLessonCount": true,
+      "lessonHeaderImageAlpha": 0.6,
+      "lessonHeaderImageColor": "DARK",
+      "enableVideoPlaybackSpeed": true,
+      "customColorLessonHeaderContrast": "AUTO"
+    },
+    "lessonHeaderImage": {},
+    "overlayNavigationImage": {},
+    "type": null,
+    "experiments": {
+      "publishes": {
+        "LMS": {
+          "published_at": "2026-07-07T10:27:54.728Z",
+          "published_by": "auth0|5874ebb773ba635cf4995c59"
+        }
+      }
+    },
+    "settings": {},
+    "defaultLocaleId": null,
+    "metadata": {
+      "createdVia": "blank"
+    },
+    "blockBackgroundImage": {},
+    "otherTypefaceIds": null,
+    "contentUpdatedAt": "2026-07-03T08:04:48.511Z",
+    "authorType": "standard",
+    "lastPublishedAt": "2026-07-07T10:27:54.728Z",
+    "localizationMetadata": {},
+    "features": {
+      "ai-learner-chatbot": true,
+      "rise-audio-release": true,
+      "rise-course-navigation": true,
+      "rise-process-accessibility": true,
+      "rise-matching-accessibility": true,
+      "rise-block-controls-phase-four": true
+    },
+    "aiTutorConfig": null,
+    "authors": [
+      {
+        "id": "auth0|5874ebb773ba635cf4995c59",
+        "avatar": "small_1542368189.png",
+        "authorName": "Simon Smith"
+      }
+    ],
+    "aiLearnerCourseApiKey": null,
+    "mondrian": {},
+    "bodyTypeface": "Merriweather",
+    "headingTypeface": "Lato",
+    "uiTypeface": "Lato"
+  },
+  "labelSet": {
+    "iso639Code": "en",
+    "labels": {
+      "exitMessage": "You may now leave this page.",
+      "salutation": "\ud83d\udc4b Bye!",
+      "a11yAiTutorArticulateLogo": "Articulate - open in new tab",
+      "a11yAiTutorAskButton": "Ask AI Tutor",
+      "a11yAiTutorAssistantMessage": "AI Tutor response",
+      "a11yAiTutorChatWindow": "AI Tutor chat window",
+      "a11yAiTutorCloseTipsModal": "Close tips modal",
+      "a11yAiTutorFeedbackDismiss": "Dismiss feedback",
+      "a11yAiTutorFeedbackInput": "Type your feedback",
+      "a11yAiTutorFeedbackSubmit": "Submit feedback",
+      "a11yAiTutorFeedbackWhyUnhelpful": "Why is it unhelpful?",
+      "a11yAiTutorHide": "Hide AI Tutor chat",
+      "a11yAiTutorInput": "Type your message for AI Tutor",
+      "a11yAiTutorSection": "AI Tutor",
+      "a11yAiTutorSeeTips": "See tips for using AI Tutor",
+      "a11yAiTutorSendButton": "Send message to AI Tutor",
+      "a11yAiTutorStartOver": "Return to AI Tutor home screen",
+      "a11yAiTutorThumbsDown": "Rate response as not helpful",
+      "a11yAiTutorThumbsDownSubmitted": "Not helpful, feedback submitted",
+      "a11yAiTutorThumbsUp": "Rate response as helpful",
+      "a11yAiTutorThumbsUpSubmitted": "Helpful, feedback submitted",
+      "a11yAiTutorUserMessage": "User message",
+      "a11yAnswerLive": "Your answer",
+      "a11yAuthorPrefix": "By",
+      "a11yBlockChartAxisX": "x-axis",
+      "a11yBlockChartAxisY": "y-axis",
+      "a11yBlockChartBar": "Bar chart",
+      "a11yBlockChartInstructions": "Use arrow keys to navigate data points. Screen reader users may need to switch modes to interact.",
+      "a11yBlockChartLine": "Line chart",
+      "a11yBlockChartPie": "Pie chart",
+      "a11yBlockChartPreposition": "of",
+      "a11yBlockCode": "Custom Interaction",
+      "a11yBlockCodeSnippet": "Code",
+      "a11yBlockEmbed": "Embedded Content",
+      "a11yBlockFlashcardBack": "Back of card",
+      "a11yBlockFlashcardFront": "Front of card",
+      "a11yBlockFlashcardGrid": "Flashcard grid",
+      "a11yBlockFlashcardStack": "Flashcard carousel",
+      "a11yBlockFlashcardStackRoleDescription": "Carousel",
+      "a11yBlockFlashcardStackSlideControls": "Slide controls",
+      "a11yBlockFlashcardStackSlideControlsGoToNext": "Go to next slide",
+      "a11yBlockFlashcardStackSlideControlsGoToPrevious": "Go to previous slide",
+      "a11yBlockFlashcardStackSlideControlsGoToSlide": "Go to slide",
+      "a11yBlockFlashcardStackSlidePreposition": "of",
+      "a11yBlockFlashcardStackSlideRoleDescription": "Slide",
+      "a11yBlockImageCarousel": "Image Carousel",
+      "a11yBlockImageCarouselRoleDescription": "Carousel",
+      "a11yBlockImageCarouselSlideControls": "Slide controls",
+      "a11yBlockImageCarouselSlideControlsGoToNext": "Go to next slide",
+      "a11yBlockImageCarouselSlideControlsGoToPrevious": "Go to previous slide",
+      "a11yBlockImageCarouselSlideControlsGoToSlide": "Go to slide",
+      "a11yBlockImageCarouselSlidePreposition": "of",
+      "a11yBlockImageCarouselSlideRoleDescription": "Slide",
+      "a11yBlockKnowledgeCheck": "Knowledge check",
+      "a11yBlockKnowledgeCheckFIB": "Knowledge check: Fill in the blank",
+      "a11yBlockKnowledgeCheckM": "Knowledge check: Matching",
+      "a11yBlockKnowledgeCheckMC": "Knowledge check: Multiple choice",
+      "a11yBlockKnowledgeCheckMR": "Knowledge check: Multiple response",
+      "a11yBlockProcessCarousel": "Carousel",
+      "a11yBlockProcessRoleDescription": "Carousel",
+      "a11yBlockProcessSlideControls": "Slide controls",
+      "a11yBlockProcessSlideControlsGoToNext": "Go to next slide",
+      "a11yBlockProcessSlideControlsGoToPrevious": "Go to previous slide",
+      "a11yBlockProcessSlideControlsGoToSlide": "Go to slide",
+      "a11yBlockProcessSlideControlsIntroduction": "Introduction",
+      "a11yBlockProcessSlideControlsSummary": "Summary",
+      "a11yBlockProcessSlidePreposition": "of",
+      "a11yBlockProcessSlideRoleDescription": "Slide",
+      "a11yBlockQuoteCarousel": "Quote Carousel",
+      "a11yBlockQuoteCarouselRoleDescription": "Carousel",
+      "a11yBlockQuoteCarouselSlideControls": "Slide controls",
+      "a11yBlockQuoteCarouselSlideControlsGoToNext": "Go to next slide",
+      "a11yBlockQuoteCarouselSlideControlsGoToPrevious": "Go to previous slide",
+      "a11yBlockQuoteCarouselSlideControlsGoToSlide": "Go to slide",
+      "a11yBlockQuoteCarouselSlidePreposition": "of",
+      "a11yBlockQuoteCarouselSlideRoleDescription": "Slide",
+      "a11yBlockStoryline": "Storyline",
+      "a11yBlockSurveyCharCount": "Character count:",
+      "a11yBlockSurveyConfirmation": "Thanks! Your responses were sent.",
+      "a11yBlockSurveySubmitting": "Submitting survey responses.",
+      "a11yBlockSurveyValidationError": "Please answer all required questions to continue",
+      "a11yBlockTimeline": "Timeline",
+      "a11yBlockVideoSidePanelTablist": "Video details",
+      "a11yCarouselNext": "Next",
+      "a11yCarouselPrevious": "Previous",
+      "a11yCertificateDownloadFailed": "Failed to download certificate",
+      "a11yCorrectLive": "Correct answer",
+      "a11yCoverCourseCompleted": "Course Completed",
+      "a11yCoverCourseLength": "Course Length",
+      "a11yCoverRequirementComplete": "Requirement complete",
+      "a11yCoverRequirementFailed": "Requirement failed",
+      "a11yCoverRequirementIncomplete": "Requirement incomplete",
+      "a11yExcelIcon": "Microsoft Excel spreadsheet",
+      "a11yFileIcon": "File",
+      "a11yGroupAudioPlayer": "Audio player",
+      "a11yGroupScenario": "Interactive scenario",
+      "a11yGroupVideoPlayer": "Video player",
+      "a11yLabeledGraphicBlock": "Labeled graphic",
+      "a11yLabeledGraphicButtonMarker": "Marker",
+      "a11yLabeledGraphicIconArrowDown": "Down arrow",
+      "a11yLabeledGraphicIconArrowDownLeft": "Down left arrow",
+      "a11yLabeledGraphicIconArrowDownRight": "Down right arrow",
+      "a11yLabeledGraphicIconArrowLeft": "Left arrow",
+      "a11yLabeledGraphicIconArrowRight": "Right arrow",
+      "a11yLabeledGraphicIconArrowUp": "Up arrow",
+      "a11yLabeledGraphicIconArrowUpLeft": "Up left arrow",
+      "a11yLabeledGraphicIconArrowUpRight": "Up right arrow",
+      "a11yLabeledGraphicIconCheck": "Check mark",
+      "a11yLabeledGraphicIconDot": "Dot",
+      "a11yLabeledGraphicIconHeart": "Heart",
+      "a11yLabeledGraphicIconInformation": "Information",
+      "a11yLabeledGraphicIconPin": "Map pin",
+      "a11yLabeledGraphicIconPlus": "Plus",
+      "a11yLabeledGraphicIconQuestion": "Question mark",
+      "a11yLabeledGraphicIconX": "X",
+      "a11yLabeledGraphicUnviewed": "Not viewed",
+      "a11yLabeledGraphicViewed": "Viewed",
+      "a11yMatchingColumn1": "Matching column 1",
+      "a11yMatchingColumn2": "Matching column 2",
+      "a11yMatchingItemMatchedWith": "Matched with",
+      "a11yMatchingItemMatchWith": "Match with",
+      "a11yMatchingItemSelectableItem": "Selectable item",
+      "a11yMatchingItemShowLess": "Show less",
+      "a11yMatchingItemShowMore": "Show more",
+      "a11yMediaCaptions": "Captions",
+      "a11yMediaCaptionsOff": "Captions off",
+      "a11yMediaCurrentTime": "Current time",
+      "a11yMediaDownload": "Download",
+      "a11yMediaDuration": "Duration",
+      "a11yMediaErrorVideo": "This video could not be loaded.",
+      "a11yMediaExitFullscreen": "Exit fullscreen",
+      "a11yMediaExitPictureInPicture": "Exit picture-in-picture",
+      "a11yMediaFullscreen": "Fullscreen",
+      "a11yMediaMoreOptions": "More options",
+      "a11yMediaMoreOptionsBack": "Back to more options",
+      "a11yMediaMute": "Mute",
+      "a11yMediaPause": "Pause",
+      "a11yMediaPictureInPicture": "Picture-in-picture",
+      "a11yMediaPlay": "Play",
+      "a11yMediaPlaybackRate": "Playback Rate",
+      "a11yMediaPlaybackRateNormal": "Normal",
+      "a11yMediaPlayVideo": "Play video",
+      "a11yMediaRemainingTime": "Remaining time",
+      "a11yMediaReplay": "Replay",
+      "a11yMediaSeek": "Seek",
+      "a11yMediaSeekDisabled": "Forward seeking is disabled",
+      "a11yMediaUnmute": "Unmute",
+      "a11yMediaVolume": "Volume",
+      "a11yNavigationMenuClose": "Close navigation menu",
+      "a11yNavigationMenuOpen": "Open navigation menu",
+      "a11yNoticeLinkNewTab": "(opens in a new tab)",
+      "a11yPageMarker": "Top of page",
+      "a11yPDFIcon": "PDF file",
+      "a11yPPTIcon": "PowerPoint presentation",
+      "a11yPreposition": "of",
+      "a11yProgressSummaryRequirementCompleted": "Requirement completed, check mark",
+      "a11yProgressSummaryRequirementNotCompleted": "Requirement not completed, empty square",
+      "a11yQuizFailed": "Failed",
+      "a11yQuizFeedback": "Feedback",
+      "a11yQuizPassed": "Passed",
+      "a11yQuizReviewCorrectlyChecked": "Correctly checked",
+      "a11yQuizReviewCorrectlySelected": "Correctly selected",
+      "a11yQuizReviewCorrectlyUnchecked": "Correctly unchecked",
+      "a11yQuizReviewCorrectlyUnselected": "Correctly unselected",
+      "a11yQuizReviewIncorrectlyChecked": "Incorrectly checked",
+      "a11yQuizReviewIncorrectlySelected": "Incorrectly selected",
+      "a11yQuizReviewIncorrectlyUnchecked": "Incorrectly unchecked",
+      "a11yQuizReviewIncorrectlyUnselected": "Incorrectly unselected",
+      "a11yRegionMainLesson": "Lesson content",
+      "a11yRegionMainOverview": "Course overview",
+      "a11yRegionNavLesson": "Navigation menu",
+      "a11yRegionNavOverview": "Table of contents",
+      "a11yRestrictedNav": "This lesson is currently unavailable",
+      "a11yRTFIcon": "Rich Text File",
+      "a11ySearchClose": "Close search menu",
+      "a11ySearchInput": "Search",
+      "a11ySearchInputClear": "clear search term",
+      "a11ySearchOpen": "Open search menu",
+      "a11ySortingCategories": "Categories",
+      "a11ySortingCategoriesComplete": "Categories. Interaction completed.",
+      "a11ySortingCategory": "category",
+      "a11ySortingComplete": "cards correct",
+      "a11ySortingCompleteOf": "of",
+      "a11ySortingCorrect": "Correct",
+      "a11ySortingCurrentItem": "Current item",
+      "a11ySortingIncorrect": "Incorrect. Choose another category.",
+      "a11ySortingNextItem": "Next item",
+      "a11yStatusAdditionalContent": "Additional content has been loaded",
+      "a11yStatusContinued": "Continued",
+      "a11yUnzoomImage": "Unzoom image",
+      "a11yWordIcon": "Microsoft Word document",
+      "a11yZipIcon": "Zip file",
+      "a11yZoomImage": "Zoom image",
+      "aiTutorAskButton": "Ask AI Tutor",
+      "aiTutorBlankHeading": "Hey there, need a hand?",
+      "aiTutorBlankPillExplain": "Explain this in simpler terms",
+      "aiTutorBlankPillSearch": "Search course content",
+      "aiTutorBlankPillSummarize": "Summarize this training",
+      "aiTutorDisabledWhileQuiz": "AI Tutor is disabled while a quiz is in progress.",
+      "aiTutorDisclaimer": "AI isn't perfect\u2014double check important information.",
+      "aiTutorErrorGeneral": "Something went wrong. Try refreshing the page or submitting a new request.",
+      "aiTutorErrorUnavailable": "AI Tutor is currently unavailable.",
+      "aiTutorFeedbackDetailsPlaceholder": "Share additional details (optional)",
+      "aiTutorFeedbackImprovementNote": "Your feedback helps improve this feature.",
+      "aiTutorFeedbackLearnMore": "Learn more",
+      "aiTutorFeedbackPopoverTitle": "Tell us more",
+      "aiTutorFeedbackReasonIncorrect": "Incorrect information",
+      "aiTutorFeedbackReasonNoAnswer": "Didn't answer my question",
+      "aiTutorFeedbackReasonNotHelpful": "Explanation wasn't helpful for me",
+      "aiTutorFeedbackReasonNotRelevant": "Response wasn't relevant",
+      "aiTutorFeedbackReasonOther": "Other",
+      "aiTutorFeedbackSubmit": "Submit",
+      "aiTutorFeedbackThankYou": "Thank you for your feedback",
+      "aiTutorFeedbackToast": "Thanks for your feedback",
+      "aiTutorGeneratingResponse": "Generating response",
+      "aiTutorHideTooltip": "Hide",
+      "aiTutorInputPlaceholder": "Type your message",
+      "aiTutorPrivacyLink": "privacy policy",
+      "aiTutorSeeTips": "See tips",
+      "aiTutorStartOverTooltip": "Start over",
+      "aiTutorTermsLink": "terms of use",
+      "aiTutorTermsPrefix": "By using this service, you agree to the Articulate",
+      "aiTutorTipsGotIt": "Got it",
+      "aiTutorTipsTip1": "AI can make mistakes. Use it as a guide, but verify what matters.",
+      "aiTutorTipsTip2": "Focus on topics covered in the course. Ask specific questions for best results.",
+      "aiTutorTipsTip3": "Don't share personal or sensitive information.",
+      "aiTutorTipsTitle": "What to know",
+      "audioCollapsePlayer": "Collapse audio player",
+      "audioExpandPlayer": "Expand audio player",
+      "audioHideTranscript": "Hide transcript",
+      "audioNoTranscriptAvailable": "No transcript available",
+      "audioPlaySpeed": "Play speed",
+      "audioShowTranscript": "Show transcript",
+      "audioTranscript": "Audio transcript",
+      "blocksClickToFlip": "Click to flip",
+      "blocksPreposition": "of",
+      "certificateDownload": "Download certificate",
+      "certificateDownloadInProgress": "Downloading...",
+      "certificateRetryDownload": "Retry download",
+      "courseCompletionOverdue": "Overdue",
+      "courseExit": "EXIT COURSE",
+      "courseFinish": "Finish",
+      "courseHome": "Home",
+      "courseResume": "RESUME COURSE",
+      "courseSkipToLesson": "SKIP TO LESSON",
+      "courseStart": "START COURSE",
+      "coverCompleteAllLessons": "Complete all lessons in this course",
+      "coverCompleted": "Completed",
+      "coverCompleteLessonsInCourse": "lessons in this course",
+      "coverCompleteLessonsName": "Complete",
+      "coverCompleteLessonsPreposition": "of",
+      "coverCourseRequirements": "Course Requirements",
+      "coverHour": "Hour",
+      "coverHours": "Hours",
+      "coverLesson": "Lesson",
+      "coverLessons": "Lessons",
+      "coverMinute": "Minute",
+      "coverMinutes": "Minutes",
+      "coverNoAttemptsRemaining": "No attempts remaining",
+      "coverPublished": "Published",
+      "coverQuizPercentOrHigher": "% or higher",
+      "coverQuizScoreOf": "Score of",
+      "curtainLoading": "Your content is loading.",
+      "curtainOffline": "Your computer is offline.",
+      "curtainOfflineReconnecting": "Attempting to reconnect\u2026",
+      "curtainSessionTimedOut": "Your session has timed out.",
+      "curtainSessionTimedOutRefresh": "Refresh",
+      "curtainSessionTimedOutRestart": "Click refresh to restart your session.",
+      "curtainSomethingWrong": "Something went wrong.",
+      "curtainSomethingWrongRefresh": "Refresh",
+      "curtainSomethingWrongTryAgain": "Click to refresh and try again.",
+      "customBlockVideoError": "Video didn't load",
+      "embedLinkGroup": "Embedded web content",
+      "embedPlayerGroup": "Embedded media player",
+      "embedReadMore": "Read more",
+      "embedViewOn": "VIEW ON",
+      "knowledgeCheckCorrectAnswerRequiredBlock": "Requires a correct answer to continue",
+      "knowledgeCheckCorrectAnswerRequiredNav": "Complete previous knowledge checks to unlock this lesson",
+      "knowledgeCheckMaxRetriesReached": "You have reached the maximum amount of retries.",
+      "knowledgeCheckRetriesAttemptsRemaining": "Attempts remaining:",
+      "l10nChooseLanguage": "Choose your course language",
+      "l10nChooseLanguageContinue": "Continue",
+      "labeledGraphicMarkerLabel": "Labeled graphic marker",
+      "lessonComplete": "COMPLETE",
+      "lessonName": "Lesson",
+      "lessonPreposition": "of",
+      "lessonRestricted": "Lessons must be completed in order",
+      "noResults": "No results for",
+      "numberedDividerGroup": "Numbered divider",
+      "overviewPageTitleSuffix": "Overview",
+      "pauseButtonLabel": "Pause",
+      "playButtonLabel": "Play",
+      "processComplete": "Complete",
+      "processLandmark": "Process",
+      "processLessonName": "Lesson",
+      "processNextStep": "NEXT STEP",
+      "processStart": "START",
+      "processStartAgain": "START AGAIN",
+      "processStepName": "Step",
+      "processStepPreposition": "of",
+      "processSwipe": "Swipe to continue",
+      "progressPieClickToComplete": "Click to complete",
+      "progressPieClickToReset": "Click to reset",
+      "progressPieCompleted": "Completed",
+      "progressPieQuizFailed": "Failed",
+      "progressPieUnstarted": "Unstarted",
+      "progressSummary": "Progress Summary",
+      "progressSummaryBackToLearning": "Back to my learning",
+      "progressSummaryCompleted": "Completed:",
+      "progressSummaryCompletionRequirement": "Completion Requirement",
+      "progressSummaryCongratulations": "Congratulations!",
+      "progressSummaryNextUp": "Next up",
+      "progressSummaryNoAttemptsRemaining": "No attempts remaining.",
+      "progressSummaryNoTitle": "(No Title)",
+      "progressSummaryPercentComplete": "% Complete",
+      "progressSummaryPercentCompletion": "% Completion",
+      "progressSummaryQuizRequirement": "Quiz Requirement",
+      "progressSummaryRequirementsMet": "You've met all the requirements.",
+      "progressSummaryScoreOf": "Score of",
+      "progressSummaryScoreOfPreposition": "% on",
+      "progressSummaryStartOver": "Start Over",
+      "progressSummaryViewQuiz": "View quiz",
+      "progressSummaryYouCompleted": "You completed:",
+      "progressSummaryYouScored": "You scored",
+      "quizAcceptableResponses": "Acceptable responses",
+      "quizAnswerPlaceholder": "Type your answer here",
+      "quizContinue": "Continue",
+      "quizCorrect": "Correct",
+      "quizIncorrect": "Incorrect",
+      "quizNext": "NEXT",
+      "quizPassing": "PASSING",
+      "quizQuestion": "Question",
+      "quizRequireAnswer": "Please answer the question to continue",
+      "quizRequirePassingScore": "Must pass quiz before continuing",
+      "quizRestart": "Restart",
+      "quizResults": "Quiz Results",
+      "quizScore": "Your score",
+      "quizSkipAhead": "Skip Ahead to Lesson",
+      "quizStart": "START QUIZ",
+      "quizSubmit": "SUBMIT",
+      "quizTakeAgain": "TAKE AGAIN",
+      "quizTimerElapsed": "Time elapsed",
+      "quizTimerExpired": "Time expired",
+      "quizTimerExpiredAction": "OK",
+      "quizTimerExpiredMessage": "You have reached the time limit for this quiz. Your results will be automatically submitted",
+      "quizTimerHide": "Hide",
+      "quizTimerLimit": "Time limit",
+      "quizTimerMinute": "Minute",
+      "quizTimerMinutePlural": "Minutes",
+      "quizTimerRemaining": "Time left",
+      "quizTimerShow": "Show timer",
+      "result": "result",
+      "results": "results",
+      "scenarioComplete": "Scenario Complete!",
+      "scenarioContinue": "CONTINUE",
+      "scenarioStartOver": "START OVER",
+      "scenarioTryAgain": "TRY AGAIN",
+      "search": "search",
+      "seekSliderLabel": "Seek",
+      "sortingCardsCorrect": "Cards Correct",
+      "sortingLandmark": "Sorting Activity",
+      "sortingReplay": "Replay",
+      "surveyConfirmation": "Thanks! Your responses were sent.",
+      "surveyFreeResponseRequired": "Please enter a response",
+      "surveyPlaceholder": "Share your thoughts",
+      "surveyRatingRequired": "Please select a rating",
+      "surveyMultipleChoiceRequired": "Please select an answer",
+      "surveyMultipleResponseRequired": "Please select at least one answer",
+      "surveyRequired": "Required",
+      "surveySubmit": "Submit",
+      "surveySubmitting": "Submitting...",
+      "surveyValidationError": "Please answer all required questions to continue.",
+      "videoChapters": "Chapters",
+      "videoCheckpointDefaultTitle": "Checkpoint",
+      "videoCheckpointNoContent": "No content added to this checkpoint.",
+      "videoCheckpointPausedAt": "Paused at",
+      "videoCheckpointResume": "Resume video",
+      "videoNoChapters": "No chapters yet",
+      "videoNoChaptersMessage": "Add timestamps in the block settings to organize your video.",
+      "videoShowLessChapters": "Show less chapters",
+      "videoShowMoreChapters": "Show more chapters",
+      "videoTranscript": "Transcript",
+      "videoViewTranscript": "View transcript",
+      "lessonNext": "NEXT LESSON",
+      "courseDetails": "DETAILS",
+      "lessonPrevious": "PREVIOUS LESSON"
+    },
+    "id": "W4KZVzxmRwOeAho-MI7bYbYY",
+    "author": "auth0|5874ebb773ba635cf4995c59",
+    "name": "English",
+    "defaultId": 1,
+    "defaultSet": true,
+    "deleted": false,
+    "createdAt": "2017-09-11T07:36:32.287Z",
+    "updatedAt": "2017-09-11T07:36:32.287Z",
+    "transferredAt": null
+  },
+  "exportAggregate": {
+    "subscriptionId": "b9e34be6-0286-4e32-abc5-fb1c445c8e09",
+    "exportId": "bwofyyxj5i0xMjsKhd-MWdUSXrl8GMZB",
+    "courseId": "Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR",
+    "courseType": "course",
+    "courseTheme": "classic",
+    "courseCreatedVia": "blank",
+    "courseLessons": {
+      "total": 4,
+      "ai": 0,
+      "section": {
+        "total": 2,
+        "ai": 0
+      },
+      "blocks": {
+        "total": 1,
+        "ai": 0
+      },
+      "quiz": {
+        "total": 1,
+        "ai": 0
+      }
+    },
+    "courseBlocks": {
+      "total": 48,
+      "ai": 0,
+      "text": {
+        "total": 11,
+        "ai": 0
+      },
+      "list": {
+        "total": 3,
+        "ai": 0
+      },
+      "image": {
+        "total": 8,
+        "ai": 0
+      },
+      "divider": {
+        "total": 5,
+        "ai": 0
+      },
+      "multimedia": {
+        "total": 4,
+        "ai": 0
+      },
+      "interactive": {
+        "total": 11,
+        "ai": 0
+      },
+      "knowledgeCheck": {
+        "total": 3,
+        "ai": 0
+      },
+      "chart": {
+        "total": 3,
+        "ai": 0
+      }
+    }
+  },
+  "fonts": [
+    {
+      "id": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+      "name": "Lato",
+      "default": true,
+      "key": "Lato2-Regular.woff",
+      "style": "normal",
+      "family": "Lato",
+      "weight": "400"
+    },
+    {
+      "id": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+      "name": "Lato",
+      "default": true,
+      "key": "Lato2-Light.woff",
+      "style": "normal",
+      "family": "Lato",
+      "weight": "300"
+    },
+    {
+      "id": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+      "name": "Lato",
+      "default": true,
+      "key": "Lato2-Italic.woff",
+      "style": "italic",
+      "family": "Lato",
+      "weight": "400"
+    },
+    {
+      "id": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+      "name": "Lato",
+      "default": true,
+      "key": "Lato2-Bold.woff",
+      "style": "normal",
+      "family": "Lato",
+      "weight": "700"
+    },
+    {
+      "id": "_vy9IVqRPwz6wQlKi0wsA9dsYpZ7gsQ3",
+      "name": "Lato",
+      "default": true,
+      "key": "Lato2-Black.woff",
+      "style": "normal",
+      "family": "Lato",
+      "weight": "900"
+    },
+    {
+      "id": "Wstu1lVkR_rUsAuU6x1N_UImwchzygj2",
+      "name": "Merriweather",
+      "default": true,
+      "key": "Merriweather-Black.woff",
+      "style": "normal",
+      "family": "Merriweather",
+      "weight": "900"
+    },
+    {
+      "id": "Wstu1lVkR_rUsAuU6x1N_UImwchzygj2",
+      "name": "Merriweather",
+      "default": true,
+      "key": "Merriweather-Italic.woff",
+      "style": "italic",
+      "family": "Merriweather",
+      "weight": "400"
+    },
+    {
+      "id": "Wstu1lVkR_rUsAuU6x1N_UImwchzygj2",
+      "name": "Merriweather",
+      "default": true,
+      "key": "Merriweather-Bold.woff",
+      "style": "normal",
+      "family": "Merriweather",
+      "weight": "700"
+    },
+    {
+      "id": "Wstu1lVkR_rUsAuU6x1N_UImwchzygj2",
+      "name": "Merriweather",
+      "default": true,
+      "key": "Merriweather-Regular.woff",
+      "style": "normal",
+      "family": "Merriweather",
+      "weight": "400"
+    },
+    {
+      "id": "Wstu1lVkR_rUsAuU6x1N_UImwchzygj2",
+      "name": "Merriweather",
+      "default": true,
+      "key": "Merriweather-Light.woff",
+      "style": "normal",
+      "family": "Merriweather",
+      "weight": "300"
+    }
+  ],
+  "partnerContent": []
+}

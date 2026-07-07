@@ -1,0 +1,22 @@
+{
+  "name": "forge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "contract-check": "node scripts/contract-check.mjs",
+    "smoke": "node e2e/smoke/render-smoke.mjs",
+    "verify": "node scripts/contract-check.mjs && turbo run build lint test && node e2e/smoke/render-smoke.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}

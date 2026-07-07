@@ -1,0 +1,1705 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "01JZ9S99Z8A0Y4Y6RAZ76D9M7F",
+  "title": "Forge Kitchen Sink",
+  "description": "A cleaned Forge-shaped fixture covering every v1 block variant and quiz question type.",
+  "defaultLocale": "en-US",
+  "theme": {
+    "primaryColor": "#1f6feb",
+    "backgroundColor": "#ffffff",
+    "surfaceColor": "#f6f8fa",
+    "textColor": "#1f2328",
+    "accentColor": "#dd6b20",
+    "headingTypeface": "Inter",
+    "bodyTypeface": "Inter",
+    "uiTypeface": "Inter",
+    "spacingScale": "comfortable",
+    "logoMediaId": "image_logo"
+  },
+  "labelSet": {
+    "startCourse": "Start course",
+    "resumeCourse": "Resume course",
+    "continue": "Continue",
+    "submit": "Submit",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "retry": "Retry",
+    "revealAnswer": "Reveal answer",
+    "nextLesson": "Next lesson",
+    "previousLesson": "Previous lesson",
+    "exitCourse": "Exit course",
+    "complete": "Complete",
+    "passed": "Passed",
+    "failed": "Failed",
+    "searchPlaceholder": "Search lessons"
+  },
+  "settings": {
+    "navigationMode": "free",
+    "sidebar": {
+      "enabled": true,
+      "defaultOpen": true
+    },
+    "searchEnabled": true,
+    "showLessonCount": true,
+    "blockEntranceAnimation": "fade",
+    "videoPlaybackSpeedControl": true
+  },
+  "lessons": [
+    {
+      "type": "section",
+      "id": "section_intro",
+      "title": "Kitchen sink"
+    },
+    {
+      "type": "blocks",
+      "id": "lesson_blocks",
+      "title": "All block variants",
+      "icon": "sparkles",
+      "headerImage": "image_cover",
+      "blocks": [
+        {
+          "id": "block_text_paragraph",
+          "family": "text",
+          "variant": "paragraph",
+          "payload": {
+            "html": "<p>Paragraph body with <strong>emphasis</strong> and a <a href=\"https://example.com\">link</a>.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_text_heading",
+          "family": "text",
+          "variant": "heading",
+          "payload": {
+            "heading": "<h2>Heading text</h2>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_text_subheading",
+          "family": "text",
+          "variant": "subheading",
+          "payload": {
+            "subheading": "<h3>Subheading text</h3>"
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_text_heading_paragraph",
+          "family": "text",
+          "variant": "heading+paragraph",
+          "payload": {
+            "heading": "<h2>Heading plus paragraph</h2>",
+            "html": "<p>This variant pairs a heading with supporting copy.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_text_subheading_paragraph",
+          "family": "text",
+          "variant": "subheading+paragraph",
+          "payload": {
+            "subheading": "<h3>Subheading plus paragraph</h3>",
+            "html": "<p>Useful for a compact explanation under a smaller title.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_text_two_column",
+          "family": "text",
+          "variant": "two column",
+          "payload": {
+            "columns": [
+              {
+                "id": "column_left",
+                "html": "<p>Left column content.</p>"
+              },
+              {
+                "id": "column_right",
+                "html": "<p>Right column content.</p>"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_impact_a",
+          "family": "impact",
+          "variant": "a",
+          "payload": {
+            "html": "<p>A strong statement block.</p>",
+            "attribution": "Forge"
+          },
+          "settings": {
+            "paddingTop": 3,
+            "paddingBottom": 3,
+            "backgroundColor": "#f6f8fa",
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_impact_b",
+          "family": "impact",
+          "variant": "b",
+          "payload": {
+            "html": "<p>Variant B statement.</p>"
+          },
+          "settings": {
+            "paddingTop": 3,
+            "paddingBottom": 3,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_impact_c",
+          "family": "impact",
+          "variant": "c",
+          "payload": {
+            "html": "<p>Variant C statement.</p>"
+          },
+          "settings": {
+            "paddingTop": 3,
+            "paddingBottom": 3,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_impact_d",
+          "family": "impact",
+          "variant": "d",
+          "payload": {
+            "html": "<p>Variant D statement.</p>"
+          },
+          "settings": {
+            "paddingTop": 3,
+            "paddingBottom": 3,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_impact_note",
+          "family": "impact",
+          "variant": "note",
+          "payload": {
+            "html": "<p>Note style impact copy.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_list_bulleted",
+          "family": "list",
+          "variant": "bulleted",
+          "payload": {
+            "items": [
+              {
+                "id": "bullet_01",
+                "html": "<p>First bullet.</p>"
+              },
+              {
+                "id": "bullet_02",
+                "html": "<p>Second bullet.</p>"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_list_numbered",
+          "family": "list",
+          "variant": "numbered",
+          "payload": {
+            "items": [
+              {
+                "id": "numbered_01",
+                "html": "<p>Step one.</p>"
+              },
+              {
+                "id": "numbered_02",
+                "html": "<p>Step two.</p>"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_list_checkboxes",
+          "family": "list",
+          "variant": "checkboxes",
+          "payload": {
+            "items": [
+              {
+                "id": "checkbox_01",
+                "html": "<p>Cosmetic checked item.</p>",
+                "checked": true
+              },
+              {
+                "id": "checkbox_02",
+                "html": "<p>Cosmetic unchecked item.</p>",
+                "checked": false
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_image_hero",
+          "family": "image",
+          "variant": "hero",
+          "payload": {
+            "mediaId": "image_hero",
+            "alt": "Abstract course hero image",
+            "caption": "Hero image caption",
+            "zoomOnClick": false
+          },
+          "settings": {
+            "paddingTop": 0,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_image_full_width",
+          "family": "image",
+          "variant": "full width",
+          "payload": {
+            "mediaId": "image_wide",
+            "alt": "Wide image",
+            "caption": "Full width image",
+            "zoomOnClick": true
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_image_centered",
+          "family": "image",
+          "variant": "centered",
+          "payload": {
+            "mediaId": "image_centered",
+            "alt": "Centered image",
+            "zoomOnClick": true
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_image_text_aside",
+          "family": "image",
+          "variant": "text aside",
+          "payload": {
+            "mediaId": "image_aside",
+            "alt": "Image beside explanatory text",
+            "caption": "Image with text",
+            "zoomOnClick": true,
+            "text": "<p>Text placed beside the image.</p>"
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_image_banner",
+          "family": "image",
+          "variant": "banner",
+          "payload": {
+            "mediaId": "image_banner",
+            "alt": "Banner image",
+            "zoomOnClick": false
+          },
+          "settings": {
+            "paddingTop": 0,
+            "paddingBottom": 0,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_gallery_carousel",
+          "family": "gallery",
+          "variant": "carousel (centered)",
+          "payload": {
+            "items": [
+              {
+                "id": "gallery_carousel_01",
+                "mediaId": "image_gallery_01",
+                "alt": "Carousel image one",
+                "caption": "First carousel item"
+              },
+              {
+                "id": "gallery_carousel_02",
+                "mediaId": "image_gallery_02",
+                "alt": "Carousel image two",
+                "caption": "Second carousel item"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_gallery_two",
+          "family": "gallery",
+          "variant": "two column grid",
+          "payload": {
+            "items": [
+              {
+                "id": "gallery_two_01",
+                "mediaId": "image_gallery_01",
+                "alt": "Two column image one"
+              },
+              {
+                "id": "gallery_two_02",
+                "mediaId": "image_gallery_02",
+                "alt": "Two column image two"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_gallery_three",
+          "family": "gallery",
+          "variant": "three column grid",
+          "payload": {
+            "items": [
+              {
+                "id": "gallery_three_01",
+                "mediaId": "image_gallery_01",
+                "alt": "Three column image one"
+              },
+              {
+                "id": "gallery_three_02",
+                "mediaId": "image_gallery_02",
+                "alt": "Three column image two"
+              },
+              {
+                "id": "gallery_three_03",
+                "mediaId": "image_gallery_03",
+                "alt": "Three column image three"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_gallery_four",
+          "family": "gallery",
+          "variant": "four column grid",
+          "payload": {
+            "items": [
+              {
+                "id": "gallery_four_01",
+                "mediaId": "image_gallery_01",
+                "alt": "Four column image one"
+              },
+              {
+                "id": "gallery_four_02",
+                "mediaId": "image_gallery_02",
+                "alt": "Four column image two"
+              },
+              {
+                "id": "gallery_four_03",
+                "mediaId": "image_gallery_03",
+                "alt": "Four column image three"
+              },
+              {
+                "id": "gallery_four_04",
+                "mediaId": "image_gallery_04",
+                "alt": "Four column image four"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_divider_line",
+          "family": "divider",
+          "variant": "line",
+          "payload": {
+            "style": "solid"
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_divider_numbered",
+          "family": "divider",
+          "variant": "numbered",
+          "payload": {
+            "number": 1,
+            "label": "Checkpoint"
+          },
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_divider_spacer",
+          "family": "divider",
+          "variant": "spacer",
+          "payload": {
+            "size": "medium"
+          },
+          "settings": {
+            "paddingTop": 0,
+            "paddingBottom": 0,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_divider_continue",
+          "family": "divider",
+          "variant": "continue button",
+          "payload": {
+            "label": "Continue"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_multimedia_video",
+          "family": "multimedia",
+          "variant": "video",
+          "payload": {
+            "mediaId": "video_intro",
+            "posterMediaId": "image_video_poster",
+            "captions": [
+              {
+                "id": "caption_en",
+                "mediaId": "captions_en",
+                "srclang": "en",
+                "label": "English",
+                "default": true
+              }
+            ],
+            "transcript": "<p>Video transcript text.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_multimedia_embed",
+          "family": "multimedia",
+          "variant": "embed",
+          "payload": {
+            "url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            "title": "Allowed training embed",
+            "allowFullscreen": true,
+            "aspectRatio": "16:9"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_multimedia_attachment",
+          "family": "multimedia",
+          "variant": "attachment",
+          "payload": {
+            "mediaId": "attachment_policy",
+            "label": "Download policy PDF",
+            "sizeBytes": 2048
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_multimedia_code",
+          "family": "multimedia",
+          "variant": "code",
+          "payload": {
+            "language": "json",
+            "code": "{ \"answer\": true }",
+            "showLineNumbers": true,
+            "copyButton": true
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_interactive_accordion",
+          "family": "interactive",
+          "variant": "accordion",
+          "payload": {
+            "items": [
+              {
+                "id": "accordion_01",
+                "title": "Open me",
+                "html": "<p>Accordion panel content.</p>"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_interactive_tabs",
+          "family": "interactive",
+          "variant": "tabs",
+          "payload": {
+            "items": [
+              {
+                "id": "tab_01",
+                "title": "Tab one",
+                "html": "<p>First tab content.</p>"
+              },
+              {
+                "id": "tab_02",
+                "title": "Tab two",
+                "html": "<p>Second tab content.</p>",
+                "imageMediaId": "image_gallery_01"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_fullscreen_process",
+          "family": "interactive-fullscreen",
+          "variant": "process",
+          "payload": {
+            "intro": "<p>Follow these process steps.</p>",
+            "steps": [
+              {
+                "id": "process_01",
+                "title": "Prepare",
+                "html": "<p>Prepare the materials.</p>"
+              },
+              {
+                "id": "process_02",
+                "title": "Run",
+                "html": "<p>Run the workflow.</p>"
+              }
+            ],
+            "summary": "<p>Process complete.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_fullscreen_labeled_graphic",
+          "family": "interactive-fullscreen",
+          "variant": "labeled graphic",
+          "payload": {
+            "image": {
+              "mediaId": "image_labeled",
+              "alt": "Labeled workflow diagram"
+            },
+            "markers": [
+              {
+                "id": "marker_01",
+                "x": 35,
+                "y": 45,
+                "title": "Decision",
+                "html": "<p>This marker explains the decision point.</p>"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_fullscreen_timeline",
+          "family": "interactive-fullscreen",
+          "variant": "timeline",
+          "payload": {
+            "events": [
+              {
+                "id": "timeline_01",
+                "date": "Week 1",
+                "title": "Kickoff",
+                "html": "<p>The work begins.</p>"
+              },
+              {
+                "id": "timeline_02",
+                "date": "Week 2",
+                "title": "Review",
+                "html": "<p>The review closes the loop.</p>"
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_fullscreen_sorting",
+          "family": "interactive-fullscreen",
+          "variant": "sorting",
+          "payload": {
+            "piles": [
+              {
+                "id": "pile_do",
+                "label": "Do"
+              },
+              {
+                "id": "pile_avoid",
+                "label": "Avoid"
+              }
+            ],
+            "items": [
+              {
+                "id": "sort_01",
+                "label": "Check source freshness",
+                "correctPileId": "pile_do",
+                "feedback": "Current sources reduce drift."
+              },
+              {
+                "id": "sort_02",
+                "label": "Skip validation",
+                "correctPileId": "pile_avoid",
+                "feedback": "Validation catches regressions."
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_flashcard_single",
+          "family": "flashcard",
+          "variant": "single card",
+          "payload": {
+            "cards": [
+              {
+                "id": "card_01",
+                "front": {
+                  "kind": "text",
+                  "html": "<p>Front text</p>"
+                },
+                "back": {
+                  "kind": "text",
+                  "html": "<p>Back text</p>"
+                }
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_flashcard_grid",
+          "family": "flashcard",
+          "variant": "grid",
+          "payload": {
+            "cards": [
+              {
+                "id": "card_grid_01",
+                "front": {
+                  "kind": "text",
+                  "html": "<p>Grid front</p>"
+                },
+                "back": {
+                  "kind": "image",
+                  "mediaId": "image_gallery_01",
+                  "alt": "Grid card back image"
+                }
+              },
+              {
+                "id": "card_grid_02",
+                "front": {
+                  "kind": "text",
+                  "html": "<p>Second grid front</p>"
+                },
+                "back": {
+                  "kind": "text",
+                  "html": "<p>Second grid back</p>"
+                }
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_flashcard_stack",
+          "family": "flashcard",
+          "variant": "stack",
+          "payload": {
+            "cards": [
+              {
+                "id": "card_stack_01",
+                "front": {
+                  "kind": "text",
+                  "html": "<p>Stack front</p>"
+                },
+                "back": {
+                  "kind": "text",
+                  "html": "<p>Stack back</p>"
+                }
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_buttons_single",
+          "family": "buttons",
+          "variant": "single button",
+          "payload": {
+            "buttons": [
+              {
+                "id": "button_01",
+                "label": "Visit example",
+                "destination": {
+                  "type": "url",
+                  "url": "https://example.com"
+                }
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_buttons_stack",
+          "family": "buttons",
+          "variant": "button stack",
+          "payload": {
+            "buttons": [
+              {
+                "id": "button_stack_01",
+                "label": "Go to quiz",
+                "destination": {
+                  "type": "lesson",
+                  "lessonId": "quiz_final"
+                }
+              },
+              {
+                "id": "button_stack_02",
+                "label": "Email owner",
+                "destination": {
+                  "type": "mailto",
+                  "email": "owner@example.com",
+                  "subject": "Question about course"
+                }
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_kc_multiple_choice",
+          "family": "knowledgeCheck",
+          "variant": "multiple choice",
+          "payload": {
+            "prompt": "<p>Which answer is correct?</p>",
+            "answers": [
+              {
+                "id": "kc_mc_a",
+                "html": "<p>Correct</p>",
+                "correct": true,
+                "feedback": "<p>Yes.</p>"
+              },
+              {
+                "id": "kc_mc_b",
+                "html": "<p>Incorrect</p>",
+                "correct": false,
+                "feedback": "<p>Try again.</p>"
+              }
+            ],
+            "correctFeedback": "<p>Correct.</p>",
+            "incorrectFeedback": "<p>Not quite.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_kc_multiple_response",
+          "family": "knowledgeCheck",
+          "variant": "multiple response",
+          "payload": {
+            "prompt": "<p>Select all good practices.</p>",
+            "answers": [
+              {
+                "id": "kc_mr_a",
+                "html": "<p>Validate input</p>",
+                "correct": true
+              },
+              {
+                "id": "kc_mr_b",
+                "html": "<p>Ignore errors</p>",
+                "correct": false
+              },
+              {
+                "id": "kc_mr_c",
+                "html": "<p>Write tests</p>",
+                "correct": true
+              }
+            ],
+            "correctFeedback": "<p>Good choices.</p>",
+            "incorrectFeedback": "<p>Review the guidance.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_kc_fill_blank",
+          "family": "knowledgeCheck",
+          "variant": "fill in the blank",
+          "payload": {
+            "prompt": "<p>Forge tracks with native ____.</p>",
+            "acceptedAnswers": [
+              {
+                "id": "kc_fib_a",
+                "value": "xAPI"
+              },
+              {
+                "id": "kc_fib_b",
+                "value": "Tin Can"
+              }
+            ],
+            "caseSensitive": false,
+            "correctFeedback": "<p>Exactly.</p>",
+            "incorrectFeedback": "<p>The answer is xAPI.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_kc_matching",
+          "family": "knowledgeCheck",
+          "variant": "matching",
+          "payload": {
+            "prompt": "<p>Match the concepts.</p>",
+            "pairs": [
+              {
+                "id": "kc_match_a",
+                "prompt": "State API",
+                "match": "Resume data"
+              },
+              {
+                "id": "kc_match_b",
+                "prompt": "Activity IRI",
+                "match": "Stable identifier"
+              }
+            ],
+            "correctFeedback": "<p>Matched.</p>",
+            "incorrectFeedback": "<p>Check the definitions.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_chart_bar",
+          "family": "chart",
+          "variant": "bar",
+          "payload": {
+            "title": "Completion by lesson",
+            "items": [
+              {
+                "id": "chart_bar_01",
+                "label": "Intro",
+                "value": 80,
+                "color": "#1f6feb"
+              },
+              {
+                "id": "chart_bar_02",
+                "label": "Quiz",
+                "value": 60,
+                "color": "#dd6b20"
+              }
+            ],
+            "xAxisLabel": "Lesson",
+            "yAxisLabel": "Percent"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_chart_line",
+          "family": "chart",
+          "variant": "line",
+          "payload": {
+            "title": "Score trend",
+            "items": [
+              {
+                "id": "chart_line_01",
+                "label": "Attempt 1",
+                "value": 50
+              },
+              {
+                "id": "chart_line_02",
+                "label": "Attempt 2",
+                "value": 75
+              }
+            ],
+            "curveType": "monotone"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_chart_pie",
+          "family": "chart",
+          "variant": "pie",
+          "payload": {
+            "title": "Responses",
+            "items": [
+              {
+                "id": "chart_pie_01",
+                "label": "Yes",
+                "value": 70
+              },
+              {
+                "id": "chart_pie_02",
+                "label": "No",
+                "value": 30
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_table_basic",
+          "family": "table",
+          "variant": "basic",
+          "payload": {
+            "caption": "Basic table",
+            "headerRow": false,
+            "headerColumn": false,
+            "columns": [
+              {
+                "id": "table_basic_col_01",
+                "html": "<p>Column A</p>"
+              },
+              {
+                "id": "table_basic_col_02",
+                "html": "<p>Column B</p>"
+              }
+            ],
+            "rows": [
+              {
+                "id": "table_basic_row_01",
+                "cells": [
+                  {
+                    "id": "table_basic_cell_01",
+                    "columnId": "table_basic_col_01",
+                    "html": "<p>A1</p>"
+                  },
+                  {
+                    "id": "table_basic_cell_02",
+                    "columnId": "table_basic_col_02",
+                    "html": "<p>B1</p>"
+                  }
+                ]
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_table_headers",
+          "family": "table",
+          "variant": "header row/col options",
+          "payload": {
+            "caption": "Header table",
+            "headerRow": true,
+            "headerColumn": true,
+            "columns": [
+              {
+                "id": "table_header_col_01",
+                "html": "<p>Metric</p>"
+              },
+              {
+                "id": "table_header_col_02",
+                "html": "<p>Value</p>"
+              }
+            ],
+            "rows": [
+              {
+                "id": "table_header_row_01",
+                "cells": [
+                  {
+                    "id": "table_header_cell_01",
+                    "columnId": "table_header_col_01",
+                    "html": "<p>Pass rate</p>"
+                  },
+                  {
+                    "id": "table_header_cell_02",
+                    "columnId": "table_header_col_02",
+                    "html": "<p>95%</p>"
+                  }
+                ]
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_audio_standalone",
+          "family": "audio",
+          "variant": "standalone audio",
+          "payload": {
+            "mediaId": "audio_narration",
+            "title": "Narration",
+            "transcript": "<p>Audio transcript text.</p>"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_callout_info",
+          "family": "callout",
+          "variant": "info",
+          "payload": {
+            "title": "Info",
+            "html": "<p>Helpful context.</p>",
+            "icon": "info"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_callout_warning",
+          "family": "callout",
+          "variant": "warning",
+          "payload": {
+            "title": "Warning",
+            "html": "<p>Pay attention before continuing.</p>",
+            "icon": "triangle-alert"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_callout_success",
+          "family": "callout",
+          "variant": "success",
+          "payload": {
+            "title": "Success",
+            "html": "<p>The learner completed the step.</p>",
+            "icon": "check"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_callout_danger",
+          "family": "callout",
+          "variant": "danger",
+          "payload": {
+            "title": "Danger",
+            "html": "<p>This action requires escalation.</p>",
+            "icon": "octagon-alert"
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_scenario_branching",
+          "family": "scenario",
+          "variant": "branching scene",
+          "payload": {
+            "startSceneId": "scene_01",
+            "scenes": [
+              {
+                "id": "scene_01",
+                "prompt": "<p>A learner asks for help. What do you do?</p>",
+                "choices": [
+                  {
+                    "id": "choice_help",
+                    "label": "Offer guidance",
+                    "feedback": "<p>Good response.</p>",
+                    "nextSceneId": "scene_02"
+                  },
+                  {
+                    "id": "choice_ignore",
+                    "label": "Ignore the request",
+                    "feedback": "<p>This misses the support need.</p>",
+                    "endsScenario": true
+                  }
+                ]
+              },
+              {
+                "id": "scene_02",
+                "prompt": "<p>The learner needs a resource.</p>",
+                "choices": [
+                  {
+                    "id": "choice_resource",
+                    "label": "Share the resource",
+                    "feedback": "<p>Scenario complete.</p>",
+                    "endsScenario": true
+                  }
+                ]
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_checklist_tasks",
+          "family": "checklist",
+          "variant": "task checklist",
+          "payload": {
+            "requiredForCompletion": true,
+            "items": [
+              {
+                "id": "task_01",
+                "html": "<p>Read the policy.</p>"
+              },
+              {
+                "id": "task_02",
+                "html": "<p>Complete the quiz.</p>",
+                "initiallyChecked": false
+              }
+            ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        }
+      ]
+    },
+    {
+      "type": "quiz",
+      "id": "quiz_final",
+      "title": "Final quiz",
+      "settings": {
+        "passingScore": 80,
+        "retryCount": 2,
+        "revealAnswers": "afterFinalAttempt",
+        "shuffleAnswerChoices": true,
+        "randomizeQuestionOrder": false,
+        "questionPoolSize": 7,
+        "timeLimitSeconds": 900
+      },
+      "questions": [
+        {
+          "id": "question_mc",
+          "type": "MULTIPLE_CHOICE",
+          "prompt": "<p>Which runtime tracking standard does Forge use?</p>",
+          "points": 1,
+          "answers": [
+            {
+              "id": "mc_a",
+              "html": "<p>xAPI</p>",
+              "correct": true,
+              "feedback": "<p>Correct.</p>"
+            },
+            {
+              "id": "mc_b",
+              "html": "<p>SCORM only</p>",
+              "correct": false,
+              "feedback": "<p>Forge publishes native xAPI.</p>"
+            }
+          ],
+          "feedback": {
+            "correct": "<p>Yes.</p>",
+            "incorrect": "<p>Review the launch section.</p>"
+          },
+          "rationale": "<p>Native xAPI is a hard v1 constraint.</p>"
+        },
+        {
+          "id": "question_mr",
+          "type": "MULTIPLE_RESPONSE",
+          "prompt": "<p>Select the Forge resume mechanisms.</p>",
+          "points": 2,
+          "answers": [
+            {
+              "id": "mr_a",
+              "html": "<p>xAPI State API</p>",
+              "correct": true
+            },
+            {
+              "id": "mr_b",
+              "html": "<p>SCORM suspend data</p>",
+              "correct": false
+            },
+            {
+              "id": "mr_c",
+              "html": "<p>Bookmark state</p>",
+              "correct": true
+            }
+          ],
+          "feedback": {
+            "correct": "<p>Good.</p>",
+            "incorrect": "<p>State API stores resume state.</p>"
+          }
+        },
+        {
+          "id": "question_fib",
+          "type": "FILL_IN_THE_BLANK",
+          "prompt": "<p>The course document is validated by ____.</p>",
+          "points": 1,
+          "acceptedAnswers": [
+            {
+              "id": "fib_a",
+              "value": "Zod"
+            },
+            {
+              "id": "fib_b",
+              "value": "zod"
+            }
+          ],
+          "caseSensitive": false,
+          "feedback": {
+            "correct": "<p>Correct.</p>",
+            "incorrect": "<p>The schema source is Zod.</p>"
+          }
+        },
+        {
+          "id": "question_matching",
+          "type": "MATCHING",
+          "prompt": "<p>Match each item.</p>",
+          "points": 2,
+          "pairs": [
+            {
+              "id": "match_a",
+              "prompt": "Course",
+              "match": "Top-level activity"
+            },
+            {
+              "id": "match_b",
+              "prompt": "Question",
+              "match": "Interaction activity"
+            }
+          ],
+          "feedback": {
+            "correct": "<p>Matched.</p>",
+            "incorrect": "<p>Review the IRI scheme.</p>"
+          }
+        },
+        {
+          "id": "question_sequence",
+          "type": "SEQUENCING",
+          "prompt": "<p>Put the publish steps in order.</p>",
+          "points": 2,
+          "items": [
+            {
+              "id": "seq_a",
+              "html": "<p>Snapshot the draft.</p>",
+              "correctOrder": 0
+            },
+            {
+              "id": "seq_b",
+              "html": "<p>Validate content.</p>",
+              "correctOrder": 1
+            },
+            {
+              "id": "seq_c",
+              "html": "<p>Build the package.</p>",
+              "correctOrder": 2
+            }
+          ],
+          "feedback": {
+            "correct": "<p>Right order.</p>",
+            "incorrect": "<p>Publishing starts with a snapshot.</p>"
+          }
+        },
+        {
+          "id": "question_numeric",
+          "type": "NUMERIC",
+          "prompt": "<p>What percent completion is the default course tracking threshold?</p>",
+          "points": 1,
+          "grading": {
+            "mode": "exact",
+            "value": 100,
+            "tolerance": 0
+          },
+          "feedback": {
+            "correct": "<p>Correct.</p>",
+            "incorrect": "<p>The default is 100 percent.</p>"
+          }
+        },
+        {
+          "id": "question_likert",
+          "type": "LIKERT",
+          "prompt": "<p>This course helped me understand Forge.</p>",
+          "scale": [
+            {
+              "id": "likert_1",
+              "label": "Strongly disagree",
+              "value": 1
+            },
+            {
+              "id": "likert_2",
+              "label": "Disagree",
+              "value": 2
+            },
+            {
+              "id": "likert_3",
+              "label": "Neutral",
+              "value": 3
+            },
+            {
+              "id": "likert_4",
+              "label": "Agree",
+              "value": 4
+            },
+            {
+              "id": "likert_5",
+              "label": "Strongly agree",
+              "value": 5
+            }
+          ],
+          "required": false
+        }
+      ]
+    }
+  ],
+  "media": {
+    "image_logo": {
+      "id": "image_logo",
+      "kind": "image",
+      "filename": "logo.png",
+      "mime": "image/png",
+      "bytes": 1024,
+      "width": 256,
+      "height": 256,
+      "alt": "Forge logo",
+      "storageKey": "courses/course_kitchen_sink/media/logo.png"
+    },
+    "image_cover": {
+      "id": "image_cover",
+      "kind": "image",
+      "filename": "cover.jpg",
+      "mime": "image/jpeg",
+      "bytes": 204800,
+      "width": 1600,
+      "height": 900,
+      "alt": "Course cover image",
+      "storageKey": "courses/course_kitchen_sink/media/cover.jpg",
+      "derived": {
+        "thumbKey": "courses/course_kitchen_sink/media/cover-thumb.jpg",
+        "renditions": [
+          {
+            "width": 800,
+            "height": 450,
+            "storageKey": "courses/course_kitchen_sink/media/cover-800.jpg",
+            "bytes": 80960
+          }
+        ]
+      }
+    },
+    "image_hero": {
+      "id": "image_hero",
+      "kind": "image",
+      "filename": "hero.jpg",
+      "mime": "image/jpeg",
+      "bytes": 180000,
+      "width": 1600,
+      "height": 900,
+      "alt": "Abstract course hero image",
+      "storageKey": "courses/course_kitchen_sink/media/hero.jpg"
+    },
+    "image_wide": {
+      "id": "image_wide",
+      "kind": "image",
+      "filename": "wide.jpg",
+      "mime": "image/jpeg",
+      "bytes": 150000,
+      "width": 1400,
+      "height": 700,
+      "alt": "Wide image",
+      "storageKey": "courses/course_kitchen_sink/media/wide.jpg"
+    },
+    "image_centered": {
+      "id": "image_centered",
+      "kind": "image",
+      "filename": "centered.jpg",
+      "mime": "image/jpeg",
+      "bytes": 120000,
+      "width": 900,
+      "height": 600,
+      "alt": "Centered image",
+      "storageKey": "courses/course_kitchen_sink/media/centered.jpg"
+    },
+    "image_aside": {
+      "id": "image_aside",
+      "kind": "image",
+      "filename": "aside.jpg",
+      "mime": "image/jpeg",
+      "bytes": 100000,
+      "width": 800,
+      "height": 600,
+      "alt": "Aside image",
+      "storageKey": "courses/course_kitchen_sink/media/aside.jpg"
+    },
+    "image_banner": {
+      "id": "image_banner",
+      "kind": "image",
+      "filename": "banner.jpg",
+      "mime": "image/jpeg",
+      "bytes": 110000,
+      "width": 1600,
+      "height": 420,
+      "alt": "Banner image",
+      "storageKey": "courses/course_kitchen_sink/media/banner.jpg"
+    },
+    "image_gallery_01": {
+      "id": "image_gallery_01",
+      "kind": "image",
+      "filename": "gallery-01.jpg",
+      "mime": "image/jpeg",
+      "bytes": 90000,
+      "width": 800,
+      "height": 600,
+      "alt": "Gallery image one",
+      "storageKey": "courses/course_kitchen_sink/media/gallery-01.jpg"
+    },
+    "image_gallery_02": {
+      "id": "image_gallery_02",
+      "kind": "image",
+      "filename": "gallery-02.jpg",
+      "mime": "image/jpeg",
+      "bytes": 92000,
+      "width": 800,
+      "height": 600,
+      "alt": "Gallery image two",
+      "storageKey": "courses/course_kitchen_sink/media/gallery-02.jpg"
+    },
+    "image_gallery_03": {
+      "id": "image_gallery_03",
+      "kind": "image",
+      "filename": "gallery-03.jpg",
+      "mime": "image/jpeg",
+      "bytes": 93000,
+      "width": 800,
+      "height": 600,
+      "alt": "Gallery image three",
+      "storageKey": "courses/course_kitchen_sink/media/gallery-03.jpg"
+    },
+    "image_gallery_04": {
+      "id": "image_gallery_04",
+      "kind": "image",
+      "filename": "gallery-04.jpg",
+      "mime": "image/jpeg",
+      "bytes": 94000,
+      "width": 800,
+      "height": 600,
+      "alt": "Gallery image four",
+      "storageKey": "courses/course_kitchen_sink/media/gallery-04.jpg"
+    },
+    "image_video_poster": {
+      "id": "image_video_poster",
+      "kind": "image",
+      "filename": "video-poster.jpg",
+      "mime": "image/jpeg",
+      "bytes": 75000,
+      "width": 1280,
+      "height": 720,
+      "alt": "Video poster image",
+      "storageKey": "courses/course_kitchen_sink/media/video-poster.jpg"
+    },
+    "image_labeled": {
+      "id": "image_labeled",
+      "kind": "image",
+      "filename": "labeled.jpg",
+      "mime": "image/jpeg",
+      "bytes": 130000,
+      "width": 1200,
+      "height": 800,
+      "alt": "Labeled graphic base",
+      "storageKey": "courses/course_kitchen_sink/media/labeled.jpg"
+    },
+    "video_intro": {
+      "id": "video_intro",
+      "kind": "video",
+      "filename": "intro.mp4",
+      "mime": "video/mp4",
+      "bytes": 10485760,
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 120,
+      "storageKey": "courses/course_kitchen_sink/media/intro.mp4",
+      "derived": {
+        "posterKey": "courses/course_kitchen_sink/media/intro-poster.jpg"
+      }
+    },
+    "captions_en": {
+      "id": "captions_en",
+      "kind": "captions",
+      "filename": "intro-en.vtt",
+      "mime": "text/vtt",
+      "bytes": 2048,
+      "storageKey": "courses/course_kitchen_sink/media/intro-en.vtt"
+    },
+    "attachment_policy": {
+      "id": "attachment_policy",
+      "kind": "attachment",
+      "filename": "policy.pdf",
+      "mime": "application/pdf",
+      "bytes": 2048,
+      "storageKey": "courses/course_kitchen_sink/media/policy.pdf"
+    },
+    "audio_narration": {
+      "id": "audio_narration",
+      "kind": "audio",
+      "filename": "narration.mp3",
+      "mime": "audio/mpeg",
+      "bytes": 4096000,
+      "durationSeconds": 90,
+      "storageKey": "courses/course_kitchen_sink/media/narration.mp3"
+    }
+  },
+  "createdAt": "2026-07-04T09:00:00.000Z",
+  "updatedAt": "2026-07-04T09:30:00.000Z"
+}

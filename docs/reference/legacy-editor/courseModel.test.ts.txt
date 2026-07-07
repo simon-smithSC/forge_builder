@@ -1,0 +1,258 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  addBlock,
+  addLesson,
+  createInitialCourse,
+  deleteBlock,
+  deleteLesson,
+  duplicateBlock,
+  findBlock,
+  getCourseStats,
+  moveBlock,
+  moveLesson,
+  renameLesson,
+  updateBlock,
+  type Course,
+} from "./courseModel.js";
+
+const deepFreeze = <T>(value: T): T => {
+  if (value && typeof value === "object") {
+    Object.freeze(value);
+
+    for (const child of Object.values(value)) {
+      deepFreeze(child);
+    }
+  }
+
+  return value;
+};
+
+describe("courseModel", () => {
+  it("creates a realistic editable course with lessons, blocks, and stats", () => {
+    const course = createInitialCourse();
+
+    expect(course.lessons).toHaveLength(2);
+    expect(course.lessons[0]?.blocks.length).toBeGreaterThanOrEqual(3);
+    expect(course.lessons[1]?.blocks.length).toBeGreaterThanOrEqual(2);
+    expect(course.lessons.flatMap((lesson) => lesson.blocks).map((block) => block.family)).toEqual(
+      expect.arrayContaining(["text", "image", "callout", "checklist", "quiz"]),
+    );
+    expect(getCourseStats(course)).toEqual({
+      lessons: 2,
+      blocks: course.lessons.reduce((total, lesson) => total + lesson.blocks.length, 0),
+      quizzes: 1,
+      estimatedMinutes: expect.any(Number),
+    });
+    expect(getCourseStats(course).estimatedMinutes).toBeGreaterThan(0);
+  });
+
+  it("adds and renames lessons without mutating the original course", () => {
+    const course = deepFreeze(createInitialCourse());
+
+    const withLesson = addLesson(course, "Publishing checklist");
+    const lesson = withLesson.lessons.at(-1);
+    const renamed = renameLesson(withLesson, lesson?.id ?? "", "Final publishing checklist");
+
+    expect(withLesson).not.toBe(course);
+    expect(withLesson.lessons).toHaveLength(course.lessons.length + 1);
+    expect(lesson).toMatchObject({ title: "Publishing checklist", blocks: [] });
+    expect(renamed.lessons.at(-1)?.title).toBe("Final publishing checklist");
+    expect(course.lessons).toHaveLength(2);
+  });
+
+  it("deletes lessons unless it would remove the final lesson", () => {
+    const course = deepFreeze(createInitialCourse());
+    const firstLessonId = course.lessons[0]?.id ?? "";
+    const secondLessonId = course.lessons[1]?.id ?? "";
+
+    const deleted = deleteLesson(course, firstLessonId);
+    const missing = deleteLesson(course, "missing");
+    const finalLesson = deleteLesson(
+      deepFreeze({ ...course, lessons: [course.lessons[0] ?? { id: "lesson-only", title: "Only", blocks: [] }] }),
+      firstLessonId,
+    );
+
+    expect(deleted.lessons.map((lesson) => lesson.id)).toEqual([secondLessonId]);
+    expect(deleted.lessons).toHaveLength(course.lessons.length - 1);
+    expect(missing).toBe(course);
+    expect(finalLesson.lessons).toHaveLength(1);
+    expect(course.lessons).toHaveLength(2);
+  });
+
+  it("moves lessons up and down without mutating the original course", () => {
+    const course = deepFreeze(createInitialCourse());
+    const firstLessonId = course.lessons[0]?.id ?? "";
+    const secondLessonId = course.lessons[1]?.id ?? "";
+
+    const movedDown = moveLesson(course, firstLessonId, "down");
+    const movedUpAgain = moveLesson(movedDown, firstLessonId, "up");
+
+    expect(movedDown.lessons.map((lesson) => lesson.id)).toEqual([secondLessonId, firstLessonId]);
+    expect(movedUpAgain.lessons.map((lesson) => lesson.id)).toEqual([firstLessonId, secondLessonId]);
+    expect(course.lessons.map((lesson) => lesson.id)).toEqual([firstLessonId, secondLessonId]);
+  });
+
+  it("adds editable defaults for supported block families", () => {
+    const course = deepFreeze(createInitialCourse());
+    const lessonId = course.lessons[0]?.id ?? "";
+
+    const families = [
+      "text",
+      "heading",
+      "subheading",
+      "twoColumnText",
+      "statement",
+      "quote",
+      "list",
+      "image",
+      "gallery",
+      "divider",
+      "multimedia",
+      "interactive",
+      "process",
+      "flashcard",
+      "buttons",
+      "knowledgeCheck",
+      "chart",
+      "table",
+      "audio",
+      "scenario",
+      "callout",
+      "checklist",
+      "quiz",
+    ] as const;
+    const originalBlockCount = createInitialCourse().lessons[0]?.blocks.length ?? 0;
+
+    for (const family of families) {
+      const updatedCourse = addBlock(course, lessonId, family);
+      expect(updatedCourse.lessons[0]?.blocks.at(-1)).toMatchObject({
+        family,
+        estimatedMinutes: expect.any(Number),
+        settings: expect.objectContaining({ variant: expect.any(String) }),
+      });
+    }
+
+    expect(addBlock(course, lessonId, "text").lessons[0]?.blocks.at(-1)).toMatchObject({ family: "text", content: { text: expect.any(String) } });
+    expect(addBlock(course, lessonId, "gallery").lessons[0]?.blocks.at(-1)).toMatchObject({ family: "gallery", content: { images: expect.any(Array) } });
+    expect(addBlock(course, lessonId, "multimedia").lessons[0]?.blocks.at(-1)).toMatchObject({
+      family: "multimedia",
+      content: { url: expect.any(String) },
+      settings: { variant: "embed" },
+    });
+    expect(addBlock(course, lessonId, "knowledgeCheck").lessons[0]?.blocks.at(-1)).toMatchObject({
+      family: "knowledgeCheck",
+      content: {
+        acceptedAnswers: expect.any(Array),
+        correctFeedback: expect.any(String),
+        correctOption: 0,
+        correctOptions: expect.any(Array),
+        incorrectFeedback: expect.any(String),
+        matches: expect.any(Array),
+        options: expect.any(Array),
+      },
+      settings: expect.objectContaining({ attempts: 1, showFeedback: true, variant: "multiple-choice" }),
+    });
+    expect(addBlock(course, lessonId, "quiz").lessons[0]?.blocks.at(-1)).toMatchObject({
+      family: "quiz",
+      content: {
+        acceptedAnswers: expect.any(Array),
+        correctFeedback: expect.any(String),
+        correctOption: 0,
+        correctOptions: expect.any(Array),
+        incorrectFeedback: expect.any(String),
+        matches: expect.any(Array),
+        options: expect.any(Array),
+      },
+      settings: expect.objectContaining({ attempts: 1, showFeedback: true, variant: "multiple-choice" }),
+    });
+    expect(addBlock(course, lessonId, "chart").lessons[0]?.blocks.at(-1)).toMatchObject({
+      family: "chart",
+      settings: expect.objectContaining({ showDataTable: true, variant: "bar" }),
+    });
+    expect(addBlock(course, lessonId, "table").lessons[0]?.blocks.at(-1)).toMatchObject({
+      family: "table",
+      settings: expect.objectContaining({ headerColumn: false, headerRow: true, variant: "basic" }),
+    });
+    expect(course.lessons[0]?.blocks).toHaveLength(originalBlockCount);
+  });
+
+  it("adds blocks at a clamped insertion index", () => {
+    const course = deepFreeze(createInitialCourse());
+    const lessonId = course.lessons[0]?.id ?? "";
+    const originalBlockIds = course.lessons[0]?.blocks.map((block) => block.id) ?? [];
+
+    const insertedInMiddle = addBlock(course, lessonId, "quiz", 1);
+    const insertedAtStart = addBlock(course, lessonId, "text", -5);
+    const insertedAtEnd = addBlock(course, lessonId, "callout", 99);
+
+    expect(insertedInMiddle.lessons[0]?.blocks.map((block) => block.id)).toEqual([
+      originalBlockIds[0],
+      expect.stringMatching(/^block-/),
+      ...originalBlockIds.slice(1),
+    ]);
+    expect(insertedInMiddle.lessons[0]?.blocks[1]).toMatchObject({ family: "quiz" });
+    expect(insertedAtStart.lessons[0]?.blocks[0]).toMatchObject({ family: "text" });
+    expect(insertedAtEnd.lessons[0]?.blocks.at(-1)).toMatchObject({ family: "callout" });
+    expect(course.lessons[0]?.blocks.map((block) => block.id)).toEqual(originalBlockIds);
+  });
+
+  it("updates block content and settings immutably", () => {
+    const course = deepFreeze(createInitialCourse());
+    const lessonId = course.lessons[0]?.id ?? "";
+    const blockId = course.lessons[0]?.blocks[0]?.id ?? "";
+
+    const updated = updateBlock(course, lessonId, blockId, {
+      content: { text: "Updated lesson copy" },
+      settings: { emphasis: "strong" },
+    });
+
+    expect(findBlock(updated, lessonId, blockId)).toMatchObject({
+      content: { text: "Updated lesson copy" },
+      settings: expect.objectContaining({ emphasis: "strong" }),
+    });
+    expect(findBlock(course, lessonId, blockId)).not.toMatchObject({
+      content: { text: "Updated lesson copy" },
+    });
+    expect(updated.lessons[1]).toBe(course.lessons[1]);
+  });
+
+  it("deletes, duplicates, and moves blocks without mutating inputs", () => {
+    const course = deepFreeze(createInitialCourse());
+    const lessonId = course.lessons[0]?.id ?? "";
+    const firstBlockId = course.lessons[0]?.blocks[0]?.id ?? "";
+    const secondBlockId = course.lessons[0]?.blocks[1]?.id ?? "";
+
+    const deleted = deleteBlock(course, lessonId, firstBlockId);
+    const duplicated = duplicateBlock(course, lessonId, secondBlockId);
+    const movedDown = moveBlock(course, lessonId, firstBlockId, "down");
+    const movedUpAgain = moveBlock(movedDown, lessonId, firstBlockId, "up");
+
+    expect(findBlock(deleted, lessonId, firstBlockId)).toBeUndefined();
+    expect(duplicated.lessons[0]?.blocks).toHaveLength((course.lessons[0]?.blocks.length ?? 0) + 1);
+    expect(duplicated.lessons[0]?.blocks[2]).toMatchObject({
+      ...course.lessons[0]?.blocks[1],
+      id: expect.not.stringMatching(secondBlockId),
+    });
+    expect(movedDown.lessons[0]?.blocks[1]?.id).toBe(firstBlockId);
+    expect(movedUpAgain.lessons[0]?.blocks[0]?.id).toBe(firstBlockId);
+    expect(course.lessons[0]?.blocks[0]?.id).toBe(firstBlockId);
+  });
+
+  it("returns the unchanged course for missing lessons, missing blocks, and boundary moves", () => {
+    const course: Course = deepFreeze(createInitialCourse());
+    const lessonId = course.lessons[0]?.id ?? "";
+    const firstBlockId = course.lessons[0]?.blocks[0]?.id ?? "";
+
+    expect(renameLesson(course, "missing", "Nope")).toBe(course);
+    expect(addBlock(course, "missing", "text")).toBe(course);
+    expect(deleteLesson(course, "missing")).toBe(course);
+    expect(moveLesson(course, "missing", "down")).toBe(course);
+    expect(moveLesson(course, lessonId, "up")).toBe(course);
+    expect(updateBlock(course, lessonId, "missing", { content: { text: "Nope" } })).toBe(course);
+    expect(deleteBlock(course, lessonId, "missing")).toBe(course);
+    expect(duplicateBlock(course, lessonId, "missing")).toBe(course);
+    expect(moveBlock(course, lessonId, firstBlockId, "up")).toBe(course);
+    expect(findBlock(course, "missing", firstBlockId)).toBeUndefined();
+  });
+});

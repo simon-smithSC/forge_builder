@@ -1,0 +1,401 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  createPublishSnapshot,
+  createXapiPackagePayload,
+  estimatePackageSize,
+  validatePublishReadiness,
+  type PublishCourse,
+} from "./publishModel.js";
+
+const readyCourse: PublishCourse = {
+  id: "course_kitchen_sink",
+  title: "Kitchen sink",
+  state: "ready",
+  lessons: [
+    {
+      id: "lesson_blocks",
+      type: "blocks",
+      title: "All block variants",
+      status: "ready",
+      blocks: [
+        {
+          id: "block_text",
+          family: "Text",
+          variant: "Heading + paragraph",
+          title: "Heading plus paragraph",
+          body: "Paragraph body with emphasis.",
+        },
+        {
+          id: "block_image",
+          family: "Image",
+          variant: "Text aside",
+          title: "Required alt text workflow",
+          body: "Media slots ask for alt text.",
+          image: { src: "hero.png", alt: "Learner adding image alt text" },
+        },
+        {
+          id: "block_checklist",
+          family: "Checklist",
+          variant: "Task checklist",
+          title: "Learner checklist",
+          body: "State persists as compact bitsets.",
+          completionMarker: "checklist",
+        },
+      ],
+    },
+    {
+      id: "lesson_quiz",
+      type: "quiz",
+      title: "Knowledge check and quiz",
+      status: "ready",
+    },
+  ],
+};
+
+describe("validatePublishReadiness", () => {
+  it("reports readiness issues for missing lessons, blocks, text, image source, alt text, and completion markers", () => {
+    const result = validatePublishReadiness({
+      id: "course_empty",
+      title: " ",
+      state: "draft",
+      lessons: [
+        {
+          id: "lesson_empty",
+          type: "blocks",
+          title: " ",
+          blocks: [
+            {
+              id: "block_image",
+              family: "Image",
+              variant: "Text aside",
+              title: "",
+              body: "",
+              image: { src: "", alt: "" },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual([
+      { code: "course_title_empty", message: "Course title is empty.", path: "course.title" },
+      { code: "lesson_title_empty", message: "Lesson title is empty.", path: "lessons[0].title" },
+      { code: "block_title_empty", message: "Block title is empty.", path: "lessons[0].blocks[0].title" },
+      { code: "block_body_empty", message: "Block body is empty.", path: "lessons[0].blocks[0].body" },
+      { code: "image_src_missing", message: "Image block is missing a source URL.", path: "lessons[0].blocks[0].image.src" },
+      { code: "image_alt_missing", message: "Image block is missing alt text.", path: "lessons[0].blocks[0].image.alt" },
+      {
+        code: "completion_marker_missing",
+        message: "Course has no quiz, checklist, or interactive completion marker.",
+        path: "lessons",
+      },
+    ]);
+  });
+
+  it("reports no-lessons and no-blocks readiness issues", () => {
+    expect(
+      validatePublishReadiness({
+        id: "course_no_lessons",
+        title: "No lessons",
+        lessons: [],
+      }).issues,
+    ).toEqual([
+      { code: "lessons_missing", message: "Course has no lessons.", path: "lessons" },
+      {
+        code: "completion_marker_missing",
+        message: "Course has no quiz, checklist, or interactive completion marker.",
+        path: "lessons",
+      },
+    ]);
+
+    expect(
+      validatePublishReadiness({
+        id: "course_no_blocks",
+        title: "No blocks",
+        lessons: [{ id: "lesson_empty", type: "blocks", title: "Empty lesson", blocks: [] }],
+      }).issues,
+    ).toContainEqual({
+      code: "blocks_missing",
+      message: "Lesson has no blocks.",
+      path: "lessons[0].blocks",
+    });
+  });
+
+  it("returns warnings for offline API and unpublished drafts when options are passed", () => {
+    const result = validatePublishReadiness(readyCourse, {
+      apiState: "offline",
+      publishState: "draft",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.issues).toEqual([]);
+    expect(result.warnings).toEqual([
+      { code: "api_offline", message: "API is offline; publish package will be local only.", path: "api" },
+      { code: "draft_unpublished", message: "Course is still an unpublished draft.", path: "course.state" },
+    ]);
+  });
+
+  it("accepts knowledge check blocks as publish completion markers", () => {
+    const result = validatePublishReadiness({
+      id: "course_with_kc",
+      title: "Knowledge check course",
+      lessons: [
+        {
+          id: "lesson_with_kc",
+          type: "blocks",
+          title: "Practice",
+          blocks: [
+            {
+              id: "block_kc",
+              family: "knowledgeCheck",
+              variant: "multiple-choice",
+              title: "Check understanding",
+              body: "Which option is correct?",
+              content: { correctOption: 0 },
+              completionMarker: "knowledgeCheck",
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(result.issues).not.toContainEqual({
+      code: "completion_marker_missing",
+      message: "Course has no quiz, checklist, or interactive completion marker.",
+      path: "lessons",
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("validates exported media assets, button destinations, and quiz answers", () => {
+    const result = validatePublishReadiness({
+      id: "course_media_gaps",
+      title: "Media gaps",
+      lessons: [
+        {
+          id: "lesson_media",
+          type: "blocks",
+          title: "Media",
+          blocks: [
+            {
+              id: "gallery_block",
+              family: "gallery",
+              variant: "carousel",
+              title: "Gallery",
+              body: "Images",
+              media: [{ kind: "gallery-image", src: "", alt: "" }],
+            },
+            {
+              id: "button_block",
+              family: "buttons",
+              variant: "stack",
+              title: "Buttons",
+              body: "Links",
+              content: { buttons: [{ label: "Open resource", destination: "" }] },
+            },
+            {
+              id: "quiz_block",
+              family: "quiz",
+              variant: "fill-blank",
+              title: "Quiz",
+              body: "Answer the question",
+              completion: { kind: "quiz", required: true, criterion: "answer" },
+              content: { question: "The sky is ____." },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual([
+      {
+        code: "media_src_missing",
+        message: "gallery-image asset is missing a source.",
+        path: "lessons[0].blocks[0].media[0].src",
+      },
+      {
+        code: "button_destination_missing",
+        message: "Button is missing a destination.",
+        path: "lessons[0].blocks[1].content.buttons[0].destination",
+      },
+      {
+        code: "quiz_answer_missing",
+        message: "Quiz block is missing answer data.",
+        path: "lessons[0].blocks[2].content",
+      },
+    ]);
+    expect(result.warnings).toContainEqual({
+      code: "image_alt_missing",
+      message: "gallery-image asset is missing alt text.",
+      path: "lessons[0].blocks[0].media[0].alt",
+    });
+  });
+});
+
+describe("createPublishSnapshot", () => {
+  it("creates a deterministic static preview snapshot with manifest and xAPI statement profile", () => {
+    const snapshot = createPublishSnapshot(readyCourse, {
+      buildId: "build_fixed",
+      now: () => new Date("2026-07-04T09:30:00.000Z"),
+      launcher: "index.html",
+      tracking: "xapi",
+    });
+
+    expect(snapshot).toEqual({
+      buildId: "build_fixed",
+      title: "Kitchen sink",
+      createdAt: "2026-07-04T09:30:00.000Z",
+      settings: {
+        launcher: "index.html",
+        tracking: "xapi",
+      },
+      courseData: readyCourse,
+      manifestFiles: [
+        { path: "index.html", role: "launcher", bytes: 2048 },
+        { path: "course.json", role: "course-data", bytes: 1196 },
+        { path: "manifest.json", role: "manifest", bytes: 512 },
+        { path: "xapi/profile.json", role: "statement-profile", bytes: 768 },
+        { path: "tincan.xml", role: "xapi-launch", bytes: 1024 },
+      ],
+      statementProfile: {
+        id: "forge.local.static-preview",
+        verbs: ["initialized", "experienced", "completed", "answered"],
+        activityTypes: ["course", "lesson", "block", "quiz"],
+      },
+    });
+  });
+});
+
+describe("createXapiPackagePayload", () => {
+  it("returns a ZIP xAPI package containing launcher, course data, manifest, profile, and tincan.xml", () => {
+    const snapshot = createPublishSnapshot(readyCourse, {
+      buildId: "build_fixed",
+      now: () => new Date("2026-07-04T09:30:00.000Z"),
+    });
+
+    const payload = createXapiPackagePayload(snapshot);
+
+    expect(payload.filename).toBe("kitchen-sink-build_fixed.xapi.zip");
+    expect(payload.mime).toBe("application/zip");
+    expect(Array.from(payload.content.slice(0, 4))).toEqual([0x50, 0x4b, 0x03, 0x04]);
+    expect(listZipEntries(payload.content)).toEqual([
+      "index.html",
+      "course.json",
+      "manifest.json",
+      "xapi/profile.json",
+      "tincan.xml",
+    ]);
+    expect(decodeZipEntry(payload.content, "tincan.xml")).toContain("<tincan");
+    expect(decodeZipEntry(payload.content, "course.json")).toContain('"title": "Kitchen sink"');
+  });
+
+  it("ships a functional launcher with xAPI launch parsing, statement transport, and interactive block rendering", () => {
+    const snapshot = createPublishSnapshot(readyCourse, {
+      buildId: "build_fixed",
+      now: () => new Date("2026-07-04T09:30:00.000Z"),
+      tracking: "xapi",
+    });
+
+    const launcher = decodeZipEntry(createXapiPackagePayload(snapshot).content, "index.html");
+
+    expect(launcher).toContain("function parseLaunch()");
+    expect(launcher).toContain("function sendStatement(");
+    expect(launcher).toContain("endpoint");
+    expect(launcher).toContain("X-Experience-API-Version");
+    expect(launcher).toContain("function renderBlock(");
+    expect(launcher).toContain("function renderQuiz(");
+    expect(launcher).toContain("function markBlockComplete(");
+    expect(launcher).not.toContain("Forge xAPI package</p>");
+  });
+
+  it("declares lesson and interaction activities in tincan.xml", () => {
+    const courseWithQuiz: PublishCourse = {
+      id: "course_export",
+      title: "Export course",
+      lessons: [
+        {
+          id: "lesson_intro",
+          type: "blocks",
+          title: "Intro",
+          blocks: [
+            {
+              id: "quiz_block",
+              family: "quiz",
+              variant: "multiple-choice",
+              title: "Readiness check",
+              body: "Choose one.",
+              content: { question: "What is exported?", options: ["JSON", "xAPI ZIP"], correctOption: 1 },
+              completionMarker: "quiz",
+            },
+          ],
+        },
+      ],
+    };
+
+    const snapshot = createPublishSnapshot(courseWithQuiz, {
+      buildId: "build_fixed",
+      now: () => new Date("2026-07-04T09:30:00.000Z"),
+      tracking: "xapi",
+    });
+
+    const tincan = decodeZipEntry(createXapiPackagePayload(snapshot).content, "tincan.xml");
+
+    expect(tincan).toContain("https://xapi.supercell.com/courses/course_export");
+    expect(tincan).toContain("https://xapi.supercell.com/courses/course_export/lessons/lesson_intro");
+    expect(tincan).toContain("https://xapi.supercell.com/courses/course_export/interactions/quiz_block");
+    expect(tincan).toContain("<interactionType>choice</interactionType>");
+    expect(tincan).toContain("<correctResponsesPattern>xAPI ZIP</correctResponsesPattern>");
+  });
+});
+
+describe("estimatePackageSize", () => {
+  it("returns the generated ZIP package size", () => {
+    const snapshot = createPublishSnapshot(readyCourse, {
+      buildId: "build_fixed",
+      now: () => new Date("2026-07-04T09:30:00.000Z"),
+    });
+
+    expect(estimatePackageSize(snapshot)).toBe(createXapiPackagePayload(snapshot).content.byteLength);
+  });
+});
+
+function listZipEntries(bytes: Uint8Array): string[] {
+  const entries: string[] = [];
+  let offset = 0;
+  while (offset < bytes.byteLength && readUint32(bytes, offset) === 0x04034b50) {
+    const compressedSize = readUint32(bytes, offset + 18);
+    const fileNameLength = readUint16(bytes, offset + 26);
+    const extraLength = readUint16(bytes, offset + 28);
+    entries.push(new TextDecoder().decode(bytes.slice(offset + 30, offset + 30 + fileNameLength)));
+    offset += 30 + fileNameLength + extraLength + compressedSize;
+  }
+  return entries;
+}
+
+function decodeZipEntry(bytes: Uint8Array, path: string): string {
+  let offset = 0;
+  while (offset < bytes.byteLength && readUint32(bytes, offset) === 0x04034b50) {
+    const compressedSize = readUint32(bytes, offset + 18);
+    const fileNameLength = readUint16(bytes, offset + 26);
+    const extraLength = readUint16(bytes, offset + 28);
+    const nameStart = offset + 30;
+    const contentStart = nameStart + fileNameLength + extraLength;
+    const name = new TextDecoder().decode(bytes.slice(nameStart, nameStart + fileNameLength));
+    if (name === path) {
+      return new TextDecoder().decode(bytes.slice(contentStart, contentStart + compressedSize));
+    }
+    offset = contentStart + compressedSize;
+  }
+  throw new Error(`Missing ZIP entry: ${path}`);
+}
+
+function readUint16(bytes: Uint8Array, offset: number): number {
+  return new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint16(offset, true);
+}
+
+function readUint32(bytes: Uint8Array, offset: number): number {
+  return new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(offset, true);
+}

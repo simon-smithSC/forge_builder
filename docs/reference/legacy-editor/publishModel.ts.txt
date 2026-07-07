@@ -1,0 +1,1278 @@
+export type PublishApiState = "checking" | "online" | "offline";
+export type PublishState = "draft" | "ready" | "published" | "review";
+
+export type PublishImage = {
+  src: string;
+  alt?: string;
+};
+
+export type PublishMediaAsset = {
+  kind: "image" | "gallery-image" | "audio" | "video" | "embed" | "attachment" | "code" | "link";
+  src?: string;
+  alt?: string;
+  label?: string;
+  caption?: string;
+};
+
+export type PublishCompletion = {
+  kind: string;
+  required: boolean;
+  criterion: "answer" | "continue" | "interact" | "choice" | "complete";
+};
+
+export type PublishBlock = {
+  id: string;
+  family: string;
+  variant: string;
+  title: string;
+  body: string;
+  estimatedMinutes?: number;
+  content?: Record<string, unknown>;
+  settings?: Record<string, unknown>;
+  image?: PublishImage;
+  media?: PublishMediaAsset[];
+  completion?: PublishCompletion;
+  completionMarker?: "quiz" | "checklist" | "interactive" | string;
+};
+
+export type PublishLesson = {
+  id: string;
+  type: "section" | "blocks" | "quiz" | string;
+  title: string;
+  status?: PublishState;
+  blocks?: PublishBlock[];
+};
+
+export type PublishCourse = {
+  id: string;
+  title: string;
+  state?: PublishState;
+  lessons: PublishLesson[];
+};
+
+export type PublishFindingCode =
+  | "api_offline"
+  | "blocks_missing"
+  | "block_body_empty"
+  | "block_title_empty"
+  | "completion_marker_missing"
+  | "course_title_empty"
+  | "draft_unpublished"
+  | "image_alt_missing"
+  | "image_src_missing"
+  | "lesson_title_empty"
+  | "lessons_missing"
+  | "media_src_missing"
+  | "button_destination_missing"
+  | "quiz_answer_missing";
+
+export type PublishFinding = {
+  code: PublishFindingCode;
+  message: string;
+  path: string;
+};
+
+export type PublishReadiness = {
+  ok: boolean;
+  issues: PublishFinding[];
+  warnings: PublishFinding[];
+};
+
+export type PublishReadinessOptions = {
+  apiState?: PublishApiState;
+  publishState?: PublishState;
+};
+
+export type PublishSettings = {
+  buildId?: string;
+  now?: () => Date;
+  launcher?: string;
+  tracking?: "local" | "xapi";
+};
+
+export type ResolvedPublishSettings = {
+  launcher: string;
+  tracking: "local" | "xapi";
+};
+
+export type ManifestFile = {
+  path: string;
+  role: "course-data" | "launcher" | "manifest" | "statement-profile" | "xapi-launch";
+  bytes: number;
+};
+
+export type StatementProfile = {
+  id: string;
+  verbs: string[];
+  activityTypes: string[];
+};
+
+export type PublishSnapshot = {
+  buildId: string;
+  title: string;
+  createdAt: string;
+  settings: ResolvedPublishSettings;
+  courseData: PublishCourse;
+  manifestFiles: ManifestFile[];
+  statementProfile: StatementProfile;
+};
+
+export type DownloadPayload = {
+  filename: string;
+  mime: "application/zip";
+  content: Uint8Array;
+};
+
+const completionFamilies = new Set(["checklist", "interactive", "knowledgecheck", "process", "quiz"]);
+
+export function validatePublishReadiness(
+  course: PublishCourse,
+  options: PublishReadinessOptions = {},
+): PublishReadiness {
+  const issues: PublishFinding[] = [];
+  const warnings: PublishFinding[] = [];
+
+  if (isBlank(course.title)) {
+    issues.push({ code: "course_title_empty", message: "Course title is empty.", path: "course.title" });
+  }
+
+  if (course.lessons.length === 0) {
+    issues.push({ code: "lessons_missing", message: "Course has no lessons.", path: "lessons" });
+  }
+
+  course.lessons.forEach((lesson, lessonIndex) => {
+    if (isBlank(lesson.title)) {
+      issues.push({
+        code: "lesson_title_empty",
+        message: "Lesson title is empty.",
+        path: `lessons[${lessonIndex}].title`,
+      });
+    }
+
+    if (lesson.type === "blocks" && (!lesson.blocks || lesson.blocks.length === 0)) {
+      issues.push({
+        code: "blocks_missing",
+        message: "Lesson has no blocks.",
+        path: `lessons[${lessonIndex}].blocks`,
+      });
+    }
+
+    lesson.blocks?.forEach((block, blockIndex) => {
+      if (isBlank(block.title)) {
+        issues.push({
+          code: "block_title_empty",
+          message: "Block title is empty.",
+          path: `lessons[${lessonIndex}].blocks[${blockIndex}].title`,
+        });
+      }
+
+      if (isBlank(block.body)) {
+        issues.push({
+          code: "block_body_empty",
+          message: "Block body is empty.",
+          path: `lessons[${lessonIndex}].blocks[${blockIndex}].body`,
+        });
+      }
+
+      if (block.image) {
+        if (isBlank(block.image.src)) {
+          issues.push({
+            code: "image_src_missing",
+            message: "Image block is missing a source URL.",
+            path: `lessons[${lessonIndex}].blocks[${blockIndex}].image.src`,
+          });
+        }
+
+        if (isBlank(block.image.alt)) {
+          issues.push({
+            code: "image_alt_missing",
+            message: "Image block is missing alt text.",
+            path: `lessons[${lessonIndex}].blocks[${blockIndex}].image.alt`,
+          });
+        }
+      }
+
+      validateBlockMedia(block, lessonIndex, blockIndex, issues, warnings);
+      validateBlockInteractionData(block, lessonIndex, blockIndex, issues);
+    });
+  });
+
+  if (!hasCompletionMarker(course)) {
+    issues.push({
+      code: "completion_marker_missing",
+      message: "Course has no quiz, checklist, or interactive completion marker.",
+      path: "lessons",
+    });
+  }
+
+  if (options.apiState === "offline") {
+    warnings.push({
+      code: "api_offline",
+      message: "API is offline; publish package will be local only.",
+      path: "api",
+    });
+  }
+
+  if (options.publishState === "draft") {
+    warnings.push({
+      code: "draft_unpublished",
+      message: "Course is still an unpublished draft.",
+      path: "course.state",
+    });
+  }
+
+  return { ok: issues.length === 0, issues, warnings };
+}
+
+export function createPublishSnapshot(course: PublishCourse, settings: PublishSettings = {}): PublishSnapshot {
+  const resolvedSettings: ResolvedPublishSettings = {
+    launcher: settings.launcher ?? "index.html",
+    tracking: settings.tracking ?? "local",
+  };
+
+  return {
+    buildId: settings.buildId ?? createStableBuildId(course),
+    title: course.title,
+    createdAt: (settings.now ?? (() => new Date()))().toISOString(),
+    settings: resolvedSettings,
+    courseData: course,
+    manifestFiles: createManifestFiles(course, resolvedSettings),
+    statementProfile: {
+      id: "forge.local.static-preview",
+      verbs: ["initialized", "experienced", "completed", "answered"],
+      activityTypes: ["course", "lesson", "block", "quiz"],
+    },
+  };
+}
+
+export function createXapiPackagePayload(snapshot: PublishSnapshot): DownloadPayload {
+  return {
+    filename: `${slugify(snapshot.title)}-${snapshot.buildId}.xapi.zip`,
+    mime: "application/zip",
+    content: createZipArchive(createXapiPackageFiles(snapshot)),
+  };
+}
+
+export function estimatePackageSize(snapshot: PublishSnapshot): number {
+  return createXapiPackagePayload(snapshot).content.byteLength;
+}
+
+function createManifestFiles(course: PublishCourse, settings: ResolvedPublishSettings): ManifestFile[] {
+  return [
+    { path: settings.launcher, role: "launcher", bytes: 2048 },
+    { path: "course.json", role: "course-data", bytes: stableJsonByteLength(course) },
+    { path: "manifest.json", role: "manifest", bytes: 512 },
+    { path: "xapi/profile.json", role: "statement-profile", bytes: 768 },
+    { path: "tincan.xml", role: "xapi-launch", bytes: 1024 },
+  ];
+}
+
+type ZipSourceFile = {
+  path: string;
+  content: string;
+};
+
+function createXapiPackageFiles(snapshot: PublishSnapshot): ZipSourceFile[] {
+  const courseJson = JSON.stringify(snapshot.courseData, null, 2);
+  const profileJson = JSON.stringify(snapshot.statementProfile, null, 2);
+  const manifestJson = JSON.stringify(
+    {
+      buildId: snapshot.buildId,
+      title: snapshot.title,
+      createdAt: snapshot.createdAt,
+      packageType: "xapi",
+      launcher: snapshot.settings.launcher,
+      files: snapshot.manifestFiles,
+      statementProfile: snapshot.statementProfile,
+    },
+    null,
+    2,
+  );
+
+  return [
+    { path: "index.html", content: createLauncherHtml(snapshot) },
+    { path: "course.json", content: courseJson },
+    { path: "manifest.json", content: manifestJson },
+    { path: "xapi/profile.json", content: profileJson },
+    { path: "tincan.xml", content: createTinCanXml(snapshot) },
+  ];
+}
+
+function createLauncherHtml(snapshot: PublishSnapshot): string {
+  const packageMeta = JSON.stringify({
+    buildId: snapshot.buildId,
+    createdAt: snapshot.createdAt,
+    courseId: snapshot.courseData.id,
+    courseIri: courseActivityIri(snapshot.courseData),
+  });
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(snapshot.title)}</title>
+    <style>
+      :root { color-scheme: light; --ink: #17202a; --muted: #617084; --line: #dfe5ec; --panel: #ffffff; --wash: #f5f7fa; --accent: #2563eb; --good: #15803d; --bad: #b42318; }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--wash); }
+      button, input, select { font: inherit; }
+      button, a.course-button { min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); cursor: pointer; }
+      button:hover, a.course-button:hover { border-color: #9fb0c5; }
+      button:disabled { cursor: not-allowed; opacity: .55; }
+      main { max-width: 980px; margin: 0 auto; padding: 42px 22px 64px; }
+      .launch-banner { margin: 0 0 18px; padding: 12px 14px; border: 1px solid #f4c36d; border-radius: 8px; background: #fff8e6; color: #6f4b00; font-weight: 700; }
+      .course-shell { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; }
+      .course-hero { padding: 34px 30px 24px; border-bottom: 1px solid var(--line); }
+      .eyebrow { margin: 0 0 8px; color: var(--muted); font-size: .78rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(2.4rem, 8vw, 4.5rem); line-height: .95; letter-spacing: 0; }
+      h2 { margin: 0 0 18px; font-size: clamp(1.5rem, 4vw, 2rem); }
+      h3 { margin: 0 0 10px; font-size: 1.12rem; }
+      p { line-height: 1.6; }
+      .lesson { padding: 30px; border-bottom: 1px solid var(--line); }
+      .lesson:last-child { border-bottom: 0; }
+      .block { margin: 18px 0 0; padding: 18px; border: 1px solid #edf1f5; border-radius: 8px; background: #fff; }
+      .copy.paragraph h3 { display: none; }
+      .heading .display { font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1; }
+      .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+      .statement { border-left: 5px solid var(--accent); background: #f7faff; }
+      .statement p { margin: 0; font-size: 1.35rem; font-weight: 800; }
+      .statement span { display: block; margin-top: 12px; color: var(--muted); }
+      .list li, .checklist li { margin: 8px 0; }
+      .image img, .gallery img, video { display: block; max-width: 100%; border-radius: 8px; }
+      .placeholder { display: grid; min-height: 150px; place-items: center; border: 1px dashed #b8c4d2; border-radius: 8px; color: var(--muted); background: #f8fafc; }
+      .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+      .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+      .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+      .tabs button[aria-selected="true"], .answer.selected, .matching-options button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(37, 99, 235, .16); }
+      .panel { padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfe; }
+      .accordion-item { margin-top: 10px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+      .accordion-item > button { display: flex; width: 100%; justify-content: space-between; padding: 13px 14px; border: 0; border-radius: 0; font-weight: 800; }
+      .accordion-item > div { padding: 0 14px 14px; }
+      .flashcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+      .flashcard { min-height: 150px; padding: 18px; text-align: left; }
+      .flashcard.flipped { background: #eef6ff; }
+      .course-button { display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; text-decoration: none; font-weight: 800; }
+      .chart-row { display: grid; grid-template-columns: 130px 1fr 48px; gap: 10px; align-items: center; margin: 10px 0; }
+      .bar { display: block; height: 14px; border-radius: 999px; background: var(--accent); }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 10px; border: 1px solid var(--line); text-align: left; }
+      .answer-list { display: grid; gap: 10px; margin: 16px 0; }
+      .answer { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: center; padding: 12px; text-align: left; }
+      .answer.correct { border-color: var(--good); }
+      .answer.incorrect { border-color: var(--bad); }
+      .answer span { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 999px; background: #eef2f7; font-weight: 800; }
+      .feedback { padding: 12px 14px; border-radius: 8px; background: #f1f7ff; font-weight: 700; }
+      .matching-row { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(180px, 2fr); gap: 12px; align-items: center; }
+      .matching-options { display: flex; flex-wrap: wrap; gap: 8px; }
+      .scenario-choice, .sort-item { display: block; width: 100%; margin-top: 8px; padding: 12px; text-align: left; }
+      .sort-workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .muted { color: var(--muted); }
+      @media (max-width: 720px) { main { padding: 18px 12px 40px; } .course-hero, .lesson { padding: 22px 16px; } .two-col, .sort-workspace, .matching-row { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div id="launch-status"></div>
+      <article class="course-shell">
+        <header class="course-hero">
+          <p class="eyebrow">Forge course</p>
+          <h1>${escapeHtml(snapshot.title)}</h1>
+          <p id="status">Loading course...</p>
+        </header>
+        <div id="course"></div>
+      </article>
+    </main>
+    <script>
+      window.FORGE_XAPI_PACKAGE = ${packageMeta};
+      const completedBlocks = new Set();
+      const completedLessons = new Set();
+      let courseData = null;
+      let launch = parseLaunch();
+
+      fetch("course.json")
+        .then((response) => response.json())
+        .then((course) => {
+          courseData = course;
+          renderCourse(course);
+          sendStatement("http://adlnet.gov/expapi/verbs/launched", courseObject(course), { completion: false });
+          sendStatement("http://adlnet.gov/expapi/verbs/initialized", courseObject(course), { completion: false });
+        })
+        .catch(() => {
+          document.getElementById("status").textContent = "Course data could not be loaded.";
+        });
+
+      window.addEventListener("pagehide", () => {
+        if (courseData) {
+          sendStatement("http://adlnet.gov/expapi/verbs/terminated", courseObject(courseData), { completion: isCourseComplete(courseData) }, true);
+        }
+      });
+
+      function parseLaunch() {
+        const params = new URLSearchParams(window.location.search);
+        const actorRaw = params.get("actor");
+        let actor = null;
+        try {
+          actor = actorRaw ? JSON.parse(actorRaw) : null;
+        } catch {
+          actor = null;
+        }
+        const parsed = {
+          endpoint: params.get("endpoint") || "",
+          auth: params.get("auth") || "",
+          actor,
+          activityId: params.get("activity_id") || window.FORGE_XAPI_PACKAGE.courseIri,
+          registration: params.get("registration") || getStoredRegistration(),
+          tracked: Boolean(params.get("endpoint") && actor),
+        };
+        if (!parsed.tracked) {
+          document.getElementById("launch-status").innerHTML = '<div class="launch-banner">Untracked preview mode. Launch from the LXP to send xAPI statements.</div>';
+        }
+        return parsed;
+      }
+
+      function getStoredRegistration() {
+        const key = "forge-registration-" + window.FORGE_XAPI_PACKAGE.courseId;
+        const existing = window.localStorage.getItem(key);
+        if (existing) return existing;
+        const created = uuid();
+        window.localStorage.setItem(key, created);
+        return created;
+      }
+
+      function sendStatement(verbId, object, result, urgent) {
+        if (!launch.tracked) return Promise.resolve(false);
+        const statement = {
+          id: uuid(),
+          actor: launch.actor,
+          verb: { id: verbId, display: { "en-US": verbLabel(verbId) } },
+          object,
+          context: {
+            registration: launch.registration,
+            contextActivities: { grouping: [{ id: launch.activityId, objectType: "Activity" }] },
+            extensions: {
+              "https://xapi.supercell.com/extensions/package-build-id": window.FORGE_XAPI_PACKAGE.buildId,
+              "https://xapi.supercell.com/extensions/package-created-at": window.FORGE_XAPI_PACKAGE.createdAt,
+            },
+          },
+          timestamp: new Date().toISOString(),
+        };
+        if (result) statement.result = result;
+        const body = JSON.stringify(statement);
+        return fetch(statementEndpoint(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Experience-API-Version": "1.0.3",
+            ...(launch.auth ? { Authorization: launch.auth } : {}),
+          },
+          body,
+          keepalive: Boolean(urgent),
+        }).catch(() => false);
+      }
+
+      function statementEndpoint() {
+        const endpoint = launch.endpoint.trim();
+        if (/\\/statements\\/?$/i.test(endpoint)) return endpoint;
+        return endpoint.replace(/\\/?$/, "/") + "statements";
+      }
+
+      function renderCourse(course) {
+        document.getElementById("status").textContent = course.lessons.length + " lesson" + (course.lessons.length === 1 ? "" : "s");
+        const root = document.getElementById("course");
+        root.replaceChildren(...course.lessons.map((lesson) => renderLesson(course, lesson)));
+      }
+
+      function renderLesson(course, lesson) {
+        const section = el("section", "lesson");
+        section.dataset.lessonId = lesson.id;
+        section.append(el("h2", "", text(lesson.title || "Untitled lesson")));
+        (lesson.blocks || []).forEach((block) => section.append(renderBlock(course, lesson, block)));
+        sendStatement("http://adlnet.gov/expapi/verbs/experienced", lessonObject(course, lesson));
+        return section;
+      }
+
+      function renderBlock(course, lesson, block) {
+        const family = String(block.family || "");
+        if (family === "quiz" || family === "knowledgeCheck") return renderQuiz(course, lesson, block);
+        if (family === "interactive" || family === "process") return renderInteractive(course, lesson, block);
+        if (family === "flashcard") return renderFlashcards(course, lesson, block);
+        if (family === "checklist") return renderChecklist(course, lesson, block);
+        if (family === "scenario") return renderScenario(course, lesson, block);
+        if (family === "gallery") return renderGallery(course, lesson, block);
+        const section = el("section", "block " + family + " variant-" + safeClass(block.variant));
+        if (family === "heading") {
+          section.append(el("h3", "display", text(value(block.content, "heading") || block.title)));
+        } else if (family === "subheading") {
+          section.append(el("h3", "", text(value(block.content, "heading") || block.title)), paragraph(value(block.content, "text") || block.body));
+        } else if (family === "twoColumnText") {
+          section.append(twoColumn(block));
+        } else if (family === "statement" || family === "quote") {
+          section.append(paragraph(value(block.content, "text") || block.body), el("span", "", text(value(block.content, "attribution"))));
+        } else if (family === "list") {
+          section.append(el("h3", "", text(block.title)), list(arrayValue(block.content && block.content.items), block.variant === "numbered"));
+        } else if (family === "image") {
+          section.append(mediaImage(value(block.content, "src"), value(block.content, "alt")), paragraph(value(block.content, "caption")));
+        } else if (family === "divider") {
+          const button = el("button", "", text(value(block.content, "label") || "Continue"));
+          button.addEventListener("click", () => {
+            button.textContent = "Continued";
+            markBlockComplete(course, lesson, block);
+          });
+          section.append(button);
+        } else if (family === "buttons") {
+          objectArray(block.content && block.content.buttons).forEach((button) => section.append(linkButton(button)));
+        } else if (family === "chart") {
+          section.append(renderChart(block));
+        } else if (family === "table") {
+          section.append(renderTable(block));
+        } else if (family === "audio") {
+          section.append(el("h3", "", text(value(block.content, "title") || block.title)), audioElement(value(block.content, "url")), paragraph(value(block.content, "transcript")));
+        } else if (family === "multimedia") {
+          section.append(renderMedia(block));
+        } else if (family === "callout") {
+          section.append(el("h3", "", text(block.title)), paragraph(value(block.content, "text") || block.body));
+        } else {
+          section.append(el("h3", "", text(block.title)), paragraph(block.body));
+        }
+        return section;
+      }
+
+      function renderQuiz(course, lesson, block) {
+        const section = el("section", "block quiz variant-" + safeClass(block.variant));
+        const question = value(block.content, "question") || block.title;
+        const feedback = el("div", "feedback");
+        let submitted = false;
+        let attempts = 0;
+        const maxAttempts = Math.max(1, Number(block.settings && block.settings.attempts) || 1);
+        section.append(el("p", "eyebrow", text((block.family === "quiz" ? "Quiz" : "Knowledge check") + " - " + (block.variant || "question"))), el("h3", "", text(question)));
+        if (block.variant === "fill-blank") {
+          const input = el("input");
+          input.placeholder = "Type your answer";
+          section.append(input, submitRow(() => {
+            const accepted = arrayValue(block.content && block.content.acceptedAnswers).map((item) => typeof item === "object" ? String(item.value || "") : String(item));
+            const correct = accepted.some((answer) => answer.trim().toLowerCase() === input.value.trim().toLowerCase());
+            attempts += 1;
+            submitted = true;
+            recordAnswer(course, lesson, block, input.value, correct, attempts);
+            feedback.textContent = correct ? feedbackText(block, true) : feedbackText(block, false);
+            if (correct || attempts >= maxAttempts) input.disabled = true;
+          }, () => Boolean(input.value.trim()) && (!submitted || attempts < maxAttempts)), feedback);
+          return section;
+        }
+        if (block.variant === "matching") {
+          const matches = objectArray(block.content && block.content.matches);
+          const selected = {};
+          const rows = el("div", "answer-list");
+          matches.forEach((match, index) => {
+            const row = el("div", "matching-row", el("strong", "", text(String(match.prompt || ""))));
+            const options = el("div", "matching-options");
+            matches.map((item) => String(item.match || "")).forEach((candidate) => {
+              const choice = el("button", "", text(candidate));
+              choice.addEventListener("click", () => {
+                selected[index] = candidate;
+                Array.from(options.children).forEach((child) => child.setAttribute("aria-pressed", "false"));
+                choice.setAttribute("aria-pressed", "true");
+              });
+              options.append(choice);
+            });
+            row.append(options);
+            rows.append(row);
+          });
+          section.append(rows, submitRow(() => {
+            attempts += 1;
+            const correct = matches.every((match, index) => selected[index] === String(match.match || ""));
+            recordAnswer(course, lesson, block, JSON.stringify(selected), correct, attempts);
+            feedback.textContent = correct ? feedbackText(block, true) : feedbackText(block, false);
+          }, () => Object.keys(selected).length === matches.length), feedback);
+          return section;
+        }
+        const selected = new Set();
+        const options = arrayValue(block.content && block.content.options);
+        const answerList = el("div", "answer-list");
+        options.forEach((option, index) => {
+          const button = el("button", "answer", el("span", "", text(String.fromCharCode(65 + index))), paragraph(option));
+          button.addEventListener("click", () => {
+            if (block.variant !== "multiple-response") {
+              selected.clear();
+              Array.from(answerList.children).forEach((child) => child.classList.remove("selected"));
+            }
+            if (selected.has(index)) {
+              selected.delete(index);
+              button.classList.remove("selected");
+            } else {
+              selected.add(index);
+              button.classList.add("selected");
+            }
+          });
+          answerList.append(button);
+        });
+        section.append(answerList, submitRow(() => {
+          attempts += 1;
+          const correct = setsEqual(selected, correctOptions(block));
+          Array.from(answerList.children).forEach((child, index) => {
+            child.classList.toggle("correct", correctOptions(block).has(index));
+            child.classList.toggle("incorrect", selected.has(index) && !correctOptions(block).has(index));
+          });
+          recordAnswer(course, lesson, block, Array.from(selected).map((index) => options[index]).join("[,]"), correct, attempts);
+          feedback.textContent = correct ? feedbackText(block, true) : feedbackText(block, false);
+        }, () => selected.size > 0), feedback);
+        return section;
+      }
+
+      function submitRow(onSubmit, canSubmit) {
+        const row = el("div", "row");
+        const button = el("button", "", text("Submit"));
+        button.addEventListener("click", () => {
+          if (canSubmit()) onSubmit();
+        });
+        row.append(button);
+        return row;
+      }
+
+      function recordAnswer(course, lesson, block, response, correct, attempt) {
+        markBlockComplete(course, lesson, block);
+        sendStatement("http://adlnet.gov/expapi/verbs/answered", interactionObject(course, block), {
+          success: correct,
+          completion: true,
+          response,
+          score: { scaled: correct ? 1 : 0, raw: correct ? 1 : 0, min: 0, max: 1 },
+          extensions: { "https://xapi.supercell.com/extensions/attempt": attempt },
+        });
+      }
+
+      function renderInteractive(course, lesson, block) {
+        const items = objectArray((block.content && (block.content.items || block.content.steps)) || []);
+        const section = el("section", "block interactive variant-" + safeClass(block.variant), el("h3", "", text(block.title)));
+        if (block.variant === "tabs") {
+          const tabs = el("div", "tabs");
+          const panel = el("div", "panel");
+          items.forEach((item, index) => {
+            const tab = el("button", "", text(String(item.title || "Tab " + (index + 1))));
+            tab.addEventListener("click", () => {
+              Array.from(tabs.children).forEach((child) => child.setAttribute("aria-selected", "false"));
+              tab.setAttribute("aria-selected", "true");
+              panel.replaceChildren(el("h3", "", text(String(item.title || ""))), paragraph(String(item.text || "")));
+              markBlockComplete(course, lesson, block);
+            });
+            tabs.append(tab);
+            if (index === 0) tab.click();
+          });
+          section.append(tabs, panel);
+          return section;
+        }
+        items.forEach((item, index) => {
+          const wrapper = el("div", "accordion-item");
+          const button = el("button", "", text(String(item.title || "Item " + (index + 1))));
+          const panel = el("div", "", paragraph(String(item.text || "")));
+          panel.hidden = index !== 0;
+          button.setAttribute("aria-expanded", String(!panel.hidden));
+          button.addEventListener("click", () => {
+            panel.hidden = !panel.hidden;
+            button.setAttribute("aria-expanded", String(!panel.hidden));
+            markBlockComplete(course, lesson, block);
+          });
+          wrapper.append(button, panel);
+          section.append(wrapper);
+        });
+        return section;
+      }
+
+      function renderFlashcards(course, lesson, block) {
+        const section = el("section", "block flashcard", el("h3", "", text(block.title)), el("div", "flashcards"));
+        const grid = section.querySelector(".flashcards");
+        objectArray(block.content && block.content.cards).forEach((card) => {
+          let flipped = false;
+          const button = el("button", "flashcard", paragraph(String(card.front || "")), el("small", "", text("Front")));
+          button.addEventListener("click", () => {
+            flipped = !flipped;
+            button.classList.toggle("flipped", flipped);
+            button.replaceChildren(paragraph(String(flipped ? card.back || "" : card.front || "")), el("small", "", text(flipped ? "Back" : "Front")));
+            markBlockComplete(course, lesson, block);
+          });
+          grid.append(button);
+        });
+        return section;
+      }
+
+      function renderChecklist(course, lesson, block) {
+        const items = arrayValue(block.content && block.content.items);
+        const checked = new Set();
+        const section = el("section", "block checklist", el("h3", "", text(block.title)));
+        const listElement = el("ul", "checklist");
+        items.forEach((item, index) => {
+          const button = el("button", "", text(""));
+          button.addEventListener("click", () => {
+            if (checked.has(index)) checked.delete(index); else checked.add(index);
+            button.textContent = checked.has(index) ? "✓" : "";
+            if (checked.size === items.length) markBlockComplete(course, lesson, block);
+          });
+          listElement.append(el("li", "", button, el("span", "", text(item))));
+        });
+        section.append(listElement);
+        return section;
+      }
+
+      function renderScenario(course, lesson, block) {
+        const section = el("section", "block scenario", el("h3", "", text(value(block.content, "prompt") || block.title)));
+        const outcome = el("div", "panel");
+        objectArray(block.content && block.content.choices).forEach((choice, index) => {
+          const button = el("button", "scenario-choice", text(String(choice.label || "Choice " + (index + 1))));
+          button.addEventListener("click", () => {
+            outcome.textContent = String(choice.outcome || "");
+            markBlockComplete(course, lesson, block);
+            sendStatement("https://w3id.org/xapi/dod-isd/verbs/responded", blockObject(course, lesson, block), { response: String(choice.label || index), completion: true });
+          });
+          section.append(button);
+        });
+        section.append(outcome);
+        return section;
+      }
+
+      function renderGallery(course, lesson, block) {
+        const images = objectArray(block.content && block.content.images);
+        const section = el("section", "block gallery", el("h3", "", text(block.title)));
+        const grid = el("div", "gallery-grid");
+        images.forEach((image) => grid.append(el("figure", "", mediaImage(String(image.src || ""), String(image.alt || "")), paragraph(String(image.caption || "")))));
+        section.append(grid);
+        return section;
+      }
+
+      function markBlockComplete(course, lesson, block) {
+        if (!completedBlocks.has(block.id)) {
+          completedBlocks.add(block.id);
+          sendStatement("http://adlnet.gov/expapi/verbs/completed", blockObject(course, lesson, block), { completion: true });
+        }
+        const blocks = lesson.blocks || [];
+        if (blocks.length && blocks.every((item) => completedBlocks.has(item.id)) && !completedLessons.has(lesson.id)) {
+          completedLessons.add(lesson.id);
+          sendStatement("http://adlnet.gov/expapi/verbs/completed", lessonObject(course, lesson), { completion: true });
+        }
+        if (isCourseComplete(course)) {
+          sendStatement("http://adlnet.gov/expapi/verbs/completed", courseObject(course), { completion: true, score: { scaled: 1 } });
+        }
+      }
+
+      function isCourseComplete(course) {
+        const blocks = (course.lessons || []).flatMap((lesson) => lesson.blocks || []);
+        return blocks.length > 0 && blocks.every((block) => completedBlocks.has(block.id));
+      }
+
+      function courseObject(course) {
+        return { id: launch.activityId || "https://xapi.supercell.com/courses/" + encodeURIComponent(course.id), objectType: "Activity", definition: { type: "http://adlnet.gov/expapi/activities/course", name: { "en-US": course.title || "Untitled course" } } };
+      }
+      function lessonObject(course, lesson) {
+        return { id: "https://xapi.supercell.com/courses/" + encodeURIComponent(course.id) + "/lessons/" + encodeURIComponent(lesson.id), objectType: "Activity", definition: { type: "http://adlnet.gov/expapi/activities/module", name: { "en-US": lesson.title || "Untitled lesson" } } };
+      }
+      function blockObject(course, lesson, block) {
+        return { id: "https://xapi.supercell.com/courses/" + encodeURIComponent(course.id) + "/lessons/" + encodeURIComponent(lesson.id) + "/blocks/" + encodeURIComponent(block.id), objectType: "Activity", definition: { type: "https://xapi.supercell.com/activity-types/block", name: { "en-US": block.title || "Untitled block" } } };
+      }
+      function interactionObject(course, block) {
+        const options = arrayValue(block.content && block.content.options);
+        return { id: "https://xapi.supercell.com/courses/" + encodeURIComponent(course.id) + "/interactions/" + encodeURIComponent(block.id), objectType: "Activity", definition: { type: "http://adlnet.gov/expapi/activities/cmi.interaction", interactionType: interactionType(block), name: { "en-US": value(block.content, "question") || block.title }, choices: options.map((option) => ({ id: option, description: { "en-US": option } })), correctResponsesPattern: correctResponses(block) } };
+      }
+
+      function interactionType(block) {
+        if (block.variant === "fill-blank") return "fill-in";
+        if (block.variant === "matching") return "matching";
+        if (block.variant === "multiple-response") return "choice";
+        return "choice";
+      }
+      function correctResponses(block) {
+        if (block.variant === "fill-blank") return arrayValue(block.content && block.content.acceptedAnswers).map((item) => typeof item === "object" ? String(item.value || "") : String(item));
+        if (block.variant === "matching") return objectArray(block.content && block.content.matches).map((item) => String(item.prompt || "") + "[.]" + String(item.match || ""));
+        const options = arrayValue(block.content && block.content.options);
+        return Array.from(correctOptions(block)).map((index) => options[index]).filter(Boolean);
+      }
+      function correctOptions(block) {
+        const values = new Set();
+        const content = block.content || {};
+        if (Array.isArray(content.correctOptions)) content.correctOptions.forEach((item) => values.add(Number(item)));
+        if (typeof content.correctOption === "number") values.add(content.correctOption);
+        return values;
+      }
+      function setsEqual(left, right) {
+        if (left.size !== right.size) return false;
+        return Array.from(left).every((value) => right.has(value));
+      }
+      function feedbackText(block, correct) {
+        return correct ? value(block.content, "correctFeedback") || value(block.content, "feedback") || "Correct." : value(block.content, "incorrectFeedback") || "Not quite.";
+      }
+
+      function twoColumn(block) {
+        return el("div", "two-col",
+          el("div", "", el("h3", "", text(value(block.content, "leftHeading"))), paragraph(value(block.content, "leftText"))),
+          el("div", "", el("h3", "", text(value(block.content, "rightHeading"))), paragraph(value(block.content, "rightText"))));
+      }
+      function renderChart(block) {
+        const wrap = el("div");
+        const items = objectArray(block.content && block.content.items);
+        const max = Math.max(1, ...items.map((item) => Number(item.value) || 0));
+        items.forEach((item) => wrap.append(el("div", "chart-row", el("span", "", text(String(item.label || ""))), el("span", "bar").withWidth(((Number(item.value) || 0) / max) * 100), el("strong", "", text(String(item.value || 0))))));
+        return wrap;
+      }
+      function renderTable(block) {
+        const table = el("table");
+        const headers = arrayValue(block.content && block.content.headers);
+        if (headers.length) table.append(el("thead", "", el("tr", "", ...headers.map((header) => el("th", "", text(header))))));
+        const body = el("tbody");
+        (Array.isArray(block.content && block.content.rows) ? block.content.rows : []).forEach((row) => body.append(el("tr", "", ...arrayValue(row).map((cell) => el("td", "", text(cell))))));
+        table.append(body);
+        return table;
+      }
+      function renderMedia(block) {
+        const variant = block.variant || "";
+        const url = value(block.content, "url");
+        if (variant === "video") return url ? el("video").withSrc(url) : el("div", "placeholder", text("Video source missing"));
+        if (variant === "embed") return url ? el("iframe").withSrc(url) : el("div", "placeholder", text("Embed source missing"));
+        if (variant === "attachment") return url ? linkButton({ destination: url, label: "Download attachment" }) : el("div", "placeholder", text("Attachment source missing"));
+        if (variant === "code") return el("pre", "", text(value(block.content, "code") || "// Add code sample"));
+        return paragraph(value(block.content, "caption") || block.body);
+      }
+      function mediaImage(src, alt) {
+        if (!src) return el("div", "placeholder", text(alt || "Image placeholder"));
+        const image = el("img");
+        image.src = src;
+        image.alt = alt || "";
+        return image;
+      }
+      function audioElement(src) {
+        if (!src) return el("div", "placeholder", text("Audio source missing"));
+        const audio = el("audio");
+        audio.controls = true;
+        audio.src = src;
+        return audio;
+      }
+      function linkButton(button) {
+        const link = el("a", "course-button", text(String(button.label || "Open")));
+        link.href = normalizeHref(String(button.destination || button.src || ""));
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        return link;
+      }
+      function list(items, ordered) {
+        const node = document.createElement(ordered ? "ol" : "ul");
+        items.forEach((item) => node.append(el("li", "", text(item))));
+        return node;
+      }
+      function paragraph(value) {
+        return el("p", "", text(value || ""));
+      }
+      function text(value) {
+        return document.createTextNode(String(value || ""));
+      }
+      function el(tag, className, ...children) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        children.forEach((child) => child && node.append(child));
+        node.withSrc = (src) => { node.src = src; node.controls = tag === "video"; return node; };
+        node.withWidth = (width) => { node.style.width = Math.max(8, width) + "%"; return node; };
+        return node;
+      }
+      function value(content, key) {
+        return content && typeof content[key] === "string" ? content[key] : "";
+      }
+      function arrayValue(value) {
+        return Array.isArray(value) ? value.map((item) => String(item)) : [];
+      }
+      function objectArray(value) {
+        return Array.isArray(value) ? value.map((item) => item && typeof item === "object" ? item : { value: String(item) }) : [];
+      }
+      function normalizeHref(value) {
+        const trimmed = String(value || "").trim();
+        if (!trimmed) return "#";
+        return /^(https?:|mailto:|tel:|#|\\/)/i.test(trimmed) ? trimmed : "https://" + trimmed;
+      }
+      function safeClass(value) {
+        return String(value || "standard").replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+      }
+      function verbLabel(verbId) {
+        return verbId.split("/").pop() || "experienced";
+      }
+      function uuid() {
+        if (crypto && crypto.randomUUID) return crypto.randomUUID();
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+          const random = Math.random() * 16 | 0;
+          const value = char === "x" ? random : (random & 0x3) | 0x8;
+          return value.toString(16);
+        });
+      }
+    </script>
+  </body>
+</html>`;
+}
+
+function createTinCanXml(snapshot: PublishSnapshot): string {
+  const courseId = courseActivityIri(snapshot.courseData);
+  const lessonActivities = snapshot.courseData.lessons
+    .map((lesson) => `    <activity id="${escapeXml(lessonActivityIri(snapshot.courseData, lesson))}" type="http://adlnet.gov/expapi/activities/module">
+      <name>${escapeXml(lesson.title)}</name>
+      <description>${escapeXml(`Lesson in ${snapshot.title}.`)}</description>
+    </activity>`)
+    .join("\n");
+  const interactionActivities = snapshot.courseData.lessons
+    .flatMap((lesson) => lesson.blocks ?? [])
+    .filter(isInteractionBlock)
+    .map((block) => createInteractionActivityXml(snapshot.courseData, block))
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="utf-8"?>
+<tincan xmlns="http://projecttincan.com/tincan.xsd">
+  <activities>
+    <activity id="${escapeXml(courseId)}" type="http://adlnet.gov/expapi/activities/course">
+      <name>${escapeXml(snapshot.title)}</name>
+      <description>Forge xAPI package generated ${escapeXml(snapshot.createdAt)}.</description>
+      <launch lang="en-US">${escapeXml(snapshot.settings.launcher)}</launch>
+    </activity>
+${lessonActivities}
+${interactionActivities}
+  </activities>
+</tincan>`;
+}
+
+function courseActivityIri(course: PublishCourse): string {
+  return `https://xapi.supercell.com/courses/${encodeURIComponent(course.id)}`;
+}
+
+function lessonActivityIri(course: PublishCourse, lesson: PublishLesson): string {
+  return `${courseActivityIri(course)}/lessons/${encodeURIComponent(lesson.id)}`;
+}
+
+function interactionActivityIri(course: PublishCourse, block: PublishBlock): string {
+  return `${courseActivityIri(course)}/interactions/${encodeURIComponent(block.id)}`;
+}
+
+function isInteractionBlock(block: PublishBlock): boolean {
+  return block.family === "quiz" || block.family === "knowledgeCheck";
+}
+
+function createInteractionActivityXml(course: PublishCourse, block: PublishBlock): string {
+  const choices = getQuizOptions(block)
+    .map((option) => `      <choice id="${escapeXml(option)}"><description>${escapeXml(option)}</description></choice>`)
+    .join("\n");
+  const matchComponents = getQuizMatches(block)
+    .map(
+      (match) => `      <source id="${escapeXml(match.prompt)}"><description>${escapeXml(match.prompt)}</description></source>
+      <target id="${escapeXml(match.match)}"><description>${escapeXml(match.match)}</description></target>`,
+    )
+    .join("\n");
+  const correctResponses = getCorrectResponses(block)
+    .map((response) => `      <correctResponsesPattern>${escapeXml(response)}</correctResponsesPattern>`)
+    .join("\n");
+  const components = [choices, matchComponents, correctResponses].filter(Boolean).join("\n");
+
+  return `    <activity id="${escapeXml(interactionActivityIri(course, block))}" type="http://adlnet.gov/expapi/activities/cmi.interaction">
+      <name>${escapeXml(getQuizQuestion(block))}</name>
+      <interactionType>${escapeXml(getInteractionType(block))}</interactionType>
+${components}
+    </activity>`;
+}
+
+function getQuizQuestion(block: PublishBlock): string {
+  const question = block.content?.question;
+  return typeof question === "string" && question.trim() ? question : block.title;
+}
+
+function getInteractionType(block: PublishBlock): string {
+  if (block.variant === "fill-blank") {
+    return "fill-in";
+  }
+  if (block.variant === "matching") {
+    return "matching";
+  }
+  return "choice";
+}
+
+function getQuizOptions(block: PublishBlock): string[] {
+  const options = block.content?.options;
+  return Array.isArray(options) ? options.map((option) => String(option)) : [];
+}
+
+function getQuizMatches(block: PublishBlock): Array<{ prompt: string; match: string }> {
+  const matches = block.content?.matches;
+  if (!Array.isArray(matches)) {
+    return [];
+  }
+  return matches.map((match) => {
+    if (match && typeof match === "object") {
+      const record = match as Record<string, unknown>;
+      return { prompt: String(record.prompt ?? ""), match: String(record.match ?? "") };
+    }
+    return { prompt: String(match), match: "" };
+  });
+}
+
+function getCorrectResponses(block: PublishBlock): string[] {
+  if (block.variant === "fill-blank") {
+    const acceptedAnswers = block.content?.acceptedAnswers;
+    if (!Array.isArray(acceptedAnswers)) {
+      return [];
+    }
+    return acceptedAnswers.map((answer) => {
+      if (answer && typeof answer === "object") {
+        return String((answer as Record<string, unknown>).value ?? "");
+      }
+      return String(answer);
+    });
+  }
+
+  if (block.variant === "matching") {
+    return getQuizMatches(block).map((match) => `${match.prompt}[.]${match.match}`);
+  }
+
+  const options = getQuizOptions(block);
+  const correctIndexes = new Set<number>();
+  const correctOption = block.content?.correctOption;
+  const correctOptions = block.content?.correctOptions;
+
+  if (typeof correctOption === "number") {
+    correctIndexes.add(correctOption);
+  }
+  if (Array.isArray(correctOptions)) {
+    correctOptions.forEach((option) => correctIndexes.add(Number(option)));
+  }
+
+  return Array.from(correctIndexes)
+    .map((index) => options[index])
+    .filter((option): option is string => Boolean(option));
+}
+
+function createZipArchive(files: ZipSourceFile[]): Uint8Array {
+  const encoder = new TextEncoder();
+  const localParts: Uint8Array[] = [];
+  const centralParts: Uint8Array[] = [];
+  let offset = 0;
+
+  files.forEach((file) => {
+    const nameBytes = encoder.encode(file.path);
+    const contentBytes = encoder.encode(file.content);
+    const crc = crc32(contentBytes);
+    const localHeader = createZipLocalHeader(nameBytes, contentBytes, crc);
+    localParts.push(localHeader, contentBytes);
+    centralParts.push(createZipCentralDirectoryHeader(nameBytes, contentBytes, crc, offset));
+    offset += localHeader.byteLength + contentBytes.byteLength;
+  });
+
+  const centralDirectoryOffset = offset;
+  const centralDirectorySize = centralParts.reduce((total, part) => total + part.byteLength, 0);
+  const endRecord = createZipEndRecord(files.length, centralDirectorySize, centralDirectoryOffset);
+  return concatBytes([...localParts, ...centralParts, endRecord]);
+}
+
+function createZipLocalHeader(nameBytes: Uint8Array, contentBytes: Uint8Array, crc: number): Uint8Array {
+  const header = new Uint8Array(30 + nameBytes.byteLength);
+  const view = new DataView(header.buffer);
+  view.setUint32(0, 0x04034b50, true);
+  view.setUint16(4, 20, true);
+  view.setUint16(6, 0x0800, true);
+  view.setUint16(8, 0, true);
+  view.setUint16(10, 0, true);
+  view.setUint16(12, 0, true);
+  view.setUint32(14, crc, true);
+  view.setUint32(18, contentBytes.byteLength, true);
+  view.setUint32(22, contentBytes.byteLength, true);
+  view.setUint16(26, nameBytes.byteLength, true);
+  view.setUint16(28, 0, true);
+  header.set(nameBytes, 30);
+  return header;
+}
+
+function createZipCentralDirectoryHeader(nameBytes: Uint8Array, contentBytes: Uint8Array, crc: number, localHeaderOffset: number): Uint8Array {
+  const header = new Uint8Array(46 + nameBytes.byteLength);
+  const view = new DataView(header.buffer);
+  view.setUint32(0, 0x02014b50, true);
+  view.setUint16(4, 20, true);
+  view.setUint16(6, 20, true);
+  view.setUint16(8, 0x0800, true);
+  view.setUint16(10, 0, true);
+  view.setUint16(12, 0, true);
+  view.setUint16(14, 0, true);
+  view.setUint32(16, crc, true);
+  view.setUint32(20, contentBytes.byteLength, true);
+  view.setUint32(24, contentBytes.byteLength, true);
+  view.setUint16(28, nameBytes.byteLength, true);
+  view.setUint16(30, 0, true);
+  view.setUint16(32, 0, true);
+  view.setUint16(34, 0, true);
+  view.setUint16(36, 0, true);
+  view.setUint32(38, 0, true);
+  view.setUint32(42, localHeaderOffset, true);
+  header.set(nameBytes, 46);
+  return header;
+}
+
+function createZipEndRecord(entryCount: number, centralDirectorySize: number, centralDirectoryOffset: number): Uint8Array {
+  const record = new Uint8Array(22);
+  const view = new DataView(record.buffer);
+  view.setUint32(0, 0x06054b50, true);
+  view.setUint16(4, 0, true);
+  view.setUint16(6, 0, true);
+  view.setUint16(8, entryCount, true);
+  view.setUint16(10, entryCount, true);
+  view.setUint32(12, centralDirectorySize, true);
+  view.setUint32(16, centralDirectoryOffset, true);
+  view.setUint16(20, 0, true);
+  return record;
+}
+
+function concatBytes(parts: Uint8Array[]): Uint8Array {
+  const totalLength = parts.reduce((total, part) => total + part.byteLength, 0);
+  const combined = new Uint8Array(totalLength);
+  let offset = 0;
+  parts.forEach((part) => {
+    combined.set(part, offset);
+    offset += part.byteLength;
+  });
+  return combined;
+}
+
+function crc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  bytes.forEach((byte) => {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+    }
+  });
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function hasCompletionMarker(course: PublishCourse): boolean {
+  return course.lessons.some((lesson) => {
+    if (lesson.type === "quiz") {
+      return true;
+    }
+
+    return lesson.blocks?.some((block) => {
+      const family = block.family.toLowerCase();
+      const marker = block.completionMarker?.toLowerCase();
+      return Boolean(block.completion) || completionFamilies.has(family) || Boolean(marker && completionFamilies.has(marker));
+    });
+  });
+}
+
+function validateBlockMedia(
+  block: PublishBlock,
+  lessonIndex: number,
+  blockIndex: number,
+  issues: PublishFinding[],
+  warnings: PublishFinding[],
+) {
+  block.media?.forEach((asset, assetIndex) => {
+    const path = `lessons[${lessonIndex}].blocks[${blockIndex}].media[${assetIndex}]`;
+    if (asset.kind !== "code" && isBlank(asset.src)) {
+      issues.push({
+        code: "media_src_missing",
+        message: `${asset.kind} asset is missing a source.`,
+        path: `${path}.src`,
+      });
+    }
+
+    if ((asset.kind === "image" || asset.kind === "gallery-image") && isBlank(asset.alt)) {
+      warnings.push({
+        code: "image_alt_missing",
+        message: `${asset.kind} asset is missing alt text.`,
+        path: `${path}.alt`,
+      });
+    }
+  });
+}
+
+function validateBlockInteractionData(
+  block: PublishBlock,
+  lessonIndex: number,
+  blockIndex: number,
+  issues: PublishFinding[],
+) {
+  if (block.family === "buttons") {
+    const buttons = objectArray(block.content?.buttons);
+    buttons.forEach((button, buttonIndex) => {
+      if (isBlank(stringValue(button.destination))) {
+        issues.push({
+          code: "button_destination_missing",
+          message: "Button is missing a destination.",
+          path: `lessons[${lessonIndex}].blocks[${blockIndex}].content.buttons[${buttonIndex}].destination`,
+        });
+      }
+    });
+  }
+
+  if (block.family === "quiz" || block.family === "knowledgeCheck") {
+    const variant = block.variant;
+    const hasAnswers =
+      Array.isArray(block.content?.correctOptions) && block.content.correctOptions.length > 0
+        ? true
+        : typeof block.content?.correctOption === "number"
+          ? true
+          : Array.isArray(block.content?.acceptedAnswers) && block.content.acceptedAnswers.length > 0
+            ? true
+            : Array.isArray(block.content?.matches) && block.content.matches.length > 0;
+
+    if ((variant === "fill-blank" || variant === "matching" || variant === "multiple-response" || variant === "multiple-choice") && !hasAnswers) {
+      issues.push({
+        code: "quiz_answer_missing",
+        message: "Quiz block is missing answer data.",
+        path: `lessons[${lessonIndex}].blocks[${blockIndex}].content`,
+      });
+    }
+  }
+}
+
+function objectArray(value: unknown): Array<Record<string, unknown>> {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((item) => (item && typeof item === "object" ? { ...(item as Record<string, unknown>) } : { value: String(item) }));
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    switch (character) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      default:
+        return "&#39;";
+    }
+  });
+}
+
+function escapeXml(value: string): string {
+  return escapeHtml(value);
+}
+
+function isBlank(value: string | undefined): boolean {
+  return !value || value.trim().length === 0;
+}
+
+function stableJsonByteLength(value: unknown): number {
+  return new TextEncoder().encode(JSON.stringify(value, null, 2)).length;
+}
+
+function createStableBuildId(course: PublishCourse): string {
+  const hash = Array.from(JSON.stringify(course)).reduce((accumulator, character) => {
+    return (accumulator * 31 + character.charCodeAt(0)) >>> 0;
+  }, 0);
+
+  return `build_${hash.toString(36)}`;
+}
+
+function slugify(value: string): string {
+  const slug = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || "course";
+}

@@ -1,0 +1,29 @@
+// @forge/player public API (consumed by the editor preview and the published
+// package shell). Runtime UI per docs/SPEC.md section 5 and RECOVERY-PLAN R1.
+
+export { Player } from "./Player.js";
+export type { PlayerProps } from "./Player.js";
+
+export {
+  buildCourseSnapshot,
+  computeLessonPercent,
+  consumesByInteraction,
+  gatingIds,
+} from "./progress.js";
+export type { CourseProgressSnapshot } from "./progress.js";
+
+export { QuizLessonView } from "./quiz/QuizLessonView.js";
+export type { QuizLessonViewProps } from "./quiz/QuizLessonView.js";
+
+/** Preview viewport presets used by the editor's device toggle. */
+export type PreviewDevice = "phone" | "tablet" | "desktop";
+
+export const previewDeviceWidths: Record<PreviewDevice, number> = {
+  phone: 390,
+  tablet: 820,
+  desktop: 1180,
+};
+
+export function getPreviewDeviceWidth(device: PreviewDevice): number {
+  return previewDeviceWidths[device];
+}

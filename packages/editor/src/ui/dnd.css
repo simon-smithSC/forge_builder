@@ -1,0 +1,60 @@
+/* Drag-and-drop affordances (dnd-kit) for canvas blocks and outline lessons.
+   Kept separate from ui/styles.css by contract; uses the same fe- palette
+   variables. */
+
+/* Grip handle: the ONLY element carrying dnd-kit listeners, so clicks on the
+   rest of the frame/row keep selecting and editing. touch-action none is
+   required for PointerSensor on touch devices. */
+.fe-drag-grip {
+  cursor: grab;
+  touch-action: none;
+}
+
+.fe-drag-grip:active {
+  cursor: grabbing;
+}
+
+/* Source element while its drag is in flight (the DragOverlay is the visual
+   stand-in, so the original recedes). */
+.fe-dnd-dragging {
+  opacity: 0.35;
+}
+
+/* Lifted-card presentation inside DragOverlay. Deliberately simple: title or
+   label plus a family/kind badge, never the full BlockView. */
+.fe-dnd-overlay-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 320px;
+  padding: 8px 12px;
+  background: var(--fe-surface);
+  border: 1px solid var(--fe-border);
+  border-radius: var(--fe-radius);
+  box-shadow: 0 8px 24px rgba(20, 23, 28, 0.18);
+  font-size: 13px;
+  color: var(--fe-text);
+  cursor: grabbing;
+}
+
+.fe-dnd-overlay-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fe-dnd-overlay-badge {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--fe-primary-soft);
+  color: var(--fe-primary);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Outline rows: reserve the grip a fixed slot so titles stay aligned. */
+.fe-outline-grip {
+  flex: none;
+}

@@ -1,0 +1,48 @@
+/* Styles owned by the per-family payload editors (R2). Base field styling
+   (.fe-field, .fe-array-item, buttons) lives in ui/styles.css. */
+
+.fe-pl-error {
+  margin: 0 0 8px;
+  padding: 6px 8px;
+  border: 1px solid #d1242f;
+  border-radius: 6px;
+  background: #fff1f2;
+  color: #d1242f;
+  font-size: 12px;
+}
+
+.fe-pl-required {
+  margin-left: 6px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: #fff1f2;
+  color: #d1242f;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fe-pl-hint {
+  color: #59636e;
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.fe-pl-media-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fe-pl-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  white-space: pre;
+}
+
+.fe-pl-kind-row {
+  margin-bottom: 6px;
+}

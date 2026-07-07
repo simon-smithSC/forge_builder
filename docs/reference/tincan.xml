@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<tincan
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://projecttincan.com/tincan.xsd"
+>
+  <activities>
+    <activity id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise" type="http://adlnet.gov/expapi/activities/course">
+      <name lang="en">Example Course</name>
+      <description lang="en">This is the description of the course</description>
+      <launch lang="en">scormdriver/indexAPI.html</launch>
+    </activity>
+    
+      <activity id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/zOWHM2XGIbu-e4-mKkt7QN-AioQ4RW60" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">This is a Section title/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/EVDow8tJ9g61Y00h-bJAwvoZH4Y0QmFN" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Example Lesson 1/blocks</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/7bi7BhdNqcVYzyMrao2OvLiwL3wEf2XS" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Example Section 2/section</name>
+        <description lang="en"></description>
+      </activity>
+      
+    
+      <activity id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/lfMwLC5E2jMyuX7kcJELO48hKmBmlpet" type="http://adlnet.gov/expapi/activities/module">
+        <name lang="en">Example Lesson 2/quiz</name>
+        <description lang="en"></description>
+      </activity>
+      
+        <activity
+      id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/lfMwLC5E2jMyuX7kcJELO48hKmBmlpet/cmr4ndy4200gl3b7putbp0g8u"
+      type="http://adlnet.gov/expapi/activities/cmi.interaction"
+    >
+          <name lang="en">Enter a question title here…</name>
+          <description lang="en"></description>
+          <interactionType>choice</interactionType>
+          <correctResponsePatterns>
+            
+              <correctResponsePattern>choice_cmr4ndy4200gm3b7p1mh6hho9</correctResponsePattern>
+            
+          </correctResponsePatterns>
+          
+            <choices>
+              
+                <component>
+                  <id>choice_cmr4ndy4200gm3b7p1mh6hho9</id>
+                  <description lang="en">Choice 1</description>
+                </component>
+              
+                <component>
+                  <id>choice_cmr4ndy4200gn3b7p7285rjft</id>
+                  <description lang="en">Choice 2</description>
+                </component>
+              
+            </choices>
+          
+        </activity>
+      
+        <activity
+      id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/lfMwLC5E2jMyuX7kcJELO48hKmBmlpet/cmr4ndy4200go3b7p2n6h4mw9"
+      type="http://adlnet.gov/expapi/activities/cmi.interaction"
+    >
+          <name lang="en">Enter a question title here…</name>
+          <description lang="en"></description>
+          <interactionType>choice</interactionType>
+          <correctResponsePatterns>
+            
+              <correctResponsePattern>choice_cmr4ndy4200gp3b7pr9vxx2gm</correctResponsePattern>
+            
+              <correctResponsePattern>choice_cmr4ndy4200gq3b7pkmty5qzq</correctResponsePattern>
+            
+          </correctResponsePatterns>
+          
+            <choices>
+              
+                <component>
+                  <id>choice_cmr4ndy4200gp3b7pr9vxx2gm</id>
+                  <description lang="en">Choice 1</description>
+                </component>
+              
+                <component>
+                  <id>choice_cmr4ndy4200gr3b7pgh5jz7y0</id>
+                  <description lang="en">Choice 2</description>
+                </component>
+              
+                <component>
+                  <id>choice_cmr4ndy4200gs3b7pxtv0rf14</id>
+                  <description lang="en">Choice 3</description>
+                </component>
+              
+                <component>
+                  <id>choice_cmr4ndy4200gq3b7pkmty5qzq</id>
+                  <description lang="en">Choice 4</description>
+                </component>
+              
+            </choices>
+          
+        </activity>
+      
+        <activity
+      id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/lfMwLC5E2jMyuX7kcJELO48hKmBmlpet/cmr4ne3eu00h03b7phwhzfs9s"
+      type="http://adlnet.gov/expapi/activities/cmi.interaction"
+    >
+          <name lang="en">Enter a question title here…</name>
+          <description lang="en"></description>
+          <interactionType>long-fill-in</interactionType>
+          <correctResponsePatterns>
+            
+              <correctResponsePattern>{case_matters=false}Answer 1</correctResponsePattern>
+            
+          </correctResponsePatterns>
+          
+        </activity>
+      
+        <activity
+      id="http://Yx0A4TvvXBfvCVU1Bcbc7tLl41CmmDsR_rise/lfMwLC5E2jMyuX7kcJELO48hKmBmlpet/cmr4ne4qx00h33b7ptkijust1"
+      type="http://adlnet.gov/expapi/activities/cmi.interaction"
+    >
+          <name lang="en">Enter a question title here…</name>
+          <description lang="en"></description>
+          <interactionType>matching</interactionType>
+          <correctResponsePatterns>
+            
+              <correctResponsePattern>source_cmr4ne4qy00h43b7prhvyn89m[.]target_cmr4ne4qy00h43b7prhvyn89m</correctResponsePattern>
+            
+              <correctResponsePattern>source_cmr4ne4qy00h53b7p9kd6pizm[.]target_cmr4ne4qy00h53b7p9kd6pizm</correctResponsePattern>
+            
+              <correctResponsePattern>source_cmr4ne4qy00h63b7p1a2q5wfr[.]target_cmr4ne4qy00h63b7p1a2q5wfr</correctResponsePattern>
+            
+          </correctResponsePatterns>
+          
+            <source>
+              
+                <component>
+                  <id>source_cmr4ne4qy00h43b7prhvyn89m</id>
+                  <description lang="en">First choice</description>
+                </component>
+              
+                <component>
+                  <id>source_cmr4ne4qy00h53b7p9kd6pizm</id>
+                  <description lang="en">Second choice</description>
+                </component>
+              
+                <component>
+                  <id>source_cmr4ne4qy00h63b7p1a2q5wfr</id>
+                  <description lang="en">Third choice</description>
+                </component>
+              
+            </source>
+            <target>
+              
+                <component>
+                  <id>target_cmr4ne4qy00h43b7prhvyn89m</id>
+                  <description lang="en">First match</description>
+                </component>
+              
+                <component>
+                  <id>target_cmr4ne4qy00h53b7p9kd6pizm</id>
+                  <description lang="en">Second match</description>
+                </component>
+              
+                <component>
+                  <id>target_cmr4ne4qy00h63b7p1a2q5wfr</id>
+                  <description lang="en">Third match</description>
+                </component>
+              
+            </target>
+          
+        </activity>
+      
+    
+  </activities>
+</tincan>

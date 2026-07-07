@@ -1,0 +1,23 @@
+.DS_Store
+node_modules/
+.pnpm-store/
+.turbo/
+dist/
+coverage/
+*.tsbuildinfo
+
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+.env
+.env.*
+!.env.example
+
+*.egg-info/
+
+# Generated review artifact (rebuild with: node scripts/make-standalone.mjs)
+forge-review.html
+
+docs/reference/example-course-xapi.zip

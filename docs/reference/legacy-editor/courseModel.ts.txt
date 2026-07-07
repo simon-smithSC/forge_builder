@@ -1,0 +1,748 @@
+export type BlockFamily =
+  | "text"
+  | "heading"
+  | "subheading"
+  | "twoColumnText"
+  | "statement"
+  | "quote"
+  | "list"
+  | "image"
+  | "gallery"
+  | "divider"
+  | "multimedia"
+  | "interactive"
+  | "process"
+  | "flashcard"
+  | "buttons"
+  | "knowledgeCheck"
+  | "chart"
+  | "table"
+  | "audio"
+  | "scenario"
+  | "callout"
+  | "checklist"
+  | "quiz";
+
+export type MoveDirection = "up" | "down";
+
+export type BlockContent = Record<string, unknown>;
+
+export type BlockSettings = Record<string, unknown>;
+
+export interface CourseBlock {
+  id: string;
+  family: BlockFamily;
+  title: string;
+  content: BlockContent;
+  settings: BlockSettings;
+  estimatedMinutes: number;
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  blocks: CourseBlock[];
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  lessons: Lesson[];
+}
+
+export interface CourseStats {
+  lessons: number;
+  blocks: number;
+  quizzes: number;
+  estimatedMinutes: number;
+}
+
+export interface BlockPatch {
+  title?: string;
+  content?: BlockContent;
+  settings?: BlockSettings;
+  estimatedMinutes?: number;
+}
+
+const blockDefaults: Record<BlockFamily, Omit<CourseBlock, "id">> = {
+  text: {
+    family: "text",
+    title: "Text with heading",
+    content: {
+      heading: "Text heading",
+      text: "Add clear, focused lesson copy here.",
+    },
+    settings: {
+      variant: "body",
+      style: "body",
+    },
+    estimatedMinutes: 2,
+  },
+  heading: {
+    family: "heading",
+    title: "Heading",
+    content: {
+      heading: "Add a strong section heading",
+    },
+    settings: {
+      variant: "heading",
+      style: "heading",
+    },
+    estimatedMinutes: 1,
+  },
+  subheading: {
+    family: "subheading",
+    title: "Subheading",
+    content: {
+      heading: "Add a supporting subheading",
+      text: "Use this to introduce a short transition or setup.",
+    },
+    settings: {
+      variant: "subheading",
+      style: "subheading",
+    },
+    estimatedMinutes: 1,
+  },
+  twoColumnText: {
+    family: "twoColumnText",
+    title: "Two column text",
+    content: {
+      leftHeading: "First idea",
+      leftText: "Explain the first point.",
+      rightHeading: "Second idea",
+      rightText: "Explain the second point.",
+    },
+    settings: {
+      variant: "two-column",
+      style: "two-column",
+    },
+    estimatedMinutes: 3,
+  },
+  statement: {
+    family: "statement",
+    title: "Statement",
+    content: {
+      text: "Make a high-impact statement.",
+      attribution: "",
+    },
+    settings: {
+      variant: "impact",
+      style: "impact",
+    },
+    estimatedMinutes: 1,
+  },
+  quote: {
+    family: "quote",
+    title: "Quote",
+    content: {
+      text: "Add a quotation or testimonial.",
+      attribution: "Attribution",
+    },
+    settings: {
+      variant: "quote",
+      style: "quote",
+    },
+    estimatedMinutes: 1,
+  },
+  list: {
+    family: "list",
+    title: "List",
+    content: {
+      items: ["First list item", "Second list item", "Third list item"],
+    },
+    settings: {
+      variant: "bulleted",
+      style: "bulleted",
+    },
+    estimatedMinutes: 2,
+  },
+  image: {
+    family: "image",
+    title: "Image",
+    content: {
+      src: "",
+      alt: "Describe the image for learners.",
+      caption: "Add an optional caption.",
+    },
+    settings: {
+      variant: "wide",
+      layout: "wide",
+    },
+    estimatedMinutes: 1,
+  },
+  gallery: {
+    family: "gallery",
+    title: "Gallery",
+    content: {
+      images: [
+        { src: "", alt: "First gallery image", caption: "First image caption" },
+        { src: "", alt: "Second gallery image", caption: "Second image caption" },
+      ],
+    },
+    settings: {
+      variant: "grid",
+      layout: "grid",
+    },
+    estimatedMinutes: 2,
+  },
+  divider: {
+    family: "divider",
+    title: "Divider",
+    content: {
+      label: "Continue",
+    },
+    settings: {
+      variant: "line",
+      style: "line",
+    },
+    estimatedMinutes: 1,
+  },
+  multimedia: {
+    family: "multimedia",
+    title: "Multimedia",
+    content: {
+      label: "Embedded media",
+      url: "https://example.com/embed",
+      attachmentLabel: "Download resource",
+      code: "const lesson = \"Forge\";\nconsole.log(lesson);",
+      language: "javascript",
+      caption: "Add a video, embed, attachment, or code sample.",
+    },
+    settings: {
+      variant: "embed",
+      style: "embed",
+    },
+    estimatedMinutes: 3,
+  },
+  interactive: {
+    family: "interactive",
+    title: "Accordion",
+    content: {
+      items: [
+        { title: "First panel", text: "Add the first reveal." },
+        { title: "Second panel", text: "Add the second reveal." },
+      ],
+    },
+    settings: {
+      variant: "accordion",
+      style: "accordion",
+    },
+    estimatedMinutes: 4,
+  },
+  process: {
+    family: "process",
+    title: "Process",
+    content: {
+      steps: [
+        { title: "Step one", text: "Describe the first step." },
+        { title: "Step two", text: "Describe the second step." },
+        { title: "Step three", text: "Describe the third step." },
+      ],
+    },
+    settings: {
+      variant: "process",
+      style: "process",
+    },
+    estimatedMinutes: 4,
+  },
+  flashcard: {
+    family: "flashcard",
+    title: "Flashcards",
+    content: {
+      cards: [
+        { front: "Term", back: "Definition" },
+        { front: "Question", back: "Answer" },
+      ],
+    },
+    settings: {
+      variant: "grid",
+      style: "grid",
+    },
+    estimatedMinutes: 3,
+  },
+  buttons: {
+    family: "buttons",
+    title: "Buttons",
+    content: {
+      buttons: [
+        { label: "Open resource", destination: "https://example.com" },
+        { label: "Email team", destination: "mailto:team@example.com" },
+      ],
+    },
+    settings: {
+      variant: "stack",
+      style: "stack",
+    },
+    estimatedMinutes: 1,
+  },
+  knowledgeCheck: {
+    family: "knowledgeCheck",
+    title: "Knowledge check",
+    content: {
+      question: "Which response is correct?",
+      options: ["Correct option", "Distractor option"],
+      correctOption: 0,
+      correctOptions: [0],
+      acceptedAnswers: ["Correct option"],
+      matches: [
+        { prompt: "Term", match: "Definition" },
+        { prompt: "Concept", match: "Example" },
+      ],
+      feedback: "Use feedback to reinforce the point.",
+      correctFeedback: "Correct. This reinforces the key point.",
+      incorrectFeedback: "Not quite. Review the feedback and try again.",
+    },
+    settings: {
+      variant: "multiple-choice",
+      style: "multiple-choice",
+      attempts: 1,
+      showFeedback: true,
+    },
+    estimatedMinutes: 3,
+  },
+  chart: {
+    family: "chart",
+    title: "Chart",
+    content: {
+      items: [
+        { label: "Alpha", value: 42 },
+        { label: "Beta", value: 68 },
+        { label: "Gamma", value: 54 },
+      ],
+    },
+    settings: {
+      variant: "bar",
+      style: "bar",
+      showDataTable: true,
+    },
+    estimatedMinutes: 2,
+  },
+  table: {
+    family: "table",
+    title: "Table",
+    content: {
+      headers: ["Column A", "Column B"],
+      rows: [
+        ["First row", "Value"],
+        ["Second row", "Value"],
+      ],
+    },
+    settings: {
+      variant: "basic",
+      style: "basic",
+      headerRow: true,
+      headerColumn: false,
+    },
+    estimatedMinutes: 2,
+  },
+  audio: {
+    family: "audio",
+    title: "Audio",
+    content: {
+      title: "Audio narration",
+      url: "",
+      transcript: "Add a transcript for accessibility.",
+    },
+    settings: {
+      variant: "standalone",
+      style: "standalone",
+      showTranscript: true,
+    },
+    estimatedMinutes: 2,
+  },
+  scenario: {
+    family: "scenario",
+    title: "Scenario",
+    content: {
+      prompt: "Present the learner with a decision.",
+      choices: [
+        { label: "Choice A", outcome: "Describe the outcome." },
+        { label: "Choice B", outcome: "Describe another outcome." },
+      ],
+    },
+    settings: {
+      variant: "branching",
+      style: "branching",
+      trackChoices: true,
+    },
+    estimatedMinutes: 5,
+  },
+  callout: {
+    family: "callout",
+    title: "Callout",
+    content: {
+      text: "Highlight a key idea or warning.",
+    },
+    settings: {
+      variant: "info",
+      tone: "info",
+    },
+    estimatedMinutes: 1,
+  },
+  checklist: {
+    family: "checklist",
+    title: "Checklist",
+    content: {
+      items: ["Confirm the goal", "Try the step", "Reflect on the result"],
+    },
+    settings: {
+      variant: "task-checklist",
+      allowMultiple: true,
+      requiredForCompletion: false,
+    },
+    estimatedMinutes: 3,
+  },
+  quiz: {
+    family: "quiz",
+    title: "Knowledge check",
+    content: {
+      question: "Which option best matches the lesson goal?",
+      options: ["Option A", "Option B", "Option C"],
+      correctOption: 0,
+      correctOptions: [0],
+      acceptedAnswers: ["Option A"],
+      matches: [
+        { prompt: "Term", match: "Definition" },
+        { prompt: "Concept", match: "Example" },
+      ],
+      feedback: "Use feedback to reinforce the point.",
+      correctFeedback: "Correct. This reinforces the key point.",
+      incorrectFeedback: "Not quite. Review the feedback and try again.",
+    },
+    settings: {
+      variant: "multiple-choice",
+      attempts: 1,
+      showFeedback: true,
+    },
+    estimatedMinutes: 4,
+  },
+};
+
+export const createInitialCourse = (): Course => ({
+  id: "course-local-mvp",
+  title: "Editable Launch Course",
+  lessons: [
+    {
+      id: "lesson-welcome",
+      title: "Welcome and Orientation",
+      blocks: [
+        {
+          id: "block-welcome-intro",
+          ...blockDefaults.text,
+          title: "Welcome message",
+          content: {
+            text: "Welcome learners, set expectations, and explain what they will be able to do by the end.",
+          },
+        },
+        {
+          id: "block-welcome-image",
+          ...blockDefaults.image,
+          title: "Course hero",
+          content: {
+            src: "",
+            alt: "A workspace prepared for course authoring.",
+            caption: "Replace this placeholder with a relevant course image.",
+          },
+        },
+        {
+          id: "block-welcome-callout",
+          ...blockDefaults.callout,
+          title: "Before you start",
+          content: {
+            text: "Keep this course practical: every section should help the learner take the next action.",
+          },
+        },
+      ],
+    },
+    {
+      id: "lesson-build",
+      title: "Build and Publish",
+      blocks: [
+        {
+          id: "block-build-checklist",
+          ...blockDefaults.checklist,
+          title: "Publishing checklist",
+          content: {
+            items: ["Review every block", "Preview the lesson", "Publish when ready"],
+          },
+        },
+        {
+          id: "block-build-quiz",
+          ...blockDefaults.quiz,
+          title: "Readiness check",
+          content: {
+            question: "What should you do before publishing?",
+            options: ["Preview the course", "Delete all images", "Rename every block"],
+            correctOption: 0,
+          },
+        },
+      ],
+    },
+  ],
+});
+
+export const addLesson = (course: Course, title = "Untitled lesson"): Course => ({
+  ...course,
+  lessons: [
+    ...course.lessons,
+    {
+      id: nextId(course, "lesson"),
+      title,
+      blocks: [],
+    },
+  ],
+});
+
+export const renameLesson = (course: Course, lessonId: string, title: string): Course =>
+  updateLesson(course, lessonId, (lesson) => ({
+    ...lesson,
+    title,
+  }));
+
+export const deleteLesson = (course: Course, lessonId: string): Course => {
+  if (course.lessons.length <= 1 || !course.lessons.some((lesson) => lesson.id === lessonId)) {
+    return course;
+  }
+
+  return {
+    ...course,
+    lessons: course.lessons.filter((lesson) => lesson.id !== lessonId),
+  };
+};
+
+export const moveLesson = (course: Course, lessonId: string, direction: MoveDirection): Course => {
+  const lessonIndex = course.lessons.findIndex((lesson) => lesson.id === lessonId);
+  const targetIndex = direction === "up" ? lessonIndex - 1 : lessonIndex + 1;
+
+  if (lessonIndex === -1 || targetIndex < 0 || targetIndex >= course.lessons.length) {
+    return course;
+  }
+
+  const lessons = [...course.lessons];
+  const [lesson] = lessons.splice(lessonIndex, 1);
+
+  if (!lesson) {
+    return course;
+  }
+
+  lessons.splice(targetIndex, 0, lesson);
+
+  return {
+    ...course,
+    lessons,
+  };
+};
+
+export const addBlock = (
+  course: Course,
+  lessonId: string,
+  family: BlockFamily,
+  insertAtIndex?: number,
+): Course =>
+  updateLesson(course, lessonId, (lesson) => ({
+    ...lesson,
+    blocks: insertItem(lesson.blocks, clampInsertionIndex(insertAtIndex, lesson.blocks.length), {
+      id: nextId(course, "block"),
+      ...cloneBlockDefaults(family),
+    }),
+  }));
+
+export const updateBlock = (
+  course: Course,
+  lessonId: string,
+  blockId: string,
+  patch: BlockPatch,
+): Course =>
+  updateBlockInLesson(course, lessonId, blockId, (block) => ({
+    ...block,
+    ...patch,
+    content: patch.content ? { ...block.content, ...patch.content } : block.content,
+    settings: patch.settings ? { ...block.settings, ...patch.settings } : block.settings,
+  }));
+
+export const deleteBlock = (course: Course, lessonId: string, blockId: string): Course =>
+  updateLesson(course, lessonId, (lesson) => {
+    if (!lesson.blocks.some((block) => block.id === blockId)) {
+      return lesson;
+    }
+
+    return {
+      ...lesson,
+      blocks: lesson.blocks.filter((block) => block.id !== blockId),
+    };
+  });
+
+export const duplicateBlock = (course: Course, lessonId: string, blockId: string): Course =>
+  updateLesson(course, lessonId, (lesson) => {
+    const blockIndex = lesson.blocks.findIndex((block) => block.id === blockId);
+
+    if (blockIndex === -1) {
+      return lesson;
+    }
+
+    const block = lesson.blocks[blockIndex];
+
+    if (!block) {
+      return lesson;
+    }
+
+    const duplicate: CourseBlock = {
+      ...block,
+      id: nextId(course, "block"),
+      content: cloneRecord(block.content),
+      settings: cloneRecord(block.settings),
+    };
+    const blocks = [...lesson.blocks];
+    blocks.splice(blockIndex + 1, 0, duplicate);
+
+    return {
+      ...lesson,
+      blocks,
+    };
+  });
+
+export const moveBlock = (
+  course: Course,
+  lessonId: string,
+  blockId: string,
+  direction: MoveDirection,
+): Course =>
+  updateLesson(course, lessonId, (lesson) => {
+    const blockIndex = lesson.blocks.findIndex((block) => block.id === blockId);
+    const targetIndex = direction === "up" ? blockIndex - 1 : blockIndex + 1;
+
+    if (blockIndex === -1 || targetIndex < 0 || targetIndex >= lesson.blocks.length) {
+      return lesson;
+    }
+
+    const blocks = [...lesson.blocks];
+    const [block] = blocks.splice(blockIndex, 1);
+    if (!block) {
+      return lesson;
+    }
+
+    blocks.splice(targetIndex, 0, block);
+
+    return {
+      ...lesson,
+      blocks,
+    };
+  });
+
+export const getCourseStats = (course: Course): CourseStats => {
+  const blocks = course.lessons.flatMap((lesson) => lesson.blocks);
+
+  return {
+    lessons: course.lessons.length,
+    blocks: blocks.length,
+    quizzes: blocks.filter((block) => block.family === "quiz" || block.family === "knowledgeCheck").length,
+    estimatedMinutes: blocks.reduce((total, block) => total + block.estimatedMinutes, 0),
+  };
+};
+
+export const findBlock = (
+  course: Course,
+  lessonId: string,
+  blockId: string,
+): CourseBlock | undefined =>
+  course.lessons.find((lesson) => lesson.id === lessonId)?.blocks.find((block) => block.id === blockId);
+
+const updateLesson = (
+  course: Course,
+  lessonId: string,
+  updater: (lesson: Lesson) => Lesson,
+): Course => {
+  const lessonIndex = course.lessons.findIndex((lesson) => lesson.id === lessonId);
+
+  if (lessonIndex === -1) {
+    return course;
+  }
+
+  const currentLesson = course.lessons[lessonIndex];
+
+  if (!currentLesson) {
+    return course;
+  }
+
+  const nextLesson = updater(currentLesson);
+
+  if (nextLesson === currentLesson) {
+    return course;
+  }
+
+  return {
+    ...course,
+    lessons: course.lessons.map((lesson, index) => (index === lessonIndex ? nextLesson : lesson)),
+  };
+};
+
+const updateBlockInLesson = (
+  course: Course,
+  lessonId: string,
+  blockId: string,
+  updater: (block: CourseBlock) => CourseBlock,
+): Course =>
+  updateLesson(course, lessonId, (lesson) => {
+    const blockIndex = lesson.blocks.findIndex((block) => block.id === blockId);
+
+    if (blockIndex === -1) {
+      return lesson;
+    }
+
+    return {
+      ...lesson,
+      blocks: lesson.blocks.map((block, index) => (index === blockIndex ? updater(block) : block)),
+    };
+  });
+
+const cloneBlockDefaults = (family: BlockFamily): Omit<CourseBlock, "id"> => {
+  const defaults = blockDefaults[family];
+
+  return {
+    ...defaults,
+    content: cloneValue(defaults.content),
+    settings: cloneValue(defaults.settings),
+  };
+};
+
+const cloneRecord = <T extends Record<string, unknown>>(value: T): T => cloneValue(value);
+
+const cloneValue = <T>(value: T): T => {
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+
+  return JSON.parse(JSON.stringify(value)) as T;
+};
+
+const clampInsertionIndex = (index: number | undefined, length: number): number => {
+  if (index === undefined || Number.isNaN(index)) {
+    return length;
+  }
+
+  return Math.max(0, Math.min(Math.trunc(index), length));
+};
+
+const insertItem = <T>(items: T[], index: number, item: T): T[] => {
+  const nextItems = [...items];
+  nextItems.splice(index, 0, item);
+
+  return nextItems;
+};
+
+const nextId = (course: Course, prefix: "lesson" | "block"): string => {
+  const ids = new Set([
+    course.id,
+    ...course.lessons.map((lesson) => lesson.id),
+    ...course.lessons.flatMap((lesson) => lesson.blocks.map((block) => block.id)),
+  ]);
+  let index = ids.size + 1;
+  let id = `${prefix}-${index}`;
+
+  while (ids.has(id)) {
+    index += 1;
+    id = `${prefix}-${index}`;
+  }
+
+  return id;
+};
