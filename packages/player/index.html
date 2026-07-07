@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Forge player runtime dev shell</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      #forge-root {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="forge-root"></div>
+    <script>
+      // Dev shell only: put a published course-data.json under
+      // packages/player/public/content/ and run `vite` in this package.
+      // Launch parameters (endpoint, auth, actor, activity_id, registration)
+      // go on the query string exactly like an LMS launch.
+      window.__FORGE_LAUNCH__ = {
+        courseDataUrl: "content/course-data.json",
+        search: window.location.search,
+      };
+    </script>
+    <script type="module" src="/src/standalone.tsx"></script>
+  </body>
+</html>

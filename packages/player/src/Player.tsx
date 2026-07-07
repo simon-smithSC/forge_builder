@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, ReactElement } from "react";
+import type { ReactElement } from "react";
 import { BlockRenderContext, BlockView } from "@forge/blocks";
 import type { RenderContext } from "@forge/blocks";
 import type { CourseDoc, Lesson } from "@forge/schema";
+// Type-only import: the tracker object arrives via props (R3, SPEC 6).
+import type { TrackingPort } from "@forge/xapi";
+import { LessonFooter, UntrackedBanner, themeStyleOf } from "./chrome.js";
+import { Cover } from "./Cover.js";
 import {
   buildCourseSnapshot,
   computeLessonPercent,
@@ -10,6 +14,16 @@ import {
 } from "./progress.js";
 import type { CourseProgressSnapshot } from "./progress.js";
 import { QuizLessonView } from "./quiz/QuizLessonView.js";
+import { SidebarNav } from "./SidebarNav.js";
+import {
+  usePlayerTracking,
+  useStateChangeEmitter,
+} from "./tracking.js";
+import type {
+  CompletedLessonInfo,
+  PlayerResume,
+  PlayerStateChange,
+} from "./tracking.js";
 
 export interface PlayerProps {
   course: CourseDoc;
@@ -19,6 +33,14 @@ export interface PlayerProps {
   hideCover?: boolean;
   onExit?: () => void;
   onProgress?: (snapshot: CourseProgressSnapshot) => void;
+  /** xAPI tracking port; absent means no tracking calls are made. */
+  tracking?: TrackingPort;
+  /** Resume state (bookmark, consumed ids, quiz attempts) from the host. */
+  resume?: PlayerResume;
+  /** Debounced (~1s) bookmark + consumption report for State API writes. */
+  onStateChange?: (state: PlayerStateChange) => void;
+  /** Shows a dismissible "progress not recorded" banner (untracked mode). */
+  untrackedBanner?: boolean;
 }
 
 type NavigableLesson = Exclude<Lesson, { type: "section" }>;
@@ -29,19 +51,6 @@ function isNavigable(lesson: Lesson): lesson is NavigableLesson {
   return lesson.type !== "section";
 }
 
-function themeStyleOf(course: CourseDoc): CSSProperties {
-  const theme = course.theme;
-  return {
-    "--forge-primary": theme.primaryColor,
-    "--forge-bg": theme.backgroundColor,
-    "--forge-surface": theme.surfaceColor,
-    "--forge-text": theme.textColor,
-    "--forge-accent": theme.accentColor,
-    "--forge-heading-font": theme.headingTypeface,
-    "--forge-body-font": theme.bodyTypeface,
-  } as CSSProperties;
-}
-
 /** The full runtime UI: cover, sidebar navigation, lesson view, quiz engine. */
 export function Player({
   course,
@@ -50,6 +59,10 @@ export function Player({
   hideCover,
   onExit,
   onProgress,
+  tracking,
+  resume,
+  onStateChange,
+  untrackedBanner,
 }: PlayerProps): ReactElement {
   const navigable = useMemo(
     () => course.lessons.filter(isNavigable),
@@ -58,14 +71,23 @@ export function Player({
 
   const [started, setStarted] = useState(Boolean(hideCover));
   const [currentLessonId, setCurrentLessonId] = useState<string | undefined>(
-    () => initialLessonId ?? navigable[0]?.id,
+    () => resume?.lessonId ?? initialLessonId ?? navigable[0]?.id,
   );
   const [consumedByLesson, setConsumedByLesson] = useState<
     Record<string, ReadonlySet<string>>
-  >({});
+  >(() => {
+    const seeded: Record<string, ReadonlySet<string>> = {};
+    for (const [lessonId, ids] of Object.entries(
+      resume?.consumedByLesson ?? {},
+    )) {
+      seeded[lessonId] = new Set(ids);
+    }
+    return seeded;
+  });
   const [sidebarOpen, setSidebarOpen] = useState(
     course.settings.sidebar.defaultOpen,
   );
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const [prefersReducedMotion] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -91,18 +113,63 @@ export function Player({
     });
   }, []);
 
-  // Report a full snapshot to the host after every consumption change.
+  // Full snapshot after every consumption change (host + tracking hooks).
+  const snapshot = useMemo(
+    () => buildCourseSnapshot(course.lessons, consumedByLesson),
+    [course.lessons, consumedByLesson],
+  );
   const onProgressRef = useRef(onProgress);
   onProgressRef.current = onProgress;
   useEffect(() => {
-    onProgressRef.current?.(buildCourseSnapshot(course.lessons, consumedByLesson));
-  }, [course.lessons, consumedByLesson]);
+    onProgressRef.current?.(snapshot);
+  }, [snapshot]);
 
   const isLessonComplete = useCallback(
     (lesson: Lesson): boolean =>
       computeLessonPercent(lesson, consumedByLesson[lesson.id] ?? EMPTY_SET) === 100,
     [consumedByLesson],
   );
+
+  // --- R3 tracking + resume wiring -------------------------------------
+  const trackingRef = useRef(tracking);
+  trackingRef.current = tracking;
+
+  const completedLessons = useMemo<CompletedLessonInfo[]>(
+    () =>
+      navigable
+        .filter((lesson) => snapshot.lessons[lesson.id]?.completed === true)
+        .map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          isQuiz: lesson.type === "quiz",
+        })),
+    [navigable, snapshot],
+  );
+
+  // Lessons complete at mount (resume) never re-announce lessonCompleted.
+  const initiallyCompletedRef = useRef<string[] | null>(null);
+  if (initiallyCompletedRef.current === null) {
+    initiallyCompletedRef.current = navigable
+      .filter(
+        (lesson) =>
+          computeLessonPercent(
+            lesson,
+            consumedByLesson[lesson.id] ?? EMPTY_SET,
+          ) === 100,
+      )
+      .map((lesson) => lesson.id);
+  }
+
+  usePlayerTracking({
+    tracking,
+    started,
+    currentLesson,
+    percent: snapshot.percent,
+    completedLessons,
+    initiallyCompletedLessonIds: initiallyCompletedRef.current,
+  });
+  useStateChangeEmitter(onStateChange, currentLesson?.id, consumedByLesson);
+  // ----------------------------------------------------------------------
 
   const sequential = course.settings.navigationMode === "sequential";
   const isLockedAt = useCallback(
@@ -193,6 +260,15 @@ export function Player({
             markConsumed(currentLessonIdForEvents, blockId);
           }
         },
+        onInteracted: (blockId: string, detail?: Record<string, unknown>) => {
+          // Scenario renderers report {sceneId, choiceId}; other families
+          // send different detail shapes which are not tracked.
+          const sceneId = detail?.["sceneId"];
+          const choiceId = detail?.["choiceId"];
+          if (typeof sceneId === "string" && typeof choiceId === "string") {
+            trackingRef.current?.scenarioChoice(blockId, sceneId, choiceId);
+          }
+        },
         onNavigateToLesson: goToLesson,
       },
       consumedBlockIds: currentConsumed,
@@ -209,25 +285,21 @@ export function Player({
     ],
   );
 
+  const banner =
+    untrackedBanner && !bannerDismissed ? (
+      <UntrackedBanner onDismiss={() => setBannerDismissed(true)} />
+    ) : null;
+
   if (!started) {
     return (
       <div className="fp-player" style={themeStyle}>
-        <div className="fp-cover">
-          <h1 className="fp-cover-title">{course.title}</h1>
-          {course.description ? (
-            <p className="fp-cover-description">{course.description}</p>
-          ) : null}
-          {course.settings.showLessonCount ? (
-            <p className="fp-cover-count">{navigable.length} lessons</p>
-          ) : null}
-          <button
-            type="button"
-            className="fp-button fp-button-primary fp-cover-start"
-            onClick={() => setStarted(true)}
-          >
-            {course.labelSet.startCourse}
-          </button>
-        </div>
+        {banner}
+        <Cover
+          course={course}
+          lessonCount={navigable.length}
+          resuming={resume?.lessonId !== undefined}
+          onStart={() => setStarted(true)}
+        />
       </div>
     );
   }
@@ -243,9 +315,11 @@ export function Player({
     course.settings.blockEntranceAnimation !== "none" && !prefersReducedMotion;
 
   const sidebarEnabled = course.settings.sidebar.enabled;
+  const navigableIds = navigable.map((lesson) => lesson.id);
 
   return (
     <div className="fp-player" style={themeStyle}>
+      {banner}
       <header className="fp-topbar">
         {sidebarEnabled ? (
           <button
@@ -272,48 +346,14 @@ export function Player({
       </header>
       <div className="fp-body">
         {sidebarEnabled && sidebarOpen ? (
-          <nav
-            id="fp-sidebar-nav"
-            className="fp-sidebar"
-            aria-label="Lessons"
-          >
-            <ol className="fp-nav-list">
-              {course.lessons.map((lesson) => {
-                if (lesson.type === "section") {
-                  return (
-                    <li key={lesson.id} className="fp-nav-section">
-                      {lesson.title}
-                    </li>
-                  );
-                }
-                const lessonNavIndex = navigable.findIndex(
-                  (navLesson) => navLesson.id === lesson.id,
-                );
-                const locked = isLockedAt(lessonNavIndex);
-                const complete = isLessonComplete(lesson);
-                const isCurrent = lesson.id === currentLesson?.id;
-                return (
-                  <li key={lesson.id} className="fp-nav-item">
-                    <button
-                      type="button"
-                      className={`fp-nav-link${isCurrent ? " fp-nav-current" : ""}${complete ? " fp-nav-complete" : ""}`}
-                      disabled={locked}
-                      aria-current={isCurrent ? "page" : undefined}
-                      onClick={() => goToLesson(lesson.id)}
-                    >
-                      <span className="fp-nav-status" aria-hidden="true">
-                        {complete ? "✓" : locked ? "🔒" : ""}
-                      </span>
-                      <span className="fp-nav-title">{lesson.title}</span>
-                      {locked ? (
-                        <span className="fp-sr-only">(locked)</span>
-                      ) : null}
-                    </button>
-                  </li>
-                );
-              })}
-            </ol>
-          </nav>
+          <SidebarNav
+            lessons={course.lessons}
+            navigableIds={navigableIds}
+            currentLessonId={currentLesson?.id}
+            isLocked={isLockedAt}
+            isComplete={isLessonComplete}
+            onSelect={goToLesson}
+          />
         ) : null}
         <main className="fp-main" ref={mainRef}>
           {currentLesson ? (
@@ -337,8 +377,23 @@ export function Player({
                   key={`${currentLesson.id}-quiz`}
                   lesson={currentLesson}
                   labels={course.labelSet}
+                  initialAttempt={
+                    (resume?.quizAttempts?.[currentLesson.id] ?? 0) + 1
+                  }
                   onQuestionAnswered={(questionId) =>
                     markConsumed(currentLesson.id, questionId)
+                  }
+                  onQuestionSubmitted={(input) =>
+                    trackingRef.current?.questionAnswered(input)
+                  }
+                  onQuizResult={(score, passed, attemptsExhausted) =>
+                    trackingRef.current?.quizSubmitted(
+                      currentLesson.id,
+                      currentLesson.title,
+                      score,
+                      passed,
+                      attemptsExhausted,
+                    )
                   }
                   onFinished={() => {
                     for (const question of currentLesson.questions) {
@@ -347,36 +402,13 @@ export function Player({
                   }}
                 />
               )}
-              <footer className="fp-lesson-footer">
-                <button
-                  type="button"
-                  className="fp-button"
-                  disabled={!previousLesson}
-                  onClick={() => previousLesson && goToLesson(previousLesson.id)}
-                >
-                  {course.labelSet.previousLesson}
-                </button>
-                {nextLesson ? (
-                  <button
-                    type="button"
-                    className="fp-button fp-button-primary"
-                    disabled={nextBlocked}
-                    onClick={() => goToLesson(nextLesson.id)}
-                  >
-                    {course.labelSet.continue}
-                  </button>
-                ) : (
-                  <span className="fp-lesson-footer-spacer" />
-                )}
-                <button
-                  type="button"
-                  className="fp-button"
-                  disabled={!nextLesson || nextBlocked}
-                  onClick={() => nextLesson && goToLesson(nextLesson.id)}
-                >
-                  {course.labelSet.nextLesson}
-                </button>
-              </footer>
+              <LessonFooter
+                labels={course.labelSet}
+                previousLessonId={previousLesson?.id}
+                nextLessonId={nextLesson?.id}
+                nextBlocked={nextBlocked}
+                onNavigate={goToLesson}
+              />
             </article>
           ) : (
             <p className="fp-empty">This course has no lessons yet.</p>

@@ -48,6 +48,7 @@ const PKG_ENTRY = {
   "@forge/blocks": "packages/blocks/dist/index.js",
   "@forge/player": "packages/player/dist/index.js",
   "@forge/xapi": "packages/xapi/dist/index.js",
+  "@forge/exporter": "packages/exporter/dist/index.js",
   "@forge/ui": "packages/ui/dist/index.js",
 };
 

@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactElement } from "react";
 import { Html } from "@forge/blocks";
 import type { LabelSet, Question, QuizLesson } from "@forge/schema";
+// Type-only imports: the player bundle never ships xapi runtime code.
+import type { AnsweredInput, QuizScore } from "@forge/xapi";
+import { buildAnsweredInput } from "./answeredInput.js";
 
 /**
  * R1 quiz runtime: questions one at a time, submit per question, always show
@@ -15,6 +18,16 @@ export interface QuizLessonViewProps {
   onQuestionAnswered: (questionId: string) => void;
   /** Fired when the result screen is reached (lesson counts complete). */
   onFinished: (passed: boolean) => void;
+  /** R3 tracking: statement input for every submitted question. */
+  onQuestionSubmitted?: (input: AnsweredInput) => void;
+  /** R3 tracking: fired once per attempt at the result screen. */
+  onQuizResult?: (
+    score: QuizScore,
+    passed: boolean,
+    attemptsExhausted: boolean,
+  ) => void;
+  /** 1-based attempt number to start from (resume across sessions). */
+  initialAttempt?: number;
 }
 
 type Phase = "answering" | "feedback" | "result";
@@ -58,13 +71,16 @@ export function QuizLessonView({
   labels,
   onQuestionAnswered,
   onFinished,
+  onQuestionSubmitted,
+  onQuizResult,
+  initialAttempt,
 }: QuizLessonViewProps): ReactElement {
   const [questions, setQuestions] = useState<Question[]>(() =>
     prepareQuestions(lesson),
   );
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("answering");
-  const [attempt, setAttempt] = useState(1);
+  const [attempt, setAttempt] = useState(initialAttempt ?? 1);
   const [outcomes, setOutcomes] = useState<Record<string, Outcome>>({});
 
   // Per-question response state, reset whenever the question changes.
@@ -108,14 +124,33 @@ export function QuizLessonView({
       if (outcomes[q.id]?.correct) earned += points;
     }
     const percent = possible === 0 ? 100 : Math.round((earned / possible) * 100);
-    return { percent, passed: percent >= lesson.settings.passingScore };
+    const scaled = possible === 0 ? 1 : earned / possible;
+    return {
+      percent,
+      passed: percent >= lesson.settings.passingScore,
+      raw: earned,
+      max: possible,
+      scaled,
+    };
   }, [questions, outcomes, lesson.settings.passingScore]);
 
   const onFinishedRef = useRef(onFinished);
   onFinishedRef.current = onFinished;
+  const onQuizResultRef = useRef(onQuizResult);
+  onQuizResultRef.current = onQuizResult;
   useEffect(() => {
-    if (phase === "result") onFinishedRef.current(score.passed);
-    // score is stable once the result screen renders (all questions graded).
+    if (phase !== "result") return;
+    onFinishedRef.current(score.passed);
+    const retriesUsed = attempt - 1;
+    const canRetry =
+      lesson.settings.retryCount === -1 ||
+      retriesUsed < lesson.settings.retryCount;
+    onQuizResultRef.current?.(
+      { raw: score.raw, min: 0, max: score.max, scaled: score.scaled },
+      score.passed,
+      !score.passed && !canRetry,
+    );
+    // score/attempt are stable once the result screen renders.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
@@ -213,6 +248,22 @@ export function QuizLessonView({
     const outcome = grade(question);
     setOutcomes((prev) => ({ ...prev, [question.id]: outcome }));
     onQuestionAnswered(question.id);
+    onQuestionSubmitted?.(
+      buildAnsweredInput(
+        question,
+        {
+          choice,
+          multi,
+          textValue,
+          numericValue,
+          matchSelections,
+          sequence,
+          likertValue,
+        },
+        outcome.correct,
+        attempt,
+      ),
+    );
     if (question.type === "LIKERT") {
       advance();
     } else {

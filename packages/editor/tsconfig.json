@@ -10,7 +10,8 @@
     { "path": "../schema" },
     { "path": "../ui" },
     { "path": "../blocks" },
-    { "path": "../player" }
+    { "path": "../player" },
+    { "path": "../exporter" }
   ],
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }

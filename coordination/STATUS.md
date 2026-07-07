@@ -45,9 +45,17 @@ This recovery pass ran in a sandbox without npm registry access and with darwin-
 - State layer per ADR 0002: store internals swapped to Zustand (public API preserved), history on Immer structural sharing (patch-based journaling queued for R3), TanStack Query on the read path (course list with retry/refetch states) with the bespoke autosave/journal write path intact.
 - Proof: `pnpm --filter @forge/editor build` clean, `pnpm contract-check`, `pnpm smoke`, review build regenerated (86 modules, 11 stylesheets).
 
+### Recovery R3 (2026-07-07)
+
+- `@forge/xapi`: launch parser (tracked/untracked/strict, registration generation + State persistence per SPEC 13.2), StatementBuilder for the full SPEC 6.3 verb table with cmi.interaction definitions mirroring the reference tincan.xml response formats, batched transport queue (localStorage persistence, backoff, keepalive flush, at-least-once), StateClient (debounced writes, versioned envelope), pure completion engine (2 tracking x 4 reporting modes, at-most-once outcome guarantees), TrackingPort + nullTracker. Proof: `node e2e/xapi/golden-run.mjs` (22 golden statements, 8/8 matrix) and `pnpm --filter @forge/xapi test` on a networked machine.
+- `@forge/exporter`: published course-data compile with validation warnings, tincan.xml via escaping XmlWriter matching reference structural patterns, deterministic pure-TS STORE zip (sorted entries, fixed timestamp, CRC32), SPEC 7 package layout with launch index.html. Proof: `node e2e/exporter/build-run.mjs` (byte-identical double build, unzip -t clean, 11 interaction activities from the kitchen sink).
+- Player tracking + resume: TrackingPort wiring at every SPEC 6.3 moment, State-backed resume (bitset consumption per lesson, bookmark, quiz attempt continuation), untracked preview banner, standalone runtime entry + vite bundle config (`pnpm --filter @forge/player build:runtime` on the Mac).
+- Editor Publish: settings dialog per SPEC 6.5/7 (tracking, reporting, exit link, hide cover, strict launch; forge-v1 only), in-browser package build + zip download, warning report panel. Server-side publish worker (Python, deterministic zip in the API) remains the R4 deployment path; the in-browser build is the local-MVP bridge.
+- Git: repository initialized, baseline + R3 commits on `main`, remote `https://github.com/simon-smithSC/forge_builder.git` (push requires owner credentials).
+
 ## In Progress
 
-- None. R2 remaining polish (per-family rich toolbars, link extension after next install) folds into R3 alongside `@forge/xapi` and `@forge/exporter`.
+- None. Next: R4 (Postgres/GCS persistence, SSE presence + lesson locks, Static Sites + Cloud Run deploy, publish worker, Stream Curatr manual gate).
 
 ## Blocked
 

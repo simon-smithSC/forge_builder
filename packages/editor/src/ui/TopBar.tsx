@@ -10,6 +10,7 @@ import {
   Smartphone,
   Tablet,
   Undo2,
+  UploadCloud,
 } from "lucide-react";
 import type { PreviewDevice } from "@forge/player";
 import {
@@ -22,6 +23,7 @@ import { useStore } from "../state/store.js";
 import type { SaveStatus } from "../state/store.js";
 import { LabelSetEditor } from "./dialogs/LabelSetEditor.js";
 import { ThemeEditor } from "./dialogs/ThemeEditor.js";
+import { PublishDialog } from "./publish/PublishDialog.js";
 
 const STATUS_LABEL: Record<SaveStatus, string> = {
   saved: "All changes saved",
@@ -55,6 +57,7 @@ export function TopBar({ device, onDeviceChange, onPreview }: TopBarProps): Reac
   const canRedo = useStore((state) => state.canRedo);
   const [themeOpen, setThemeOpen] = useState(false);
   const [labelsOpen, setLabelsOpen] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
 
   return (
     <header className="fe-topbar">
@@ -146,8 +149,19 @@ export function TopBar({ device, onDeviceChange, onPreview }: TopBarProps): Reac
         Preview
       </button>
 
+      <button
+        type="button"
+        className="fe-btn fe-btn-primary"
+        onClick={() => setPublishOpen(true)}
+        title="Publish as xAPI package"
+      >
+        <UploadCloud size={14} aria-hidden />
+        Publish
+      </button>
+
       <ThemeEditor open={themeOpen} onClose={() => setThemeOpen(false)} />
       <LabelSetEditor open={labelsOpen} onClose={() => setLabelsOpen(false)} />
+      <PublishDialog open={publishOpen} onClose={() => setPublishOpen(false)} />
     </header>
   );
 }

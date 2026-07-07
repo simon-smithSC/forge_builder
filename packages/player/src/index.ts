@@ -4,6 +4,11 @@
 export { Player } from "./Player.js";
 export type { PlayerProps } from "./Player.js";
 
+// Tracking/resume prop shapes (type-only; no xapi runtime in this bundle).
+// The standalone runtime entry (standalone.tsx) is a Vite build entry and is
+// deliberately NOT exported here.
+export type { PlayerResume, PlayerStateChange } from "./tracking.js";
+
 export {
   buildCourseSnapshot,
   computeLessonPercent,

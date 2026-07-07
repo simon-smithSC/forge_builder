@@ -1,0 +1,1183 @@
+[
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/launched",
+      "display": {
+        "en-US": "launched"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/initialized",
+      "display": {
+        "en-US": "initialized"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/experienced",
+      "display": {
+        "en-US": "experienced"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/lessons/l1",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/module",
+        "name": {
+          "en-US": "Lesson One"
+        }
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/progressed",
+      "display": {
+        "en-US": "progressed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {
+      "extensions": {
+        "https://w3id.org/xapi/cmi5/result/extensions/progress": 10
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/answered",
+      "display": {
+        "en-US": "answered"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/kc-1",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "name": {
+          "en-US": "Which policy applies to loot boxes?"
+        },
+        "description": {
+          "en-US": "Which policy applies to loot boxes?"
+        },
+        "interactionType": "choice",
+        "correctResponsesPattern": [
+          "choice-b"
+        ],
+        "choices": [
+          {
+            "id": "choice-a",
+            "description": {
+              "en-US": "Policy A"
+            }
+          },
+          {
+            "id": "choice-b",
+            "description": {
+              "en-US": "Policy B"
+            }
+          },
+          {
+            "id": "choice-c",
+            "description": {
+              "en-US": "Policy C"
+            }
+          }
+        ]
+      }
+    },
+    "result": {
+      "response": "choice-b",
+      "completion": true,
+      "success": true
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001",
+        "https://xapi.supercell.com/extensions/attempt": 1
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/responded",
+      "display": {
+        "en-US": "responded"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/sc-block-1.scene-1",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "interactionType": "choice"
+      }
+    },
+    "result": {
+      "response": "choice-escalate",
+      "completion": true
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/completed",
+      "display": {
+        "en-US": "completed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/lessons/l1",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/module",
+        "name": {
+          "en-US": "Lesson One"
+        }
+      }
+    },
+    "result": {
+      "completion": true
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/progressed",
+      "display": {
+        "en-US": "progressed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {
+      "extensions": {
+        "https://w3id.org/xapi/cmi5/result/extensions/progress": 33
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/experienced",
+      "display": {
+        "en-US": "experienced"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/lessons/l2",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/module",
+        "name": {
+          "en-US": "Lesson Two"
+        }
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/completed",
+      "display": {
+        "en-US": "completed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/lessons/l2",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/module",
+        "name": {
+          "en-US": "Lesson Two"
+        }
+      }
+    },
+    "result": {
+      "completion": true
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/progressed",
+      "display": {
+        "en-US": "progressed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {
+      "extensions": {
+        "https://w3id.org/xapi/cmi5/result/extensions/progress": 67
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/experienced",
+      "display": {
+        "en-US": "experienced"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/lessons/lq",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/module",
+        "name": {
+          "en-US": "Final Quiz"
+        }
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/answered",
+      "display": {
+        "en-US": "answered"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/q-choice",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "name": {
+          "en-US": "Pick both correct answers."
+        },
+        "description": {
+          "en-US": "Pick both correct answers."
+        },
+        "interactionType": "choice",
+        "correctResponsesPattern": [
+          "opt-1[,]opt-4"
+        ],
+        "choices": [
+          {
+            "id": "opt-1",
+            "description": {
+              "en-US": "Option 1"
+            }
+          },
+          {
+            "id": "opt-2",
+            "description": {
+              "en-US": "Option 2"
+            }
+          },
+          {
+            "id": "opt-3",
+            "description": {
+              "en-US": "Option 3"
+            }
+          },
+          {
+            "id": "opt-4",
+            "description": {
+              "en-US": "Option 4"
+            }
+          }
+        ]
+      }
+    },
+    "result": {
+      "response": "opt-1[,]opt-4",
+      "completion": true,
+      "success": true,
+      "score": {
+        "scaled": 1,
+        "raw": 1,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001",
+        "https://xapi.supercell.com/extensions/attempt": 1
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/answered",
+      "display": {
+        "en-US": "answered"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/q-sequencing",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "name": {
+          "en-US": "Order the escalation steps."
+        },
+        "description": {
+          "en-US": "Order the escalation steps."
+        },
+        "interactionType": "sequencing",
+        "correctResponsesPattern": [
+          "step-triage[,]step-review[,]step-escalate"
+        ],
+        "choices": [
+          {
+            "id": "step-triage",
+            "description": {
+              "en-US": "Triage"
+            }
+          },
+          {
+            "id": "step-review",
+            "description": {
+              "en-US": "Review"
+            }
+          },
+          {
+            "id": "step-escalate",
+            "description": {
+              "en-US": "Escalate"
+            }
+          }
+        ]
+      }
+    },
+    "result": {
+      "response": "step-triage[,]step-escalate[,]step-review",
+      "completion": true,
+      "success": false,
+      "score": {
+        "scaled": 0,
+        "raw": 0,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001",
+        "https://xapi.supercell.com/extensions/attempt": 1
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/answered",
+      "display": {
+        "en-US": "answered"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/q-fill-in",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "name": {
+          "en-US": "Name the reporting tool."
+        },
+        "description": {
+          "en-US": "Name the reporting tool."
+        },
+        "interactionType": "fill-in",
+        "correctResponsesPattern": [
+          "{case_matters=false}Learning Locker",
+          "{case_matters=false}LL"
+        ]
+      }
+    },
+    "result": {
+      "response": "learning locker",
+      "completion": true,
+      "success": true,
+      "score": {
+        "scaled": 1,
+        "raw": 1,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001",
+        "https://xapi.supercell.com/extensions/attempt": 1
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/answered",
+      "display": {
+        "en-US": "answered"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/q-matching",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "name": {
+          "en-US": "Match the term to its definition."
+        },
+        "description": {
+          "en-US": "Match the term to its definition."
+        },
+        "interactionType": "matching",
+        "correctResponsesPattern": [
+          "src-lrs[.]tgt-locker[,]src-lms[.]tgt-curatr"
+        ],
+        "source": [
+          {
+            "id": "src-lrs",
+            "description": {
+              "en-US": "LRS"
+            }
+          },
+          {
+            "id": "src-lms",
+            "description": {
+              "en-US": "LMS"
+            }
+          }
+        ],
+        "target": [
+          {
+            "id": "tgt-locker",
+            "description": {
+              "en-US": "Stores statements"
+            }
+          },
+          {
+            "id": "tgt-curatr",
+            "description": {
+              "en-US": "Delivers courses"
+            }
+          }
+        ]
+      }
+    },
+    "result": {
+      "response": "src-lrs[.]tgt-locker[,]src-lms[.]tgt-curatr",
+      "completion": true,
+      "success": true,
+      "score": {
+        "scaled": 1,
+        "raw": 1,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001",
+        "https://xapi.supercell.com/extensions/attempt": 1
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/answered",
+      "display": {
+        "en-US": "answered"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/q-numeric",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "name": {
+          "en-US": "How many days to respond?"
+        },
+        "description": {
+          "en-US": "How many days to respond?"
+        },
+        "interactionType": "numeric",
+        "correctResponsesPattern": [
+          "3[:]5"
+        ]
+      }
+    },
+    "result": {
+      "response": "4",
+      "completion": true,
+      "success": true,
+      "score": {
+        "scaled": 1,
+        "raw": 1,
+        "min": 0,
+        "max": 1
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001",
+        "https://xapi.supercell.com/extensions/attempt": 1
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/answered",
+      "display": {
+        "en-US": "answered"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/interactions/q-likert",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/cmi.interaction",
+        "name": {
+          "en-US": "How confident are you applying this policy?"
+        },
+        "description": {
+          "en-US": "How confident are you applying this policy?"
+        },
+        "interactionType": "likert",
+        "scale": [
+          {
+            "id": "likert-1",
+            "description": {
+              "en-US": "Not confident"
+            }
+          },
+          {
+            "id": "likert-2",
+            "description": {
+              "en-US": "Somewhat confident"
+            }
+          },
+          {
+            "id": "likert-3",
+            "description": {
+              "en-US": "Confident"
+            }
+          },
+          {
+            "id": "likert-4",
+            "description": {
+              "en-US": "Very confident"
+            }
+          }
+        ]
+      }
+    },
+    "result": {
+      "response": "likert-3",
+      "completion": true
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001",
+        "https://xapi.supercell.com/extensions/attempt": 1
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/completed",
+      "display": {
+        "en-US": "completed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden/lessons/lq",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/module",
+        "name": {
+          "en-US": "Final Quiz"
+        }
+      }
+    },
+    "result": {
+      "completion": true,
+      "score": {
+        "scaled": 0.83,
+        "raw": 5,
+        "min": 0,
+        "max": 6
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ],
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/progressed",
+      "display": {
+        "en-US": "progressed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {
+      "extensions": {
+        "https://w3id.org/xapi/cmi5/result/extensions/progress": 100
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/passed",
+      "display": {
+        "en-US": "passed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {
+      "success": true,
+      "score": {
+        "scaled": 0.83,
+        "raw": 5,
+        "min": 0,
+        "max": 6
+      }
+    },
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  },
+  {
+    "actor": {
+      "objectType": "Agent",
+      "name": "Golden Learner",
+      "mbox": "mailto:golden.learner@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/terminated",
+      "display": {
+        "en-US": "terminated"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "https://xapi.supercell.com/courses/c-golden",
+      "definition": {
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {},
+    "context": {
+      "registration": "3f2b6a1e-9d4c-4f8a-b1c2-7e5d0a9b8c7d",
+      "contextActivities": {
+        "grouping": [
+          {
+            "objectType": "Activity",
+            "id": "https://xapi.supercell.com/courses/c-golden"
+          }
+        ]
+      },
+      "extensions": {
+        "https://xapi.supercell.com/extensions/course-version": "1.2.0",
+        "https://xapi.supercell.com/extensions/package-build-id": "build-golden-001"
+      }
+    }
+  }
+]
