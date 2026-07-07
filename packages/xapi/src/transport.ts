@@ -192,9 +192,32 @@ export class StatementQueue {
       });
       // 409 means the LRS already has a statement with this id; with UUID
       // dedupe that is a successful at-least-once delivery, not a failure.
-      return response.ok || response.status === 409;
-    } catch {
+      const delivered = response.ok || response.status === 409;
+      if (!delivered) {
+        this.logDeliveryFailure(
+          `LRS rejected ${batch.length} statement(s): HTTP ${response.status}`,
+        );
+      }
+      return delivered;
+    } catch (error) {
+      // Network/CORS failure. fetch gives no status for CORS blocks; the
+      // browser console carries the detail, this marks it as ours.
+      this.logDeliveryFailure(
+        `POST to LRS failed (network or CORS): ${String(error)}`,
+      );
       return false;
+    }
+  }
+
+  /** Field diagnostic, throttled so retry loops do not flood the console. */
+  private lastFailureLogAt = 0;
+
+  private logDeliveryFailure(message: string): void {
+    const now = Date.now();
+    if (now - this.lastFailureLogAt < 10_000) return;
+    this.lastFailureLogAt = now;
+    if (typeof console !== "undefined") {
+      console.warn(`[forge-xapi] ${message}. url=${this.url} pending=${this.items.length}`);
     }
   }
 

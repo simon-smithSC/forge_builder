@@ -228,6 +228,12 @@ async function boot(): Promise<void> {
     });
 
     if (launch.mode === "untracked") {
+      // Field diagnostic: makes "no statements" debuggable from an LMS
+      // launch console. The reason names the missing launch parameter.
+      console.warn(
+        `[forge-player] UNTRACKED mode: ${launch.reason}. ` +
+          `No xAPI statements will be sent. Launch query seen: "${search || "(empty)"}"`,
+      );
       root.render(
         <Player
           course={course}
@@ -249,6 +255,11 @@ async function boot(): Promise<void> {
       launch.context,
       hadRegistrationParam,
       course.id,
+    );
+
+    console.info(
+      `[forge-player] TRACKED mode. endpoint=${context.endpoint} ` +
+        `activityId=${context.activityId} registration=${context.registration}`,
     );
 
     const stateClient = new StateClient(context, { courseId: course.id });
