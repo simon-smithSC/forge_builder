@@ -334,19 +334,20 @@
   color: var(--forge-primary, #1f6feb);
 }
 
+/* Layout contract (@forge/blocks/styles.css): the scroll container carries
+   NO horizontal padding and the lesson wrapper NO max-width, so full-width
+   block bands touch the viewport edges. Column/wide content centers via
+   each band's own inner column. */
 .fp-main {
   flex: 1;
   min-width: 0;
   overflow-y: auto;
-  padding: 2rem 1.5rem 4rem;
+  overflow-x: hidden;
+  padding: 2rem 0 4rem;
 }
 
-/* The lesson column is the block BAND width (matches the editor canvas);
-   @forge/blocks centers its own content column inside each band, so the
-   header/footer align to the same 46rem column as block content. */
 .fp-lesson {
-  max-width: 860px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 /* Lesson header band (U3): counter, title, author, optional headerImage. */
@@ -386,11 +387,12 @@
   color: color-mix(in srgb, var(--forge-text, #1f2328) 70%, transparent);
 }
 
-/* headerImage variant: full-bleed band (negative margins cancel .fp-main
-   padding); the inline style layers a dark scrim under the image so the
-   fixed white text below stays readable regardless of theme or artwork. */
+/* headerImage variant: full-bleed band (the negative top margin cancels
+   .fp-main's top padding; .fp-main has no horizontal padding to cancel);
+   the inline style layers a dark scrim under the image so the fixed white
+   text below stays readable regardless of theme or artwork. */
 .fp-lesson-header-image {
-  margin: -2rem -1.5rem 2rem;
+  margin: -2rem 0 2rem;
   padding: 4.5rem 1.5rem 3rem;
   background-size: cover;
   background-position: center;
@@ -469,6 +471,11 @@
    big-percent results; teardown 858-905) ------------------------------- */
 
 .fp-quiz {
+  /* The lesson wrapper no longer clamps width, so the quiz card carries its
+     own centered column (same 46rem measure as block content). */
+  max-width: 46rem;
+  margin: 0 auto;
+  box-sizing: border-box;
   background: var(--forge-surface, #f6f8fa);
   border-radius: 12px;
   padding: 2rem;
@@ -788,11 +795,15 @@
 
 @media (max-width: 768px) {
   .fp-main {
-    padding: 1.25rem 1rem 3rem;
+    padding: 1.25rem 0 3rem;
   }
   .fp-lesson-header-image {
-    margin: -1.25rem -1rem 1.5rem;
+    margin: -1.25rem 0 1.5rem;
     padding: 3rem 1rem 2rem;
+  }
+  .fp-quiz {
+    margin: 0 1rem;
+    padding: 1.5rem 1.25rem;
   }
   .fp-sidebar {
     position: fixed;

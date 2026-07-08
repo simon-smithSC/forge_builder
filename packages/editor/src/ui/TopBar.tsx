@@ -5,6 +5,7 @@ import {
   Languages,
   Monitor,
   Palette,
+  PanelLeft,
   Play,
   Redo2,
   Smartphone,
@@ -48,9 +49,17 @@ export interface TopBarProps {
   device: PreviewDevice;
   onDeviceChange: (device: PreviewDevice) => void;
   onPreview: () => void;
+  /** Toggles the outline overlay on narrow viewports (button is CSS-hidden
+      above 900px). */
+  onToggleOutline: () => void;
 }
 
-export function TopBar({ device, onDeviceChange, onPreview }: TopBarProps): ReactElement {
+export function TopBar({
+  device,
+  onDeviceChange,
+  onPreview,
+  onToggleOutline,
+}: TopBarProps): ReactElement {
   const title = useStore((state) => state.course?.title ?? "");
   const saveStatus = useStore((state) => state.saveStatus);
   const canUndo = useStore((state) => state.canUndo);
@@ -61,6 +70,15 @@ export function TopBar({ device, onDeviceChange, onPreview }: TopBarProps): Reac
 
   return (
     <header className="fe-topbar">
+      <button
+        type="button"
+        className="fe-icon-btn fe-outline-toggle"
+        onClick={onToggleOutline}
+        title="Toggle lesson outline"
+        aria-label="Toggle lesson outline"
+      >
+        <PanelLeft size={18} aria-hidden />
+      </button>
       <button
         type="button"
         className="fe-icon-btn"

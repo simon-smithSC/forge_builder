@@ -5,7 +5,21 @@
    Envelope (Rise parity): every block is a full-bleed BAND (.fb-block)
    that paints settings.backgroundColor edge to edge, with a centered
    content COLUMN (.fb-block-inner) whose width comes from the family's
-   contentWidth registry hint (fb-width-column | fb-width-wide | fb-width-full). */
+   contentWidth registry hint (fb-width-column | fb-width-wide | fb-width-full).
+
+   Layout contract (do not regress):
+   - The BAND chain must be width: 100% with NO horizontal padding, margin,
+     border, or max-width anywhere from <section class="fb-block"> up to the
+     host scroll container (.fe-canvas in the editor, .fp-main in the player).
+     Hosts must not wrap blocks in a max-width column or pad the lesson
+     wrapper horizontally; fb-width-full content touches the surface edges.
+   - Horizontal insets and centering live ONLY on the INNER column
+     (.fb-block-inner): column = var(--fb-column) 46rem, wide =
+     var(--fb-wide) 64rem, full = unbounded with zero padding.
+   - Images never hard-crop. The single sanctioned crop is the banner image
+     variant, which is intentionally a shallow strip (aspect-ratio + cover).
+   - No fixed pixel widths on block content; anything wider than the column
+     (tables, code) scrolls via its own overflow-x: auto wrapper. */
 
 .fb-block {
   --fb-primary: var(--forge-primary, #1f6feb);
@@ -15,6 +29,7 @@
   --fb-accent: var(--forge-accent, #dd6b20);
   --fb-border: color-mix(in srgb, var(--fb-text) 14%, transparent);
   --fb-column: 46rem;
+  --fb-wide: 64rem;
   color: var(--fb-text);
   font-family: var(--forge-body-font, Inter, system-ui, sans-serif);
   line-height: 1.6;
@@ -29,8 +44,10 @@
   box-sizing: border-box;
 }
 
+/* Wide caps itself: hosts no longer clamp the lesson column, so the hint
+   must carry its own max-width instead of leaning on a wrapper. */
 .fb-width-wide .fb-block-inner {
-  max-width: none;
+  max-width: var(--fb-wide);
 }
 
 .fb-width-full .fb-block-inner {
@@ -90,21 +107,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 180px;
+  /* Scales with the viewport so small canvases are not dominated by an
+     empty 180px slab. */
+  min-height: clamp(110px, 28vw, 180px);
   color: color-mix(in srgb, var(--fb-text) 55%, transparent);
   font-size: 0.9rem;
 }
 
 .fb-image img {
   max-width: 100%;
+  height: auto;
   border-radius: 6px;
   display: block;
   margin: 0 auto;
 }
 .fb-image { margin: 0; }
-.fb-image-full-width img { width: 100%; border-radius: 0; }
-.fb-image-hero img { width: 100%; border-radius: 8px; }
-.fb-image-banner img { width: 100%; max-height: 320px; object-fit: cover; border-radius: 0; }
+.fb-image-full-width img { width: 100%; height: auto; border-radius: 0; }
+/* Hero NEVER crops: natural aspect ratio at full column width. Any
+   max-height clamp here reintroduces the jarring hard-crop; do not add one. */
+.fb-image-hero img { width: 100%; height: auto; border-radius: 8px; }
+/* Banner is the ONE intentional crop: a shallow decorative strip. A fixed
+   aspect-ratio (not max-height) keeps the strip proportional on every
+   viewport, and object-fit: cover applies only in this variant. Treatment
+   can be tuned per theme via --fb-banner-ratio. */
+.fb-image-banner img {
+  width: 100%;
+  aspect-ratio: var(--fb-banner-ratio, 21 / 6);
+  object-fit: cover;
+  border-radius: 0;
+}
 .fb-image-centered img { max-width: 70%; }
 .fb-image-caption {
   text-align: center;
@@ -280,6 +311,7 @@
 .fb-gallery-figure { margin: 0; }
 .fb-gallery-figure img {
   width: 100%;
+  height: auto;
   border-radius: 6px;
   display: block;
 }
@@ -603,6 +635,9 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
   gap: 0.75rem;
 }
 .fb-process-card {
+  /* min-width: 0 lets the 1fr grid track shrink below content size so the
+     card never forces horizontal scroll on narrow viewports. */
+  min-width: 0;
   background: var(--fb-bg);
   border: 1px solid var(--fb-border);
   border-radius: 12px;
@@ -688,6 +723,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
 .fb-labeled-graphic { position: relative; }
 .fb-labeled-graphic-image {
   width: 100%;
+  height: auto;
   border-radius: 8px;
   display: block;
 }

@@ -282,8 +282,10 @@ export function Canvas(): ReactElement {
   }
 
   if (lesson.type === "blocks") {
+    // fe-canvas-blocks removes the scroll container's padding so block bands
+    // span the full center area edge to edge (layout contract).
     return (
-      <main className="fe-canvas">
+      <main className="fe-canvas fe-canvas-blocks">
         <BlocksCanvas lesson={lesson} course={course} />
       </main>
     );

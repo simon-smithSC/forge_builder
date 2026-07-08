@@ -24,6 +24,9 @@ export function EditorScreen(): ReactElement {
   const hasSelectedBlock = useStore((state) => state.selectedBlockId !== null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [device, setDevice] = useState<PreviewDevice>("desktop");
+  // Below 900px the outline is an overlay driven by the topbar toggle; on
+  // wider viewports the wrapper is a plain flex column and this is inert.
+  const [outlineOpen, setOutlineOpen] = useState(false);
 
   return (
     <div className="fe-editor">
@@ -31,6 +34,7 @@ export function EditorScreen(): ReactElement {
         device={device}
         onDeviceChange={setDevice}
         onPreview={() => setPreviewOpen(true)}
+        onToggleOutline={() => setOutlineOpen((open) => !open)}
       />
 
       {saveStatus === "conflict" ? (
@@ -85,9 +89,21 @@ export function EditorScreen(): ReactElement {
       ) : null}
 
       <div className="fe-editor-body">
-        <Outline />
+        <div
+          className={`fe-outline-wrap${outlineOpen ? " fe-outline-wrap-open" : ""}`}
+        >
+          <Outline />
+        </div>
         <Canvas />
-        {hasSelectedBlock ? <SettingsPanel /> : null}
+        {/* The drawer column collapses to width 0 when closed (not merely
+            emptied) so the canvas reflows to fill; the width transition
+            lives on this wrapper. */}
+        <div
+          className={`fe-drawer${hasSelectedBlock ? " fe-drawer-open" : ""}`}
+          aria-hidden={!hasSelectedBlock}
+        >
+          {hasSelectedBlock ? <SettingsPanel /> : null}
+        </div>
       </div>
 
       {previewOpen ? (

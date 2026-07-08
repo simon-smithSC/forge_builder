@@ -201,6 +201,8 @@ button:focus-visible {
   display: flex;
   flex: 1;
   min-height: 0;
+  /* Anchors the outline/settings overlays on narrow viewports. */
+  position: relative;
 }
 
 .fe-topbar {
@@ -289,6 +291,14 @@ button:focus-visible {
 }
 
 /* ---- outline ---- */
+
+/* Layout wrapper owned by EditorScreen: in normal layout it is a plain flex
+   column; below 900px it becomes a slide-in overlay driven by the topbar
+   toggle, so the canvas keeps its full width. */
+.fe-outline-wrap {
+  display: flex;
+  flex-shrink: 0;
+}
 
 .fe-outline {
   width: 260px;
@@ -381,22 +391,27 @@ button:focus-visible {
   flex: 1;
   min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 32px 24px 96px;
 }
 
-/* No horizontal padding: block bands (P5 full-bleed envelope in
-   @forge/blocks) paint edge to edge of the lesson page; the title aligns
-   to the same centered 46rem content column the blocks use. */
+/* Blocks lessons: the scroll container itself carries ZERO padding so the
+   authoring sheet spans the full center area edge to edge (layout contract
+   in @forge/blocks/styles.css). */
+.fe-canvas-blocks {
+  padding: 0;
+}
+
+/* The authoring sheet is the full center area, Rise-style: no max-width, no
+   horizontal padding, no rounding. Block bands paint edge to edge; the
+   lesson title and block content center via their own 46rem inner columns. */
 .fe-canvas-lesson {
-  max-width: 860px;
-  margin: 0 auto;
+  width: 100%;
+  min-height: 100%;
   background: var(--forge-bg, #ffffff);
   color: var(--forge-text, #1f2328);
   font-family: var(--forge-body-font, inherit), sans-serif;
-  border-radius: var(--fe-radius);
-  box-shadow: var(--fe-shadow);
-  padding: 40px 0 64px;
-  overflow: hidden;
+  padding: 40px 0 96px;
 }
 
 /* Lesson title edited in place (P1): an input styled as the h1. */
@@ -428,6 +443,7 @@ button:focus-visible {
 .fe-canvas-panel {
   max-width: 640px;
   margin: 0 auto;
+  width: 100%;
   background: var(--fe-surface);
   border-radius: var(--fe-radius);
   box-shadow: var(--fe-shadow);
@@ -444,19 +460,19 @@ button:focus-visible {
 
 /* ---- block frame ---- */
 
+/* No border/margin/padding: the frame must not inset the block band (layout
+   contract). Hover/selection chrome is an inset ring that costs no layout. */
 .fe-block-frame {
   position: relative;
-  border: 1px solid transparent;
-  border-radius: 6px;
 }
 
 .fe-block-frame:hover {
-  border-color: var(--fe-border);
+  box-shadow: inset 0 0 0 1px var(--fe-border);
 }
 
-.fe-block-frame-selected {
-  border-color: var(--fe-primary);
-  box-shadow: 0 0 0 2px var(--fe-primary-soft);
+.fe-block-frame-selected,
+.fe-block-frame-selected:hover {
+  box-shadow: inset 0 0 0 2px var(--fe-primary);
 }
 
 /* Contextual block rail (P2, Rise teardown "Contextual Block Rail"):
@@ -604,6 +620,21 @@ button:focus-visible {
 
 /* ---- settings panel ---- */
 
+/* Drawer column owned by EditorScreen: animates to width 0 when closed so
+   the canvas reflows to fill (the column is gone, not merely emptied). The
+   inner panel keeps its fixed width so content does not squash mid-slide. */
+.fe-drawer {
+  display: flex;
+  flex-shrink: 0;
+  width: 0;
+  overflow: hidden;
+  transition: width 200ms ease;
+}
+
+.fe-drawer-open {
+  width: 320px;
+}
+
 .fe-settings {
   width: 320px;
   flex-shrink: 0;
@@ -725,6 +756,75 @@ button:focus-visible {
 .fe-array-item-controls {
   display: inline-flex;
   gap: 2px;
+}
+
+/* ---- responsive editor shell ---- */
+
+/* Outline toggle lives in the topbar; only relevant once the outline
+   collapses to an overlay. */
+.fe-outline-toggle {
+  display: none;
+}
+
+/* Below 1100px the settings drawer overlays the canvas instead of
+   squeezing it. */
+@media (max-width: 1100px) {
+  .fe-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+  }
+
+  .fe-drawer-open {
+    width: min(320px, 90vw);
+    box-shadow: -12px 0 32px rgba(20, 23, 28, 0.22);
+  }
+
+  .fe-drawer .fe-settings {
+    width: 100%;
+  }
+}
+
+/* Below 900px the outline collapses to a topbar toggle and slides in as an
+   overlay; the topbar wraps so the canvas stays usable down to 768px. */
+@media (max-width: 900px) {
+  .fe-topbar {
+    flex-wrap: wrap;
+  }
+
+  .fe-title-input {
+    min-width: 140px;
+  }
+
+  .fe-outline-toggle {
+    display: inline-flex;
+  }
+
+  .fe-outline-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 30;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+    pointer-events: none;
+  }
+
+  .fe-outline-wrap-open {
+    transform: none;
+    pointer-events: auto;
+    box-shadow: 12px 0 32px rgba(20, 23, 28, 0.22);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fe-drawer,
+  .fe-outline-wrap {
+    transition: none;
+  }
 }
 
 /* ---- preview overlay (Rise-like learner preview shell: dim backdrop,
