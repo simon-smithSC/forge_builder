@@ -22,6 +22,7 @@ import {
   richTextSanitizerConfig,
   roundTripCourseDocThroughYjs,
   isSafeHtmlFragment,
+  isSafeStyleAttribute,
   stateDocumentEnvelopeSchema,
   validateCourseDoc,
 } from "./index.js";
@@ -280,7 +281,7 @@ describe("Forge schema public API", () => {
     expect(blockSchema.safeParse(unsafeButton).success).toBe(false);
   });
 
-  it("migrates a 1.0.0 course doc to 1.1.0 with a pure version bump", () => {
+  it("migrates a 1.0.0 course doc through the chain to the current version", () => {
     const legacyDoc: Record<string, unknown> = {
       ...(loadKitchenSink() as Record<string, unknown>),
       schemaVersion: "1.0.0",
@@ -291,15 +292,119 @@ describe("Forge schema public API", () => {
     const migrated = migrateCourseDoc(legacyDoc);
 
     expect(legacyDoc).toEqual(original);
-    expect(migrated.schemaVersion).toBe("1.1.0");
+    expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
     expect(migrated.author).toBeUndefined();
     expect(migrated.title).toBe(original.title);
     expect(migrated.lessons).toEqual(
-      validateCourseDoc({ ...original, schemaVersion: "1.1.0" }).lessons,
+      validateCourseDoc({ ...original, schemaVersion: CURRENT_SCHEMA_VERSION })
+        .lessons,
     );
     expect(courseDocMigrationRegistry.map((migration) => migration.from)).toContain(
       "1.0.0",
     );
+  });
+
+  it("migrates a 1.1.0 course doc to 1.2.0, moving headerImage into header", () => {
+    const legacyDoc = structuredClone(loadKitchenSink()) as Record<string, unknown>;
+    legacyDoc.schemaVersion = "1.1.0";
+    delete legacyDoc.cover;
+    delete legacyDoc.descriptionHtml;
+    const legacyLessons = legacyDoc.lessons as Record<string, unknown>[];
+    for (const lesson of legacyLessons) {
+      if (lesson.type === "blocks") {
+        delete lesson.header;
+        lesson.headerImage = "image_cover";
+      }
+    }
+    const original = structuredClone(legacyDoc);
+
+    const migrated = migrateCourseDoc(legacyDoc);
+
+    expect(legacyDoc).toEqual(original);
+    expect(migrated.schemaVersion).toBe("1.2.0");
+    expect(migrated.cover).toBeUndefined();
+    expect(migrated.descriptionHtml).toBeUndefined();
+    const blocksLesson = migrated.lessons.find((lesson) => lesson.type === "blocks");
+    if (!blocksLesson || blocksLesson.type !== "blocks") {
+      throw new Error("Expected blocks lesson after migration.");
+    }
+    expect(blocksLesson.header).toEqual({ imageMediaId: "image_cover" });
+    expect(
+      (blocksLesson as unknown as Record<string, unknown>).headerImage,
+    ).toBeUndefined();
+    expect(courseDocMigrationRegistry.map((migration) => migration.from)).toContain(
+      "1.1.0",
+    );
+  });
+
+  it("accepts the 1.2.0 cover, descriptionHtml, and lesson header fields", () => {
+    const course = validateCourseDoc(loadKitchenSink());
+    expect(course.cover).toEqual({ mediaId: "image_cover", layout: "hero" });
+    expect(course.descriptionHtml).toBe("<p>Rich <strong>description</strong></p>");
+
+    const blocksLesson = course.lessons.find((lesson) => lesson.type === "blocks");
+    if (!blocksLesson || blocksLesson.type !== "blocks") {
+      throw new Error("Expected blocks lesson in fixture.");
+    }
+    expect(blocksLesson.header).toEqual({
+      imageMediaId: "image_cover",
+      backgroundColor: "#1f2328",
+      overlayOpacity: 55,
+    });
+
+    // Constraints hold: overlayOpacity is an int 0-100, layout is an enum.
+    expect(
+      courseDocSchema.safeParse({
+        ...(loadKitchenSink() as Record<string, unknown>),
+        cover: { mediaId: "image_cover", layout: "hero", overlayOpacity: 101 },
+      }).success,
+    ).toBe(false);
+    expect(
+      courseDocSchema.safeParse({
+        ...(loadKitchenSink() as Record<string, unknown>),
+        cover: { mediaId: "image_cover", layout: "banner" },
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts allowlisted inline styles in sanitized fragments", () => {
+    expect(isSafeHtmlFragment('<p><span style="color: #ff0000">red</span></p>')).toBe(
+      true,
+    );
+    expect(
+      isSafeHtmlFragment(
+        '<p><span style="font-size: 18px; font-family: Inter, sans-serif">t</span></p>',
+      ),
+    ).toBe(true);
+    expect(
+      isSafeHtmlFragment('<p><mark style="background-color: rgb(255, 230, 0)">hi</mark></p>'),
+    ).toBe(true);
+    expect(isSafeHtmlFragment('<p style="text-align: center">centered</p>')).toBe(
+      true,
+    );
+    expect(isSafeHtmlFragment('<p style="line-height: 1.5">spaced</p>')).toBe(true);
+    expect(isSafeStyleAttribute("h2", "text-align: right; line-height: 2;")).toBe(
+      true,
+    );
+    expect(isSafeStyleAttribute("li", "text-align: left")).toBe(true);
+  });
+
+  it("rejects inline styles outside the allowlist", () => {
+    expect(isSafeHtmlFragment('<p style="background: url(x)">bad</p>')).toBe(false);
+    expect(isSafeHtmlFragment('<p style="position: fixed">bad</p>')).toBe(false);
+    expect(
+      isSafeHtmlFragment('<p><span style="color: expression(alert(1))">bad</span></p>'),
+    ).toBe(false);
+    // style is not allowlisted on strong at all.
+    expect(
+      isSafeHtmlFragment('<p><strong style="color: #ff0000">bad</strong></p>'),
+    ).toBe(false);
+    expect(isSafeStyleAttribute("span", "color: #ff0000; behavior: bad")).toBe(false);
+    expect(isSafeStyleAttribute("span", "background-color: url(evil)")).toBe(false);
+    expect(isSafeStyleAttribute("span", "font-family: @import")).toBe(false);
+    expect(isSafeStyleAttribute("span", "color: #ff0000\\65")).toBe(false);
+    expect(isSafeStyleAttribute("mark", "color: #ff0000")).toBe(false);
+    expect(isSafeStyleAttribute("p", "color: #ff0000")).toBe(false);
   });
 
   it("migrates legacy course docs without mutating the input", () => {

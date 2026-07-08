@@ -1,9 +1,14 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "id": "01JZ9S99Z8A0Y4Y6RAZ76D9M7F",
   "title": "Forge Kitchen Sink",
   "description": "A cleaned Forge-shaped fixture covering every v1 block variant and quiz question type.",
+  "descriptionHtml": "<p>Rich <strong>description</strong></p>",
   "author": "Forge Fixtures Team",
+  "cover": {
+    "mediaId": "image_cover",
+    "layout": "hero"
+  },
   "defaultLocale": "en-US",
   "theme": {
     "primaryColor": "#1f6feb",
@@ -56,7 +61,11 @@
       "id": "lesson_blocks",
       "title": "All block variants",
       "icon": "sparkles",
-      "headerImage": "image_cover",
+      "header": {
+        "imageMediaId": "image_cover",
+        "backgroundColor": "#1f2328",
+        "overlayOpacity": 55
+      },
       "blocks": [
         {
           "id": "block_text_paragraph",

@@ -9,6 +9,7 @@ export const richTextSanitizerConfig = {
     "h3",
     "h4",
     "li",
+    "mark",
     "ol",
     "p",
     "pre",
@@ -23,7 +24,13 @@ export const richTextSanitizerConfig = {
   allowedAttributes: {
     a: ["href", "title", "target", "rel"],
     code: ["class"],
-    span: ["data-color", "data-highlight"],
+    span: ["style", "data-color", "data-highlight"],
+    mark: ["data-color", "style"],
+    p: ["style"],
+    h2: ["style"],
+    h3: ["style"],
+    h4: ["style"],
+    li: ["style"],
   },
   allowedSchemes: ["http", "https", "mailto"],
 } as const;
@@ -40,6 +47,8 @@ export const richTextEditorConfig = {
     "subscript",
     "textColor",
     "highlight",
+    "fontSize",
+    "fontFamily",
   ],
   allowedNodes: [
     "paragraph",
@@ -88,6 +97,71 @@ const hasAllowedHrefScheme = (value: string): boolean => {
   const scheme = schemeMatch?.[1];
   return Boolean(scheme && allowedSchemeSet.has(scheme.toLowerCase()));
 };
+
+// Inline style policy (POLISH-PLAN V0): per-tag property allowlist with
+// strict value regexes, feeding the rich text toolbar's continuous values
+// (color, font-size, font-family, text-align, line-height).
+const colorValuePattern =
+  /^(#[0-9a-fA-F]{3,8}|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\))$/;
+const fontSizeValuePattern = /^\d{1,3}(\.\d+)?px$/;
+const fontFamilyValuePattern = /^[A-Za-z0-9 ,'"-]+$/;
+const textAlignValuePattern = /^(left|center|right)$/;
+const lineHeightValuePattern = /^\d(\.\d+)?$/;
+
+const blockStyleProperties: Record<string, RegExp> = {
+  "text-align": textAlignValuePattern,
+  "line-height": lineHeightValuePattern,
+};
+
+const styleAllowlistByTag: Record<string, Record<string, RegExp>> = {
+  span: {
+    color: colorValuePattern,
+    "background-color": colorValuePattern,
+    "font-size": fontSizeValuePattern,
+    "font-family": fontFamilyValuePattern,
+  },
+  mark: {
+    "background-color": colorValuePattern,
+  },
+  p: blockStyleProperties,
+  h2: blockStyleProperties,
+  h3: blockStyleProperties,
+  h4: blockStyleProperties,
+  li: blockStyleProperties,
+};
+
+// Raw-value tripwires: URL loads, escapes, IE expression(), at-rules.
+const styleInjectionPattern = /url\(|\\|expression|@/i;
+
+/** A style attribute is safe only when every declaration is `prop: value`
+ *  with the property in the tag's allowlist and the value matching its
+ *  strict regex. Empty declarations (trailing ";") are ignored. */
+export function isSafeStyleAttribute(tag: string, value: string): boolean {
+  if (styleInjectionPattern.test(value)) {
+    return false;
+  }
+  const allowedProperties = styleAllowlistByTag[tag.toLowerCase()];
+  if (allowedProperties === undefined) {
+    return false;
+  }
+  for (const declaration of value.split(";")) {
+    const trimmed = declaration.trim();
+    if (trimmed.length === 0) {
+      continue;
+    }
+    const colonIndex = trimmed.indexOf(":");
+    if (colonIndex === -1) {
+      return false;
+    }
+    const property = trimmed.slice(0, colonIndex).trim().toLowerCase();
+    const propertyValue = trimmed.slice(colonIndex + 1).trim();
+    const valuePattern = allowedProperties[property];
+    if (valuePattern === undefined || !valuePattern.test(propertyValue)) {
+      return false;
+    }
+  }
+  return true;
+}
 
 export function isSafeHtmlFragment(input: string): boolean {
   if (input.trim().length === 0 || /<\s*!/u.test(input)) {
@@ -141,6 +215,10 @@ export function isSafeHtmlFragment(input: string): boolean {
       }
 
       if (attrName === "href" && !hasAllowedHrefScheme(attrValue)) {
+        return false;
+      }
+
+      if (attrName === "style" && !isSafeStyleAttribute(tagName, attrValue)) {
         return false;
       }
     }

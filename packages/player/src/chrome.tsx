@@ -112,13 +112,15 @@ export interface LessonHeaderProps {
   /** "Lesson n of m" line above the title (teardown 236-239). */
   counter: string | undefined;
   author: string | undefined;
-  /** Resolved lesson.headerImage URL; presence switches to the image band. */
+  /** Resolved lesson.header.imageMediaId URL; presence switches to the
+   *  image band. */
   imageUrl: string | undefined;
   headingRef: RefObject<HTMLHeadingElement | null>;
 }
 
 /** Lesson header band: counter, focusable title, author attribution, and an
- *  optional full-bleed headerImage background with a readability scrim. */
+ *  optional full-bleed lesson.header image background with a readability
+ *  scrim. */
 export function LessonHeader({
   title,
   counter,

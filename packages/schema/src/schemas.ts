@@ -7,7 +7,7 @@ import {
 } from "./sanitizer.js";
 import { ULID_PATTERN } from "./ulid.js";
 
-export const CURRENT_SCHEMA_VERSION = "1.1.0";
+export const CURRENT_SCHEMA_VERSION = "1.2.0";
 
 const idSchema = z.string().min(1);
 export const ulidSchema = z.string().regex(new RegExp(ULID_PATTERN), {
@@ -1134,13 +1134,38 @@ const sectionHeaderSchema = z
   })
   .strict();
 
+/** Course title screen background (v1.2.0): "cover" paints the full cover
+ *  screen behind a scrim; "hero" renders the image above the title. Mirrors
+ *  Rise's coverPageType + coverImageAlpha. */
+export const courseCoverSchema = z
+  .object({
+    mediaId: mediaIdSchema,
+    layout: z.enum(["cover", "hero"]),
+    overlayOpacity: z.number().int().min(0).max(100).optional(),
+  })
+  .strict();
+
+export type CourseCover = z.infer<typeof courseCoverSchema>;
+
+/** Lesson header band styling (v1.2.0). Replaces the bare `headerImage`
+ *  media id; migration 1.1.0 -> 1.2.0 moves it into `imageMediaId`. */
+export const lessonHeaderSchema = z
+  .object({
+    imageMediaId: mediaIdSchema.optional(),
+    backgroundColor: colorSchema.optional(),
+    overlayOpacity: z.number().int().min(0).max(100).optional(),
+  })
+  .strict();
+
+export type LessonHeader = z.infer<typeof lessonHeaderSchema>;
+
 const blocksLessonSchema = z
   .object({
     type: z.literal("blocks"),
     id: idSchema,
     title: z.string().min(1),
     icon: z.string().optional(),
-    headerImage: mediaIdSchema.optional(),
+    header: lessonHeaderSchema.optional(),
     blocks: z.array(blockSchema),
   })
   .strict();
@@ -1186,7 +1211,11 @@ export const courseDocSchema = z
     id: ulidSchema,
     title: z.string().min(1),
     description: z.string(),
+    // Rich projection of `description`; the plain string stays canonical
+    // (it feeds tincan.xml) and the editor keeps both in sync on commit.
+    descriptionHtml: htmlFragmentSchema.optional(),
     author: z.string().min(1).optional(),
+    cover: courseCoverSchema.optional(),
     defaultLocale: bcp47LocaleSchema,
     theme: themeSchema,
     labelSet: labelSetSchema,

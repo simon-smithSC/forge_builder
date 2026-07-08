@@ -123,6 +123,10 @@ const isQuestionRichTextPath = (path: readonly string[]): boolean => {
   return false;
 };
 
+// Note: course-level `descriptionHtml` is deliberately NOT a rich text path.
+// It lives on the course map (not a lesson doc) and syncs as a plain string
+// value (last-writer-wins), matching how the editor commits it atomically
+// alongside the plain-text `description` projection.
 const isRichTextPath = (path: readonly string[]): boolean => {
   if (path[0] !== "lessons" || !isArrayIndex(path[1])) {
     return false;

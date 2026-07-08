@@ -54,6 +54,37 @@ describe("compileCourse", () => {
     expect(parsed["courseSettings"]).toBeDefined();
   });
 
+  it("keeps author, cover, and descriptionHtml and packages cover/header media", () => {
+    const course = makeCourse({
+      author: "Forge Author",
+      cover: { mediaId: "coverimg", layout: "hero" },
+      descriptionHtml: "<p>Rich <strong>description</strong></p>",
+      media: {
+        coverimg: makeMedia({ id: "coverimg", alt: "Cover" }),
+        headerimg: makeMedia({ id: "headerimg", alt: "Header" }),
+      },
+    });
+    const lesson = course.lessons[1] as Extract<Lesson, { type: "blocks" }>;
+    lesson.header = { imageMediaId: "headerimg" };
+    const { courseData, mediaFiles } = compileCourse(course, makeSettings());
+    expect(mediaFiles.map((file) => file.mediaId).sort()).toEqual([
+      "coverimg",
+      "headerimg",
+    ]);
+    const parsed = JSON.parse(courseData) as Record<string, unknown>;
+    expect(parsed["author"]).toBe("Forge Author");
+    expect(parsed["cover"]).toEqual({ mediaId: "coverimg", layout: "hero" });
+    expect(parsed["descriptionHtml"]).toBe("<p>Rich <strong>description</strong></p>");
+  });
+
+  it("omits absent optional course fields instead of serializing undefined", () => {
+    const { courseData } = compileCourse(makeCourse(), makeSettings());
+    const parsed = JSON.parse(courseData) as Record<string, unknown>;
+    expect("author" in parsed).toBe(false);
+    expect("cover" in parsed).toBe(false);
+    expect("descriptionHtml" in parsed).toBe(false);
+  });
+
   it("honors the iriBase option", () => {
     const { courseData } = compileCourse(makeCourse(), makeSettings(), {
       iriBase: "https://lrs.example.com/base/",

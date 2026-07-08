@@ -389,12 +389,12 @@ export function Player({
         ? `Lesson ${navIndex + 1} of ${navigable.length}`
         : `Lesson ${navIndex + 1}`
       : undefined;
-  const headerImageUrl =
-    currentLesson &&
-    currentLesson.type === "blocks" &&
-    currentLesson.headerImage !== undefined
-      ? resolveMedia(currentLesson.headerImage)
+  const headerImageId =
+    currentLesson && currentLesson.type === "blocks"
+      ? currentLesson.header?.imageMediaId
       : undefined;
+  const headerImageUrl =
+    headerImageId !== undefined ? resolveMedia(headerImageId) : undefined;
 
   return (
     <div className="fp-player" style={themeStyle}>

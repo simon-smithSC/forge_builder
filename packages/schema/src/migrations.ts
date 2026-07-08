@@ -68,9 +68,36 @@ const migrate100To110: CourseDocMigration = {
   },
 };
 
+// 1.1.0 -> 1.2.0 (POLISH-PLAN V0): course `cover` and `descriptionHtml` are
+// purely additive (never back-filled). The one structural change moves a
+// blocks lesson's string `headerImage` media id into `header.imageMediaId`.
+const migrate110To120: CourseDocMigration = {
+  from: "1.1.0",
+  to: "1.2.0",
+  up(input: unknown): unknown {
+    const source = isRecord(input) ? cloneJson(input) : {};
+
+    if (Array.isArray(source.lessons)) {
+      source.lessons = source.lessons.map((lesson: unknown) => {
+        if (!isRecord(lesson) || typeof lesson.headerImage !== "string") {
+          return lesson;
+        }
+        const { headerImage, ...rest } = lesson;
+        return { ...rest, header: { imageMediaId: headerImage } };
+      });
+    }
+
+    return {
+      ...source,
+      schemaVersion: "1.2.0",
+    };
+  },
+};
+
 export const courseDocMigrationRegistry = [
   migrate090To100,
   migrate100To110,
+  migrate110To120,
 ] as const;
 
 export function migrateCourseDoc(input: unknown): CourseDoc {
