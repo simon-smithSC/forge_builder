@@ -288,13 +288,19 @@
   align-items: center;
   gap: var(--an-space-2);
   flex: none;
+  /* 5C.3: fade + a 2px settle-in slide instead of an opacity snap; both
+     token-driven so reduced motion collapses them together. */
   opacity: 0;
-  transition: opacity var(--an-duration-120) var(--an-ease-standard);
+  transform: translateX(2px);
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-standard),
+    transform var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-ov-row:hover .fe-ov-row-actions,
 .fe-ov-row:focus-within .fe-ov-row-actions {
   opacity: 1;
+  transform: translateX(0);
 }
 
 /* ---- inline creation ---- */

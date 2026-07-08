@@ -6,7 +6,32 @@ import { anvilTokens } from "../tokens.js";
 import { Button } from "../components/Button.js";
 import { Card } from "../components/Card.js";
 import type { CardElevation } from "../components/Card.js";
+import { Input } from "../components/Input.js";
 import { Mono, Row, Section, Sub } from "./shared.js";
+
+function GradientSwatch({
+  name,
+  gradient,
+}: {
+  name: string;
+  gradient: string;
+}): ReactElement {
+  return (
+    <div style={{ width: "9rem" }}>
+      <div
+        style={{
+          height: "2.5rem",
+          borderRadius: "var(--an-radius-md)",
+          background: gradient,
+          boxShadow: "var(--an-elevation-1)",
+        }}
+      />
+      <div style={{ marginTop: "var(--an-space-2)" }}>
+        <Mono>{name}</Mono>
+      </div>
+    </div>
+  );
+}
 
 function Swatch({ name, value }: { name: string; value: string }): ReactElement {
   return (
@@ -211,6 +236,26 @@ export function TokensSection(): ReactElement {
               <Mono>--an-elevation-{level}</Mono>
             </Card>
           ))}
+        </Row>
+      </Sub>
+
+      <Sub
+        title="Depth and focus finishes"
+        note="Signature moves (5A/5C): solid fills carry the machined bevel pair (--an-bevel-highlight over --an-bevel-edge), fields glow on focus (--an-focus-glow, danger-tinted when invalid), and the two sanctioned gradients mark brand moments only (Wordmark, course-card strip)."
+      >
+        <Row style={{ gap: "var(--an-space-24)", alignItems: "center" }}>
+          <Button variant="primary">Bevelled fill</Button>
+          <div style={{ width: "12rem" }}>
+            <Input placeholder="Focus for the glow" aria-label="Focus glow demo" />
+          </div>
+          <GradientSwatch
+            name="brand-gradient"
+            gradient="var(--an-brand-gradient)"
+          />
+          <GradientSwatch
+            name="accent-gradient"
+            gradient="var(--an-accent-gradient)"
+          />
         </Row>
       </Sub>
 

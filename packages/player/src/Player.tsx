@@ -11,6 +11,7 @@ import {
   PlayerTopbar,
   UntrackedBanner,
   themeStyleOf,
+  useScrolledFlag,
 } from "./chrome.js";
 import { Cover } from "./Cover.js";
 import { resolveEntranceKind } from "./entrance.js";
@@ -228,6 +229,10 @@ export function Player({
   // Move focus to the lesson heading on lesson change (not on initial mount).
   const headingRef = useRef<HTMLHeadingElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
+  // Topbar scroll shade (5C.2): flat at rest, elevation once content slides
+  // beneath it. Gated on `started` so the listener attaches after .fp-main
+  // mounts (the cover screen has no topbar).
+  const topbarScrolled = useScrolledFlag(mainRef, started);
   const lastLessonIdRef = useRef<string | undefined>(undefined);
   useEffect(() => {
     if (!started || !currentLesson) return;
@@ -410,6 +415,7 @@ export function Player({
         onToggleSidebar={() => setSidebarOpen((open) => !open)}
         exitLabel={course.labelSet.exitCourse}
         onExit={onExit}
+        scrolled={topbarScrolled}
       />
       <div className="fp-body">
         {sidebarEnabled && sidebarOpen ? (

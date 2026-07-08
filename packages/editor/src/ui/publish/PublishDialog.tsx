@@ -236,7 +236,9 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
           </p>
         ) : null}
 
-        {publishing ? <ProgressBar label="Publishing" /> : null}
+        {/* Ember accent (5C.1): progress is ember's job, and publishing is
+            the editor's one brand-energy moment. */}
+        {publishing ? <ProgressBar accent label="Publishing" /> : null}
 
         <div className="fe-publish-actions">
           <Button onClick={onClose} disabled={publishing}>

@@ -1,9 +1,45 @@
 // Small presentational pieces of the player chrome, split out of Player.tsx
 // to keep the orchestrating component readable.
 
+import { useEffect, useState } from "react";
 import type { CSSProperties, ReactElement, RefObject } from "react";
 import type { CourseDoc, LabelSet } from "@forge/schema";
 import { fontStackOf, readableTextOn } from "./fonts.js";
+
+/** Scroll-aware topbar shade (5C.2): true while the given scroll container
+ *  has moved off its top. rAF-throttled, implemented locally so the player
+ *  stays self-contained (mirrors the editor's useScrolled mechanism without
+ *  importing editor code). `active` gates the listener to the lesson view;
+ *  the cover screen renders no topbar. */
+export function useScrolledFlag(
+  ref: RefObject<HTMLElement | null>,
+  active: boolean,
+): boolean {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const node = ref.current;
+    if (!active || node === null) {
+      setScrolled(false);
+      return;
+    }
+    let frame: number | null = null;
+    const update = (): void => {
+      frame = null;
+      setScrolled(node.scrollTop > 0);
+    };
+    const onScroll = (): void => {
+      if (frame !== null) return;
+      frame = requestAnimationFrame(update);
+    };
+    node.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => {
+      node.removeEventListener("scroll", onScroll);
+      if (frame !== null) cancelAnimationFrame(frame);
+    };
+  }, [ref, active]);
+  return scrolled;
+}
 
 export function themeStyleOf(course: CourseDoc): CSSProperties {
   const theme = course.theme;
@@ -57,6 +93,8 @@ export interface PlayerTopbarProps {
   onToggleSidebar: () => void;
   exitLabel: string;
   onExit: (() => void) | undefined;
+  /** True while .fp-main is scrolled off its top; fades in the shade. */
+  scrolled: boolean;
 }
 
 /** Slim top bar: sidebar toggle, course title (desktop) or lesson context
@@ -70,9 +108,10 @@ export function PlayerTopbar({
   onToggleSidebar,
   exitLabel,
   onExit,
+  scrolled,
 }: PlayerTopbarProps): ReactElement {
   return (
-    <header className="fp-topbar">
+    <header className="fp-topbar" data-scrolled={scrolled ? "true" : "false"}>
       {sidebarEnabled ? (
         <button
           type="button"

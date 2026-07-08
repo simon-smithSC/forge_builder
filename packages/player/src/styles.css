@@ -45,6 +45,11 @@
   --fp-elevation-4: 0px 0px 0px 1px #14161b0a, 0px 8px 16px 0px #14161b1a,
     0px 16px 48px 0px #14161b1f; /* an-elevation-4 */
 
+  /* Machined bevels for solid-fill controls (5C.2): top highlight + bottom
+     edge, composed with each control's existing shadows. */
+  --fp-bevel-highlight: inset 0px 1px 0px 0px #ffffff24; /* an-bevel-highlight */
+  --fp-bevel-edge: inset 0px -1px 0px 0px #14161b2e; /* an-bevel-edge */
+
   /* Motion (chrome transitions only; entrance timings stay locked above) */
   --fp-duration-120: 120ms; /* an-duration-120 */
   --fp-duration-160: 160ms; /* an-duration-160 */
@@ -162,10 +167,23 @@
   background: var(--forge-primary, #1f6feb);
   /* Luminance-derived pair from themeStyleOf; readable on any brand hex. */
   color: var(--forge-primary-contrast, #ffffff);
+  /* Solid fills get the machined bevel treatment (5C.2), matching the
+     editor's primary buttons. */
+  box-shadow: var(--fp-bevel-highlight), var(--fp-bevel-edge);
 }
 
 .fp-button-primary:hover:not(:disabled) {
   background: color-mix(in srgb, var(--forge-primary, #1f6feb) 85%, #000000);
+}
+
+/* Placed after the shared focus rule above so the ring composes with (rather
+   than replaces) the bevel on solid fills. */
+.fp-button-primary:focus-visible,
+.fp-quiz-pill:focus-visible {
+  box-shadow:
+    var(--fp-focus-ring),
+    var(--fp-bevel-highlight),
+    var(--fp-bevel-edge);
 }
 
 .fp-button-small {
@@ -266,7 +284,11 @@
   border-radius: var(--fp-radius-full);
 }
 
-/* Top bar (sticky-bar depth: an elevation-2 in the editor's language) --- */
+/* Top bar: scroll-aware (5C.2, mirroring the editor's 5B.2 rule). Idles FLAT
+   with only a hairline (constant elevation over nothing is a double edge);
+   gains elevation-2 (sticky-bar tier) once lesson content actually scrolls
+   beneath it. data-scrolled comes from the rAF-throttled .fp-main watcher in
+   chrome.tsx. */
 
 .fp-topbar {
   display: flex;
@@ -274,9 +296,15 @@
   gap: var(--fp-space-12);
   padding: var(--fp-space-8) var(--fp-space-16);
   background: var(--forge-surface, #f6f8fa);
-  box-shadow: var(--fp-elevation-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 10%, transparent);
+  box-shadow: none;
+  transition: box-shadow var(--fp-duration-160) var(--fp-ease-standard);
   position: relative;
   z-index: 2;
+}
+
+.fp-topbar[data-scrolled="true"] {
+  box-shadow: var(--fp-elevation-2);
 }
 
 .fp-topbar-title {
@@ -790,6 +818,8 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
+  /* Solid fill: machined bevel (5C.2), same treatment as .fp-button-primary. */
+  box-shadow: var(--fp-bevel-highlight), var(--fp-bevel-edge);
   transition: filter var(--fp-duration-120) var(--fp-ease-standard);
 }
 

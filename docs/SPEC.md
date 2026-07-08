@@ -96,7 +96,11 @@ type Lesson = SectionHeader | BlocksLesson | QuizLesson;
 interface BlocksLesson {
   type: "blocks";
   id: string; title: string; icon?: string;
-  headerImage?: MediaId;
+  header?: {                       // schema v1.2.0: replaced headerImage (migrated)
+    imageMediaId?: MediaId;
+    backgroundColor?: string;
+    overlayOpacity?: number;       // 0-100 scrim strength over the image
+  };
   blocks: Block[];
 }
 

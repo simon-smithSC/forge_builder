@@ -226,3 +226,51 @@ graduate to ADRs in `docs/adr/`; API changes follow semver in
   `--an-interactive-idle` on top of the existing tint (the tint alone was a
   weak position signal). Duotone icon re-vendor stays REJECTED (104-asset
   cost, marginal gain).
+
+## 2026-07-08: V5C signature moves
+
+- **Accent story codified: cobalt is interactive, ember is brand energy and
+  progress.** Cobalt (`--an-interactive-*`) marks anything you can act on:
+  buttons, links, selection, focus. Ember appears only where the product
+  celebrates momentum: the Wordmark spark facet, `--an-accent-gradient`, and
+  progress affordances via `[data-accent]` on ProgressBar/ProgressRing. Ember
+  must never mark an interactive control (it would read as a second primary)
+  and cobalt must never fill a progress track (it would read as a button).
+  Adoption: the publish dialog's ProgressBar flips to the ember accent -
+  publishing is the editor's one brand-energy moment. It is the editor's only
+  progressbar today (the overview outline shows no course-progress meter), so
+  no other adoption exists; nothing was invented to wear the accent.
+- **Save badge tone crossfade.** `.an-badge` gains a background-color/color/
+  border-color transition on `--an-duration-160`, so the topbar save-status
+  badge (saved/saving/offline/conflict) crossfades between tones instead of
+  snapping. Applies to all badges; tone changes are state changes and deserve
+  the same 160ms tier as other state transitions.
+- **Player chrome flair, value-copied (D4 discipline).** All three moves land
+  as `--fp-` values with an- provenance comments; `packages/player/src` still
+  contains zero `--an-` references or @forge/ui imports. (1) New
+  `--fp-bevel-highlight`/`--fp-bevel-edge` (an-bevel-highlight/an-bevel-edge
+  verbatim) compose onto the solid fills - `.fp-button-primary` (incl. cover
+  start) and `.fp-quiz-pill` - with a focus-visible rule that layers the ring
+  over the bevel instead of replacing it. (2) The player topbar adopts the
+  editor's 5B.2 scroll-aware rule: flat + course-tinted hairline at rest,
+  elevation-2 fading in on `[data-scrolled="true"]`, driven by a local
+  rAF-throttled `useScrolledFlag` hook in chrome.tsx watching `.fp-main`
+  (mechanism mirrored from ui/useScrolled.ts, never imported). (3) Sidebar
+  active item: the plan's "bar + pill fill" already shipped in D4
+  (`.fp-nav-current` = inset 3px bar + 14% primary tint); the planned 8% fill
+  was NOT applied because 8% is the hover tint - active stays one step
+  stronger. No change made.
+- **Micro-interaction pass.** Overview row actions fade AND settle in
+  (rest: opacity 0 + translateX(2px); hover/focus-within: 1 + 0, both on
+  duration-120). `.an-menu-item` hover wash transitions on duration-80 (menus
+  are scanned fast; 120 lags). `.an-iconbtn:active` dips to scale(0.96) with
+  a duration-80 transform transition. `.fe-outline-item` already had its
+  duration-120 background transition (D3); its hover controls keep the
+  `display` toggle rather than an opacity fade - making them opacity-0 would
+  permanently reserve ~56px of the 260px rail and squeeze long lesson titles.
+  Entrance timings in the player (1s / 0.12s / 0.15s) remain LOCKED and
+  untouched. All new motion is token-driven, so prefers-reduced-motion
+  collapses it wholesale.
+- **Styleguide**: TokensSection gains a "Depth and focus finishes" specimen
+  (bevelled primary, focus-glow input, the two sanctioned gradients) so 5A/5C
+  finishes are visible in review; Wordmark specimen landed with V5A.
