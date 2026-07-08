@@ -73,17 +73,53 @@ function VideoView({ block }: { block: VideoBlock }): ReactElement {
   );
 }
 
+/** Human name for known embed hosts (teardown 572-578: `VIMEO` label,
+ * title, `VIEW ON VIMEO` link under provider embeds). */
+function providerFromUrl(url: string): string | undefined {
+  let host: string;
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    return undefined;
+  }
+  if (host.includes("youtube") || host.includes("youtu.be")) return "YouTube";
+  if (host.includes("vimeo")) return "Vimeo";
+  if (host.includes("forms.office") || host.includes("forms.microsoft"))
+    return "Microsoft Forms";
+  if (host.includes("powerbi")) return "Power BI";
+  return undefined;
+}
+
 function EmbedView({ block }: { block: EmbedBlock }): ReactElement {
   const ratio = block.payload.aspectRatio.replace(":", " / ");
+  const provider = providerFromUrl(block.payload.url);
   return (
-    <div className="fb-multimedia fb-multimedia-embed" style={{ aspectRatio: ratio }}>
-      <iframe
-        className="fb-multimedia-embed-frame"
-        src={block.payload.url}
-        title={block.payload.title}
-        allowFullScreen={block.payload.allowFullscreen}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      />
+    <div className="fb-multimedia fb-multimedia-embed">
+      <div className="fb-multimedia-embed-media" style={{ aspectRatio: ratio }}>
+        <iframe
+          className="fb-multimedia-embed-frame"
+          src={block.payload.url}
+          title={block.payload.title}
+          allowFullScreen={block.payload.allowFullscreen}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        />
+      </div>
+      {provider && block.payload.title ? (
+        <div className="fb-multimedia-embed-provider">
+          <span className="fb-multimedia-embed-provider-name">{provider}</span>
+          <span className="fb-multimedia-embed-provider-title">
+            {block.payload.title}
+          </span>
+          <a
+            className="fb-multimedia-embed-provider-link"
+            href={block.payload.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View on {provider}
+          </a>
+        </div>
+      ) : null}
     </div>
   );
 }

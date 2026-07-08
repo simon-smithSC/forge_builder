@@ -727,7 +727,9 @@ button:focus-visible {
   gap: 2px;
 }
 
-/* ---- preview overlay ---- */
+/* ---- preview overlay (Rise-like learner preview shell: dim backdrop,
+   top bar with back-to-editing + centered title + device switcher,
+   centered device frame with bezel on tablet/phone; teardown 210-274) ---- */
 
 .fe-preview-overlay {
   position: fixed;
@@ -735,41 +737,126 @@ button:focus-visible {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  background: #14171c;
+  background: rgba(13, 16, 20, 0.96);
 }
 
 .fe-preview-topbar {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 10px 16px;
+  padding: 8px 16px;
   color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .fe-preview-title {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   font-weight: 600;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.fe-preview-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
 .fe-preview-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: transparent;
   color: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.fe-preview-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.fe-preview-topbar .fe-device-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.fe-preview-topbar .fe-device-btn-active {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.fe-preview-topbar .fe-device-toggle {
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .fe-preview-stage {
   flex: 1;
   min-height: 0;
   display: flex;
+  align-items: stretch;
   justify-content: center;
-  padding: 0 16px 16px;
+  padding: 16px;
 }
 
 .fe-preview-frame {
   max-width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.fe-preview-screen {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   background: #ffffff;
+}
+
+/* Desktop: plain sheet docked to the bottom edge, like a browser window. */
+.fe-preview-frame-desktop {
+  padding-bottom: 0;
+}
+
+.fe-preview-frame-desktop .fe-preview-screen {
   border-radius: 8px 8px 0 0;
+}
+
+/* Tablet and phone: centered device with a rounded dark bezel. */
+.fe-preview-frame-tablet,
+.fe-preview-frame-phone {
+  align-self: center;
+  max-height: 100%;
+  background: #262b33;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.fe-preview-frame-tablet {
+  padding: 18px;
+  border-radius: 24px;
+}
+
+.fe-preview-frame-phone {
+  padding: 14px 10px 22px;
+  border-radius: 32px;
+}
+
+.fe-preview-frame-tablet .fe-preview-screen {
+  border-radius: 10px;
+}
+
+.fe-preview-frame-phone .fe-preview-screen {
+  border-radius: 20px;
 }

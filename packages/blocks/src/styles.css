@@ -390,7 +390,8 @@
 .fb-multimedia-video-player { width: 100%; border-radius: 8px; display: block; }
 .fb-multimedia-transcript { margin-top: 0.75rem; font-size: 0.95rem; }
 .fb-multimedia-transcript summary { cursor: pointer; color: var(--fb-primary); }
-.fb-multimedia-embed {
+.fb-multimedia-embed { width: 100%; }
+.fb-multimedia-embed-media {
   position: relative;
   width: 100%;
   border-radius: 8px;
@@ -404,6 +405,32 @@
   height: 100%;
   border: 0;
 }
+/* Provider line under the frame (teardown 572-578: VIMEO / title /
+   VIEW ON VIMEO). */
+.fb-multimedia-embed-provider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 0.25rem 0;
+}
+.fb-multimedia-embed-provider-name {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fb-text) 55%, transparent);
+}
+.fb-multimedia-embed-provider-title { font-weight: 600; }
+.fb-multimedia-embed-provider-link {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fb-primary);
+  text-decoration: none;
+  margin-top: 0.25rem;
+}
+.fb-multimedia-embed-provider-link:hover { text-decoration: underline; }
 .fb-multimedia-attachment {
   display: flex;
   align-items: center;

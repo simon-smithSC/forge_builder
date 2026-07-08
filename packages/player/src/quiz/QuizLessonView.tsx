@@ -286,6 +286,13 @@ export function QuizLessonView({
       retriesUsed < lesson.settings.retryCount;
     return (
       <div className="fp-quiz fp-quiz-result" role="status">
+        <div
+          className={`fp-quiz-result-ring${
+            score.passed ? " fp-quiz-result-ring-passed" : ""
+          }`}
+        >
+          <span className="fp-quiz-result-percent">{score.percent}%</span>
+        </div>
         <h2 className="fp-quiz-result-heading">
           {score.passed ? labels.passed : labels.failed}
         </h2>
@@ -293,11 +300,7 @@ export function QuizLessonView({
           {score.percent}% / {lesson.settings.passingScore}%
         </p>
         {!score.passed && canRetry ? (
-          <button
-            type="button"
-            className="fp-button fp-button-primary"
-            onClick={handleRetry}
-          >
+          <button type="button" className="fp-quiz-pill" onClick={handleRetry}>
             {labels.retry}
           </button>
         ) : null}
@@ -316,15 +319,27 @@ export function QuizLessonView({
           <fieldset className="fp-quiz-choices">
             <legend className="fp-sr-only">Answer choices</legend>
             {question.answers.map((answer) => (
-              <label key={answer.id} className="fp-quiz-choice">
+              <label
+                key={answer.id}
+                className={`fp-quiz-choice${
+                  choice === answer.id ? " fp-quiz-choice-selected" : ""
+                }`}
+              >
                 <input
+                  className="fp-quiz-choice-input"
                   type="radio"
                   name={`fp-q-${question.id}`}
                   value={answer.id}
                   checked={choice === answer.id}
                   onChange={() => setChoice(answer.id)}
                 />
-                <Html fragment={answer.html} />
+                <span
+                  className="fp-quiz-choice-glyph fp-quiz-choice-glyph-radio"
+                  aria-hidden="true"
+                />
+                <span className="fp-quiz-choice-text">
+                  <Html fragment={answer.html} />
+                </span>
               </label>
             ))}
           </fieldset>
@@ -334,8 +349,14 @@ export function QuizLessonView({
           <fieldset className="fp-quiz-choices">
             <legend className="fp-sr-only">Answer choices, select all that apply</legend>
             {question.answers.map((answer) => (
-              <label key={answer.id} className="fp-quiz-choice">
+              <label
+                key={answer.id}
+                className={`fp-quiz-choice${
+                  multi.has(answer.id) ? " fp-quiz-choice-selected" : ""
+                }`}
+              >
                 <input
+                  className="fp-quiz-choice-input"
                   type="checkbox"
                   name={`fp-q-${question.id}`}
                   value={answer.id}
@@ -349,7 +370,13 @@ export function QuizLessonView({
                     })
                   }
                 />
-                <Html fragment={answer.html} />
+                <span
+                  className="fp-quiz-choice-glyph fp-quiz-choice-glyph-check"
+                  aria-hidden="true"
+                />
+                <span className="fp-quiz-choice-text">
+                  <Html fragment={answer.html} />
+                </span>
               </label>
             ))}
           </fieldset>
@@ -471,15 +498,25 @@ export function QuizLessonView({
           <fieldset className="fp-quiz-likert">
             <legend className="fp-sr-only">Rating scale</legend>
             {question.scale.map((step) => (
-              <label key={step.id} className="fp-quiz-likert-step">
+              <label
+                key={step.id}
+                className={`fp-quiz-choice fp-quiz-likert-step${
+                  likertValue === step.id ? " fp-quiz-choice-selected" : ""
+                }`}
+              >
                 <input
+                  className="fp-quiz-choice-input"
                   type="radio"
                   name={`fp-q-${question.id}`}
                   value={step.id}
                   checked={likertValue === step.id}
                   onChange={() => setLikertValue(step.id)}
                 />
-                <span>{step.label}</span>
+                <span
+                  className="fp-quiz-choice-glyph fp-quiz-choice-glyph-radio"
+                  aria-hidden="true"
+                />
+                <span className="fp-quiz-choice-text">{step.label}</span>
               </label>
             ))}
           </fieldset>
@@ -504,9 +541,35 @@ export function QuizLessonView({
         className={`fp-quiz-feedback ${outcome.correct ? "fp-quiz-feedback-correct" : "fp-quiz-feedback-incorrect"}`}
         role="status"
       >
-        <p className="fp-quiz-feedback-verdict">
-          {outcome.correct ? labels.correct : labels.incorrect}
-        </p>
+        <div className="fp-quiz-feedback-head">
+          <span className="fp-quiz-feedback-icon" aria-hidden="true">
+            {outcome.correct ? (
+              <svg viewBox="0 0 16 16" width="14" height="14" focusable="false">
+                <path
+                  d="M13.5 4.5 6.5 11.5 2.5 7.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 16 16" width="14" height="14" focusable="false">
+                <path
+                  d="M4.5 4.5l7 7m0-7-7 7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            )}
+          </span>
+          <p className="fp-quiz-feedback-verdict">
+            {outcome.correct ? labels.correct : labels.incorrect}
+          </p>
+        </div>
         {questionFeedback ? <Html fragment={questionFeedback} /> : null}
         {selectedAnswerFeedback ? <Html fragment={selectedAnswerFeedback} /> : null}
         {question.rationale ? (
@@ -514,11 +577,7 @@ export function QuizLessonView({
             <Html fragment={question.rationale} />
           </div>
         ) : null}
-        <button
-          type="button"
-          className="fp-button fp-button-primary"
-          onClick={advance}
-        >
+        <button type="button" className="fp-quiz-pill" onClick={advance}>
           {labels.continue}
         </button>
       </div>
@@ -527,9 +586,19 @@ export function QuizLessonView({
 
   return (
     <div className="fp-quiz">
-      <p className="fp-quiz-progress">
-        {index + 1} / {questions.length}
-      </p>
+      <div className="fp-quiz-progress">
+        <p className="fp-quiz-progress-label">
+          Question {index + 1} of {questions.length}
+        </p>
+        <div className="fp-quiz-progress-track" aria-hidden="true">
+          <div
+            className="fp-quiz-progress-fill"
+            style={{
+              width: `${Math.round(((index + 1) / questions.length) * 100)}%`,
+            }}
+          />
+        </div>
+      </div>
       <div className="fp-quiz-prompt">
         <Html fragment={question.prompt} />
       </div>
@@ -537,7 +606,7 @@ export function QuizLessonView({
       {phase === "answering" ? (
         <button
           type="button"
-          className="fp-button fp-button-primary"
+          className="fp-quiz-pill"
           disabled={!canSubmit()}
           onClick={handleSubmit}
         >

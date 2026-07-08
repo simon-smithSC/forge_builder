@@ -33,7 +33,19 @@ export function PreviewOverlay({
   return (
     <div className="fe-preview-overlay" role="dialog" aria-modal="true" aria-label="Course preview">
       <div className="fe-preview-topbar">
-        <span className="fe-preview-title">Preview: {course.title}</span>
+        <button
+          type="button"
+          className="fe-preview-close"
+          onClick={onClose}
+          title="Back to editing"
+        >
+          <X size={16} aria-hidden />
+          <span>Back to editing</span>
+        </button>
+        <span className="fe-preview-title">
+          <span className="fe-preview-kicker">Course preview</span>
+          {course.title}
+        </span>
         <span className="fe-device-toggle" role="group" aria-label="Preview device">
           {(Object.keys(previewDeviceWidths) as PreviewDevice[]).map((item) => (
             <button
@@ -47,24 +59,20 @@ export function PreviewOverlay({
             </button>
           ))}
         </span>
-        <button
-          type="button"
-          className="fe-icon-btn fe-preview-close"
-          onClick={onClose}
-          title="Close preview"
-          aria-label="Close preview"
-        >
-          <X size={18} aria-hidden />
-        </button>
       </div>
       <div className="fe-preview-stage">
-        <div className="fe-preview-frame" style={{ width: `${width}px` }}>
-          <Player
-            course={course}
-            resolveMediaUrl={resolveMediaUrl}
-            hideCover={false}
-            onExit={onClose}
-          />
+        <div
+          className={`fe-preview-frame fe-preview-frame-${device}`}
+          style={{ width: `${width}px` }}
+        >
+          <div className="fe-preview-screen">
+            <Player
+              course={course}
+              resolveMediaUrl={resolveMediaUrl}
+              hideCover={false}
+              onExit={onClose}
+            />
+          </div>
         </div>
       </div>
     </div>

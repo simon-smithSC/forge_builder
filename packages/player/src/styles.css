@@ -464,23 +464,49 @@
   }
 }
 
-/* Quiz ------------------------------------------------------------------ */
+/* Quiz (Rise learner styling: question counter + accent bar, option cards
+   with circle glyphs, uppercase accent pills, tinted feedback banner,
+   big-percent results; teardown 858-905) ------------------------------- */
 
 .fp-quiz {
   background: var(--forge-surface, #f6f8fa);
-  border-radius: 10px;
-  padding: 1.5rem;
+  border-radius: 12px;
+  padding: 2rem;
 }
 
 .fp-quiz-progress {
-  margin: 0 0 0.75rem;
-  font-size: 0.85rem;
-  color: color-mix(in srgb, var(--forge-text, #1f2328) 65%, transparent);
+  margin: 0 0 1.5rem;
+}
+
+.fp-quiz-progress-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--forge-text, #1f2328) 60%, transparent);
+}
+
+.fp-quiz-progress-track {
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--forge-text, #1f2328) 12%, transparent);
+  overflow: hidden;
+}
+
+.fp-quiz-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--forge-primary, #1f6feb);
+  transition: width 200ms ease;
 }
 
 .fp-quiz-prompt {
-  font-size: 1.1rem;
-  margin-bottom: 1.25rem;
+  font-family: var(--forge-heading-font, inherit);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 1.5rem;
 }
 
 .fp-quiz-choices,
@@ -488,15 +514,115 @@
   border: 0;
   margin: 0 0 1.25rem;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-.fp-quiz-choice,
-.fp-quiz-likert-step {
+.fp-quiz-choice {
   display: flex;
   align-items: flex-start;
-  gap: 0.6rem;
-  padding: 0.5rem 0.25rem;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--forge-bg, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 16%, transparent);
+  border-radius: 8px;
   cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.fp-quiz-choice:hover {
+  border-color: color-mix(in srgb, var(--forge-primary, #1f6feb) 55%, transparent);
+}
+
+.fp-quiz-choice-selected {
+  border-color: var(--forge-primary, #1f6feb);
+  background: color-mix(in srgb, var(--forge-primary, #1f6feb) 5%, var(--forge-bg, #ffffff));
+}
+
+/* Native input stays for a11y; the circle glyph is the visual control. */
+.fp-quiz-choice-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.fp-quiz-choice-glyph {
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.1rem;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--forge-text, #1f2328) 35%, transparent);
+  position: relative;
+}
+
+.fp-quiz-choice-selected .fp-quiz-choice-glyph {
+  border-color: var(--forge-primary, #1f6feb);
+}
+
+.fp-quiz-choice-selected .fp-quiz-choice-glyph-radio::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--forge-primary, #1f6feb);
+}
+
+.fp-quiz-choice-selected .fp-quiz-choice-glyph-check {
+  background: var(--forge-primary, #1f6feb);
+}
+
+.fp-quiz-choice-selected .fp-quiz-choice-glyph-check::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.fp-quiz-choice-input:focus-visible ~ .fp-quiz-choice-glyph {
+  outline: 2px solid var(--forge-primary, #1f6feb);
+  outline-offset: 2px;
+}
+
+.fp-quiz-choice-text {
+  min-width: 0;
+}
+
+/* Uppercase accent pill: SUBMIT / NEXT / TAKE AGAIN (teardown 874-876). */
+.fp-quiz-pill {
+  background: var(--forge-primary, #1f6feb);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 2.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 120ms ease;
+}
+
+.fp-quiz-pill:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.fp-quiz-pill:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .fp-quiz-input,
@@ -553,36 +679,94 @@
 
 .fp-quiz-feedback {
   margin-top: 1.25rem;
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   border-radius: 8px;
-  border-left: 4px solid var(--forge-primary, #1f6feb);
-  background: var(--forge-bg, #ffffff);
+  border: 1px solid;
 }
 
 .fp-quiz-feedback-correct {
-  border-left-color: #1a7f37;
+  background: color-mix(in srgb, #2da44e 8%, transparent);
+  border-color: #2da44e;
 }
 
 .fp-quiz-feedback-incorrect {
-  border-left-color: #cf222e;
+  background: color-mix(in srgb, #cf222e 8%, transparent);
+  border-color: #cf222e;
+}
+
+.fp-quiz-feedback-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.fp-quiz-feedback-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.fp-quiz-feedback-correct .fp-quiz-feedback-icon {
+  background: #2da44e;
+}
+
+.fp-quiz-feedback-incorrect .fp-quiz-feedback-icon {
+  background: #cf222e;
 }
 
 .fp-quiz-feedback-verdict {
   font-weight: 700;
-  margin: 0 0 0.5rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.fp-quiz-feedback-correct .fp-quiz-feedback-verdict {
+  color: #1a7f37;
+}
+
+.fp-quiz-feedback-incorrect .fp-quiz-feedback-verdict {
+  color: #cf222e;
 }
 
 .fp-quiz-rationale {
   margin-top: 0.5rem;
 }
 
-.fp-quiz-feedback .fp-button {
+.fp-quiz-feedback .fp-quiz-pill {
   margin-top: 1rem;
 }
 
 .fp-quiz-result {
   text-align: center;
-  padding: 2.5rem 1.5rem;
+  padding: 3rem 1.5rem;
+}
+
+.fp-quiz-result-ring {
+  width: 8.5rem;
+  height: 8.5rem;
+  margin: 0 auto 1.25rem;
+  border-radius: 50%;
+  border: 5px solid color-mix(in srgb, var(--forge-text, #1f2328) 20%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fp-quiz-result-ring-passed {
+  border-color: var(--forge-primary, #1f6feb);
+}
+
+.fp-quiz-result-percent {
+  font-family: var(--forge-heading-font, inherit);
+  font-size: 2.25rem;
+  font-weight: 700;
 }
 
 .fp-quiz-result-heading {
@@ -591,7 +775,8 @@
 }
 
 .fp-quiz-result-score {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  color: color-mix(in srgb, var(--forge-text, #1f2328) 65%, transparent);
   margin: 0 0 1.5rem;
 }
 
