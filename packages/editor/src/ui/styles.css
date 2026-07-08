@@ -3,7 +3,7 @@
    Controls (buttons, inputs, badges, chips, dialogs, tabs, segmented,
    progress) are Anvil components; this file keeps LAYOUT and Forge-specific
    composites only. Block/player visuals come from @forge/blocks and
-   @forge/player stylesheets (--forge-*/--fb-*), which Anvil never touches. */
+   @forge/player stylesheets (the --forge- and --fb- tokens), which Anvil never touches. */
 
 /* ---- temporary --fe- token bridge (D3) ----
    Maps the legacy chrome tokens onto Anvil semantics so any css not yet

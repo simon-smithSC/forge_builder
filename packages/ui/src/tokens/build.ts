@@ -271,7 +271,7 @@ for (const [name, value] of Object.entries(componentTokens)) {
 lines.push("}");
 lines.push("");
 lines.push("/* Base chrome text setting. Anvil owns app chrome only; never wrap");
-lines.push("   learner course content (--forge-*/--fb-* stay author-themed). */");
+lines.push("   learner course content: --forge- and --fb- tokens stay author-themed. */");
 lines.push(".anvil {");
 lines.push("  font-family: var(--an-font-family-sans);");
 lines.push("  font-size: var(--an-font-size-14);");

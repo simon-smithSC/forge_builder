@@ -85,6 +85,35 @@ if (existsSync(editorDir)) {
   }
 }
 
+// 6. CSS comment integrity. A comment whose BODY contains "*/" (e.g. prose
+// like "--forge-*/--fb-*") terminates early; the leftover text glues onto the
+// next selector, and CSS error recovery silently drops that entire rule.
+// Field incident: anvil.css's .anvil font rule was swallowed this way and the
+// whole editor rendered in Times. After stripping well-formed comments, no
+// "*/" may remain in any stylesheet.
+function walkCss(dir, out = []) {
+  for (const name of readdirSync(dir)) {
+    if (name === "node_modules" || name === "dist" || name.startsWith(".")) continue;
+    const full = join(dir, name);
+    const st = statSync(full);
+    if (st.isDirectory()) walkCss(full, out);
+    else if (name.endsWith(".css")) out.push(full);
+  }
+  return out;
+}
+for (const pkg of ["editor", "player", "blocks", "ui", "xapi", "exporter"]) {
+  const dir = join(root, "packages", pkg, "src");
+  if (!existsSync(dir)) continue;
+  for (const file of walkCss(dir)) {
+    const stripped = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    if (stripped.includes("*/")) {
+      failures.push(
+        `${relative(root, file)} has an orphan "*/" after comment stripping: a comment body contains "*/" and will swallow the next rule.`,
+      );
+    }
+  }
+}
+
 if (failures.length > 0) {
   console.error("Contract check FAILED:\n");
   for (const f of failures) console.error("  - " + f);
