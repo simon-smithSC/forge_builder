@@ -166,6 +166,7 @@ export async function reloadServerCopy(): Promise<void> {
     revision: result.revision,
     saveStatus: "saved",
     selectedBlockId: null,
+    settingsOpen: false,
   }));
 }
 

@@ -167,7 +167,13 @@ function lessonKindLabel(lesson: Lesson): string {
   return "lesson";
 }
 
-export function Outline(): ReactElement {
+export interface OutlineProps {
+  /** Desktop collapse state (V1.3); drives the header button's affordance. */
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+export function Outline({ collapsed, onToggleCollapse }: OutlineProps): ReactElement {
   const lessons = useStore((state) => state.course?.lessons ?? []);
   const selectedLessonId = useStore((state) => state.selectedLessonId);
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null);
@@ -202,6 +208,17 @@ export function Outline(): ReactElement {
 
   return (
     <aside className="fe-outline">
+      <div className="fe-outline-header">
+        <span className="fe-outline-header-label">Outline</span>
+        <IconButton
+          size="sm"
+          label={collapsed ? "Show outline" : "Hide outline"}
+          title={collapsed ? "Show outline (⌘\\)" : "Hide outline (⌘\\)"}
+          icon={<Icon name="panel-left" size={14} />}
+          onClick={onToggleCollapse}
+          aria-expanded={!collapsed}
+        />
+      </div>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

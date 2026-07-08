@@ -8,7 +8,7 @@ import { X } from "lucide-react";
 import { Button, IconButton, Input, Radio } from "@forge/ui";
 import { getRegistryEntry } from "@forge/blocks";
 import type { Block } from "@forge/schema";
-import { selectBlock, setBlockSettings } from "../state/actions.js";
+import { closeBlockSettings, setBlockSettings } from "../state/actions.js";
 import { useStore } from "../state/store.js";
 import { PayloadEditor } from "./PayloadEditor.js";
 import { editTitle } from "./variantLabels.js";
@@ -176,13 +176,21 @@ export function SettingsPanel(): ReactElement | null {
   const entry = getRegistryEntry(block.family);
 
   return (
-    <aside className="fe-settings" aria-label="Block settings">
+    // Closing keeps the block selected (V1.1): X and Escape only dismiss
+    // the tray; the canvas ring + rail stay.
+    <aside
+      className="fe-settings"
+      aria-label="Block settings"
+      onKeyDown={(event) => {
+        if (event.key === "Escape") closeBlockSettings();
+      }}
+    >
       <div className="fe-settings-header">
         <span>{editTitle(entry.palette.label, block.variant)}</span>
         <IconButton
           label="Close settings"
           icon={<X size={16} aria-hidden />}
-          onClick={() => selectBlock(null)}
+          onClick={() => closeBlockSettings()}
         />
       </div>
       <section className="fe-settings-section">

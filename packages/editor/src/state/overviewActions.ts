@@ -49,6 +49,7 @@ export function createLessonAt(
     course: next,
     selectedLessonId: added.lessonId,
     selectedBlockId: null,
+    settingsOpen: false,
     canUndo: history.canUndo(),
     canRedo: history.canRedo(),
   }));

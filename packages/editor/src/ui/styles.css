@@ -111,6 +111,12 @@ button:focus-visible {
   line-height: var(--an-font-line-28);
 }
 
+.fe-course-list-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--an-space-8);
+}
+
 .fe-course-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -258,6 +264,25 @@ button:focus-visible {
   overflow-y: auto;
 }
 
+/* Header row (V1.3): panel label + collapse control. */
+.fe-outline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--an-space-8);
+  padding: var(--an-space-8) var(--an-space-8) var(--an-space-8) var(--an-space-12);
+  border-bottom: 1px solid var(--an-border-subtle);
+}
+
+.fe-outline-header-label {
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
+  font-weight: var(--an-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--an-text-muted);
+}
+
 .fe-outline-list {
   list-style: none;
   margin: 0;
@@ -366,6 +391,10 @@ button:focus-visible {
      the browser default (serif) shows. Fall back to the Anvil sans stack. */
   font-family: var(--forge-body-font, var(--an-font-family-sans, system-ui)), sans-serif;
   padding: 40px 0 96px;
+  /* The paper stays author-themed (light by default) even when the tool
+     chrome is dark (D6): native widgets inside course content must not
+     inherit the dark color-scheme from the app root. */
+  color-scheme: light;
 }
 
 /* Lesson title edited in place (P1): an input styled as the h1. The hover /
@@ -529,41 +558,96 @@ button:focus-visible {
   justify-content: center;
 }
 
-/* Insert affordances (P2): Rise-style round accent plus. Accent slot comes
-   from the COURSE theme (--forge-primary) with an Anvil fallback; depth and
-   motion are Anvil. */
+/* Insert affordances (V1.2, evergreen): a slim hairline across the content
+   column with a small neutral plus disc, always visible at rest (Rise
+   teardown line 148). Hover/focus/adjacent-slot hover grows it into the
+   strong accent state; the accent comes from the COURSE theme
+   (--forge-primary) with an Anvil fallback; depth and motion are Anvil.
+   The row is inset to the 46rem content column, matching the
+   .fe-canvas-lesson-title inset, so the hairline never spans full-bleed
+   bands edge to edge. */
 .fe-insert {
   display: flex;
-  justify-content: center;
-  height: 22px;
   align-items: center;
+  justify-content: center;
+  gap: var(--an-space-8);
+  height: 22px;
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+.fe-insert-line {
+  flex: 1;
+  height: 1px;
+  background: var(--an-border-strong);
+  opacity: 0.45;
+  transition: opacity var(--an-duration-120) var(--an-ease-standard);
+}
+
+.fe-insert:hover .fe-insert-line {
+  opacity: 0.8;
 }
 
 .fe-insert-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: var(--an-radius-full);
+  gap: var(--an-space-4);
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border-radius: 999px;
   border: none;
-  background: var(--forge-primary, var(--an-interactive-idle));
-  color: #ffffff;
-  box-shadow: var(--an-elevation-2);
-  opacity: 0;
-  transform: scale(0.85);
+  background: var(--an-surface-overlay);
+  color: var(--an-text-muted);
+  box-shadow: var(--an-elevation-1);
+  opacity: 1;
   transition:
-    opacity var(--an-duration-120) var(--an-ease-standard),
-    transform var(--an-duration-120) var(--an-ease-spring);
+    width var(--an-duration-120) var(--an-ease-standard),
+    height var(--an-duration-120) var(--an-ease-standard),
+    background var(--an-duration-120) var(--an-ease-standard),
+    color var(--an-duration-120) var(--an-ease-standard),
+    box-shadow var(--an-duration-120) var(--an-ease-standard);
 }
 
+/* Intensify triggers: the slot itself, the neighbouring slot (the affordance
+   sits between two blocks), and keyboard focus. */
 .fe-insert:hover .fe-insert-btn,
 .fe-block-slot:hover .fe-insert-btn,
 .fe-block-slot:hover + .fe-block-slot .fe-insert-btn,
-.fe-block-slot:hover + .fe-insert .fe-insert-btn,
+.fe-block-slot:hover + .fe-lib-anchor .fe-insert-btn,
 .fe-insert-btn:focus-visible {
-  opacity: 1;
-  transform: scale(1);
+  width: 26px;
+  height: 26px;
+  background: var(--forge-primary, var(--an-interactive-idle));
+  color: #ffffff;
+  box-shadow: var(--an-elevation-2);
+}
+
+/* Terminal instance (end of lesson): permanently the strong state, rendered
+   as a small labelled "Add block" pill. Declared after the hover block so it
+   wins the equal-specificity tie. */
+.fe-insert-end {
+  height: 34px;
+}
+
+.fe-insert-end .fe-insert-btn {
+  width: auto;
+  height: 26px;
+  padding: 0 var(--an-space-12);
+  background: var(--forge-primary, var(--an-interactive-idle));
+  color: #ffffff;
+  box-shadow: var(--an-elevation-2);
+}
+
+.fe-insert-btn-label {
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
+  font-weight: var(--an-font-weight-semibold);
+  white-space: nowrap;
 }
 
 /* ---- block insertion ---- */
@@ -717,11 +801,24 @@ button:focus-visible {
 
 /* ---- responsive editor shell ---- */
 
-/* Outline toggle lives in the topbar; only relevant once the outline
-   collapses to an overlay. Overrides the Anvil IconButton display (this
-   stylesheet intentionally loads after components.css). */
-.fe-outline-toggle {
-  display: none;
+/* Topbar outline toggle (V1.3): always visible; collapses the rail on
+   desktop and drives the slide-in overlay below 900px. */
+
+/* Desktop collapse: the wrapper animates to width 0 (same mechanism as the
+   settings drawer) while the inner panel keeps its 260px so rows do not
+   squash mid-slide. Scoped >=900px so the overlay mode below stays
+   untouched. Layout contract safe: nothing here adds max-width or padding
+   to the canvas/band chain. */
+@media (min-width: 900px) {
+  .fe-outline-wrap {
+    width: 260px;
+    overflow: hidden;
+    transition: width var(--an-duration-200) var(--an-ease-standard);
+  }
+
+  .fe-outline-wrap.fe-outline-collapsed {
+    width: 0;
+  }
 }
 
 /* Below 1100px the settings drawer overlays the canvas instead of
@@ -754,10 +851,6 @@ button:focus-visible {
 
   .fe-title-input {
     min-width: 140px;
-  }
-
-  .fe-outline-toggle {
-    display: inline-flex;
   }
 
   .fe-outline-wrap {

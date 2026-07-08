@@ -13,6 +13,7 @@ import type { SaveStatus } from "../state/store.js";
 import { LabelSetEditor } from "./dialogs/LabelSetEditor.js";
 import { ThemeEditor } from "./dialogs/ThemeEditor.js";
 import { PublishDialog } from "./publish/PublishDialog.js";
+import { ThemeToggle } from "./ThemeToggle.js";
 
 const STATUS_LABEL: Record<SaveStatus, string> = {
   saved: "All changes saved",
@@ -44,9 +45,11 @@ export interface TopBarProps {
   device: PreviewDevice;
   onDeviceChange: (device: PreviewDevice) => void;
   onPreview: () => void;
-  /** Toggles the outline overlay on narrow viewports (button is CSS-hidden
-      above 900px). */
+  /** Universal outline toggle: collapses the rail on desktop, opens the
+      slide-in overlay below 900px (EditorScreen decides at call time). */
   onToggleOutline: () => void;
+  /** Desktop collapse state, for aria-expanded + the tooltip verb. */
+  outlineCollapsed: boolean;
 }
 
 export function TopBar({
@@ -54,6 +57,7 @@ export function TopBar({
   onDeviceChange,
   onPreview,
   onToggleOutline,
+  outlineCollapsed,
 }: TopBarProps): ReactElement {
   const title = useStore((state) => state.course?.title ?? "");
   const saveStatus = useStore((state) => state.saveStatus);
@@ -67,9 +71,13 @@ export function TopBar({
     <header className="fe-topbar">
       <IconButton
         className="fe-outline-toggle"
-        label="Toggle lesson outline"
+        label={outlineCollapsed ? "Show outline" : "Hide outline"}
+        title={
+          outlineCollapsed ? "Show outline (⌘\\)" : "Hide outline (⌘\\)"
+        }
         icon={<Icon name="panel-left" size={18} />}
         onClick={onToggleOutline}
+        aria-expanded={!outlineCollapsed}
       />
       <IconButton
         label="Back to course overview"
@@ -103,6 +111,8 @@ export function TopBar({
         onClick={() => redo()}
         disabled={!canRedo}
       />
+
+      <ThemeToggle />
 
       <Button
         iconStart={<Icon name="palette" size={14} />}

@@ -3,6 +3,7 @@ import { BookOpen, Plus } from "lucide-react";
 import { Button, EmptyState } from "@forge/ui";
 import { useCourseOpener, useCoursesQuery } from "../state/courseQueries.js";
 import { useStore } from "../state/store.js";
+import { ThemeToggle } from "./ThemeToggle.js";
 
 function formatDate(iso: string): string {
   const date = new Date(iso);
@@ -31,14 +32,17 @@ export function CourseList(): ReactElement {
     <div className="fe-course-list">
       <header className="fe-course-list-header">
         <h1>Forge</h1>
-        <Button
-          variant="primary"
-          iconStart={<Plus size={16} aria-hidden />}
-          onClick={() => void opener.create()}
-          disabled={busy}
-        >
-          New course
-        </Button>
+        <span className="fe-course-list-actions">
+          <ThemeToggle />
+          <Button
+            variant="primary"
+            iconStart={<Plus size={16} aria-hidden />}
+            onClick={() => void opener.create()}
+            disabled={busy}
+          >
+            New course
+          </Button>
+        </span>
       </header>
 
       {actionError ? (

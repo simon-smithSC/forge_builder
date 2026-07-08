@@ -16,7 +16,10 @@ import {
   markLessonDirty,
   scheduleSave,
 } from "./persistence.js";
+import { shouldAutoOpenSettings } from "./settingsPolicy.js";
 import { editorStore } from "./store.js";
+import { storeTheme } from "../ui/uiPrefs.js";
+import type { UiTheme } from "../ui/uiPrefs.js";
 
 export {
   closeCourse,
@@ -65,11 +68,33 @@ export function selectLesson(lessonId: string | null): void {
     ...prev,
     selectedLessonId: lessonId,
     selectedBlockId: null,
+    settingsOpen: false,
   }));
 }
 
+/** Selection only: never opens the settings tray. Deselecting (null) also
+ * closes it so clicking empty canvas dismisses the tray (V1.1). */
 export function selectBlock(blockId: string | null): void {
-  setState((prev) => ({ ...prev, selectedBlockId: blockId }));
+  setState((prev) => ({
+    ...prev,
+    selectedBlockId: blockId,
+    settingsOpen: blockId === null ? false : prev.settingsOpen,
+  }));
+}
+
+/** Select a block AND open the settings tray (the rail's Edit settings
+ * button, plus config-heavy inserts via shouldAutoOpenSettings). */
+export function openBlockSettings(blockId: string): void {
+  setState((prev) => ({
+    ...prev,
+    selectedBlockId: blockId,
+    settingsOpen: true,
+  }));
+}
+
+/** Close the tray but KEEP the selection (tray X button, Escape). */
+export function closeBlockSettings(): void {
+  setState((prev) => ({ ...prev, settingsOpen: false }));
 }
 
 // ---- screen navigation (course overview <-> lesson editor) ----
@@ -81,12 +106,32 @@ export function openLessonEditor(lessonId: string): void {
     screen: "lesson",
     selectedLessonId: lessonId,
     selectedBlockId: null,
+    settingsOpen: false,
   }));
 }
 
 /** Return from the lesson editor to the course overview hub. */
 export function showCourseOverview(): void {
-  setState((prev) => ({ ...prev, screen: "overview", selectedBlockId: null }));
+  setState((prev) => ({
+    ...prev,
+    screen: "overview",
+    selectedBlockId: null,
+    settingsOpen: false,
+  }));
+}
+
+// ---- UI theme (D6 dark mode) ----
+
+/** Flip the tool-chrome theme and persist the explicit choice. */
+export function toggleUiTheme(): void {
+  const next: UiTheme = getState().uiTheme === "dark" ? "light" : "dark";
+  setState((prev) => ({ ...prev, uiTheme: next }));
+  storeTheme(next);
+}
+
+/** Follow-the-OS updates (App's matchMedia listener): no persistence. */
+export function setUiTheme(theme: UiTheme): void {
+  setState((prev) => ({ ...prev, uiTheme: theme }));
 }
 
 // ---- undo/redo ----
@@ -162,6 +207,9 @@ export function insertBlock(
     ...prev,
     course,
     selectedBlockId: blockId,
+    // Config-heavy families open their settings on INSERT; text-like
+    // families are edited inline and only get selected (settingsPolicy.ts).
+    settingsOpen: shouldAutoOpenSettings(family),
     ...historyFlags(),
   }));
   markLessonDirty(lessonId);
@@ -173,7 +221,9 @@ export function deleteBlock(lessonId: string, blockId: string): void {
     mutations.removeBlock(course, lessonId, blockId),
   );
   setState((prev) =>
-    prev.selectedBlockId === blockId ? { ...prev, selectedBlockId: null } : prev,
+    prev.selectedBlockId === blockId
+      ? { ...prev, selectedBlockId: null, settingsOpen: false }
+      : prev,
   );
 }
 

@@ -26,6 +26,7 @@ import { fontStackOf } from "@forge/player";
 import type { BlocksLesson, CourseDoc, Lesson } from "@forge/schema";
 import {
   renameLesson,
+  selectBlock,
   setSectionDescription,
 } from "../state/actions.js";
 import { reorderBlock } from "../state/dndActions.js";
@@ -54,18 +55,29 @@ function themeVars(course: CourseDoc): CSSProperties {
   } as CSSProperties;
 }
 
-function InsertAffordance({ onInsert }: { onInsert: () => void }): ReactElement {
+/** Evergreen insert indicator (V1.2): hairline + small disc always visible
+ * at rest; the terminal instance is a permanently-strong "Add block" pill. */
+function InsertAffordance({
+  onInsert,
+  terminal = false,
+}: {
+  onInsert: () => void;
+  terminal?: boolean;
+}): ReactElement {
   return (
-    <div className="fe-insert">
+    <div className={terminal ? "fe-insert fe-insert-end" : "fe-insert"}>
+      <span className="fe-insert-line" aria-hidden="true" />
       <button
         type="button"
         className="fe-insert-btn"
         onClick={onInsert}
-        title="Insert block"
-        aria-label="Insert block here"
+        title={terminal ? "Add block" : "Insert block"}
+        aria-label={terminal ? "Add block at end of lesson" : "Insert block here"}
       >
         <Plus size={14} aria-hidden />
+        {terminal ? <span className="fe-insert-btn-label">Add block</span> : null}
       </button>
+      <span className="fe-insert-line" aria-hidden="true" />
     </div>
   );
 }
@@ -186,7 +198,15 @@ function BlocksCanvas({
   );
 
   return (
-    <div className="fe-canvas-lesson" style={themeVars(course)}>
+    // Clicking the lesson surface itself (not a block or affordance)
+    // deselects, which also dismisses the settings tray (V1.1).
+    <div
+      className="fe-canvas-lesson"
+      style={themeVars(course)}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) selectBlock(null);
+      }}
+    >
       <input
         className="fe-canvas-lesson-title"
         value={lesson.title}
@@ -237,6 +257,7 @@ function BlocksCanvas({
       </BlockRenderContext.Provider>
       <div className="fe-lib-anchor">
         <InsertAffordance
+          terminal
           onInsert={() =>
             setInsertAt({ index: lesson.blocks.length, tier: "strip" })
           }

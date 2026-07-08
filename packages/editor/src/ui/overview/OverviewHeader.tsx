@@ -22,6 +22,7 @@ import { LabelSetEditor } from "../dialogs/LabelSetEditor.js";
 import { ThemeEditor } from "../dialogs/ThemeEditor.js";
 import { PreviewOverlay } from "../PreviewOverlay.js";
 import { PublishDialog } from "../publish/PublishDialog.js";
+import { ThemeToggle } from "../ThemeToggle.js";
 
 const STATUS_LABEL: Record<SaveStatus, string> = {
   saved: "All changes saved",
@@ -73,6 +74,8 @@ export function OverviewHeader(): ReactElement {
         onClick={() => redo()}
         disabled={!canRedo}
       />
+
+      <ThemeToggle />
 
       <Button
         iconStart={<Palette size={14} aria-hidden />}

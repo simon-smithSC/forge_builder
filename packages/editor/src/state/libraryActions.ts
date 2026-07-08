@@ -10,6 +10,7 @@ import { createUlid } from "@forge/schema";
 import { getRegistryEntry } from "@forge/blocks";
 import * as history from "./history.js";
 import { markLessonDirty, scheduleSave } from "./persistence.js";
+import { shouldAutoOpenSettings } from "./settingsPolicy.js";
 import { editorStore } from "./store.js";
 
 const { getState, setState } = editorStore;
@@ -88,6 +89,8 @@ export function insertBlockVariant(
     ...prev,
     course,
     selectedBlockId: blockId,
+    // Same auto-open policy as actions.insertBlock (V1.1).
+    settingsOpen: shouldAutoOpenSettings(family),
     ...historyFlags(),
   }));
   markLessonDirty(lessonId);

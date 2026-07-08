@@ -4,6 +4,8 @@
 import { useStore as useZustandStore } from "zustand";
 import { createStore as createVanillaStore } from "zustand/vanilla";
 import type { CourseDoc } from "@forge/schema";
+import { resolveInitialTheme } from "../ui/uiPrefs.js";
+import type { UiTheme } from "../ui/uiPrefs.js";
 
 export interface CourseSummary {
   id: string;
@@ -32,6 +34,11 @@ export interface EditorState {
   screen: WorkspaceScreen;
   selectedLessonId: string | null;
   selectedBlockId: string | null;
+  /** Whether the block settings tray is open. The tray renders only while a
+   * block is also selected; selection alone never opens it (V1.1). */
+  settingsOpen: boolean;
+  /** Tool-chrome theme (D6). Course content stays author-themed. */
+  uiTheme: UiTheme;
   saveStatus: SaveStatus;
   revision: number;
   /** mediaId -> object URL (R1 local media bridge). // R2: signed-URL uploads */
@@ -69,6 +76,8 @@ export const initialEditorState: EditorState = {
   screen: "overview",
   selectedLessonId: null,
   selectedBlockId: null,
+  settingsOpen: false,
+  uiTheme: resolveInitialTheme(),
   saveStatus: "saved",
   revision: 1,
   mediaUrls: {},

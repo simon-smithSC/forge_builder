@@ -305,6 +305,9 @@ lines.push('.anvil[data-theme="dark"] {');
 for (const [name, value] of Object.entries(semanticDark)) {
   lines.push(`  --an-${name}: ${css(value)};`);
 }
+lines.push("  /* Native widgets (scrollbars, form controls) follow the dark");
+lines.push("     chrome; the editor canvas re-asserts light locally. */");
+lines.push("  color-scheme: dark;");
 lines.push("}");
 lines.push("");
 lines.push("/* Density: compact remaps control heights and spacing semantics. */");

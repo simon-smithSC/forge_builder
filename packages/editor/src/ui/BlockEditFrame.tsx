@@ -27,6 +27,7 @@ import {
   deleteBlock,
   duplicateBlock,
   moveBlock,
+  openBlockSettings,
   selectBlock,
   setBlockVariant,
 } from "../state/actions.js";
@@ -160,13 +161,13 @@ export function BlockEditFrame({
             onClose={() => setVariantMenuOpen(false)}
           />
         ) : null}
-        <Tooltip content="Style and format" placement="bottom">
+        <Tooltip content="Edit settings" placement="bottom">
           <IconButton
             size="sm"
-            label="Open style and format settings"
-            title="Style and format"
+            label="Edit settings"
+            title="Edit settings"
             icon={<SlidersHorizontal size={14} aria-hidden />}
-            onClick={() => selectBlock(block.id)}
+            onClick={() => openBlockSettings(block.id)}
           />
         </Tooltip>
         <IconButton

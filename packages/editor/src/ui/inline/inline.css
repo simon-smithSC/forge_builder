@@ -60,7 +60,9 @@
   color: var(--fe-primary);
 }
 
-/* Transient validation error under the field. */
+/* Transient validation error under the field. Semantic status tokens so the
+   chip follows the D6 dark remap (the old hardcoded light-red background
+   was invisible-on-glare in dark mode). */
 .fe-inline-error {
   position: absolute;
   top: 100%;
@@ -69,8 +71,9 @@
   margin-top: 4px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: #fdecea;
-  color: var(--fe-danger);
+  background: var(--an-status-danger-bg);
+  color: var(--an-status-danger-fg);
+  border: 1px solid var(--an-status-danger-border);
   font-family: Inter, "Segoe UI", system-ui, sans-serif;
   font-size: 12px;
   white-space: nowrap;

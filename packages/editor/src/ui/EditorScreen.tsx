@@ -1,7 +1,7 @@
 // Three-region editor layout per SPEC 4.1: outline / canvas / settings panel,
 // with the top bar, conflict banner, journal restore banner, and preview.
 import type { ReactElement } from "react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { PreviewDevice } from "@forge/player";
 import { Button } from "@forge/ui";
 import {
@@ -18,16 +18,70 @@ import { Outline } from "./Outline.js";
 import { PreviewOverlay } from "./PreviewOverlay.js";
 import { SettingsPanel } from "./SettingsPanel.js";
 import { TopBar } from "./TopBar.js";
+import { OUTLINE_COLLAPSED_PREF, readPref, writePref } from "./uiPrefs.js";
 
 export function EditorScreen(): ReactElement {
   const saveStatus = useStore((state) => state.saveStatus);
   const restoreCandidate = useStore((state) => state.restoreCandidate);
+  // The tray needs BOTH a selected block and an explicit open flag (V1.1):
+  // selection alone paints the ring + rail, never the drawer.
   const hasSelectedBlock = useStore((state) => state.selectedBlockId !== null);
+  const settingsOpen = useStore((state) => state.settingsOpen);
+  const trayOpen = settingsOpen && hasSelectedBlock;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [device, setDevice] = useState<PreviewDevice>("desktop");
   // Below 900px the outline is an overlay driven by the topbar toggle; on
   // wider viewports the wrapper is a plain flex column and this is inert.
   const [outlineOpen, setOutlineOpen] = useState(false);
+  // Desktop (>=900px) collapse state, persisted as a UI pref (V1.3).
+  const [outlineCollapsed, setOutlineCollapsed] = useState(
+    () => readPref(OUTLINE_COLLAPSED_PREF) === "1",
+  );
+
+  const toggleOutlineCollapsed = useCallback(() => {
+    setOutlineCollapsed((prev) => {
+      const next = !prev;
+      writePref(OUTLINE_COLLAPSED_PREF, next ? "1" : "0");
+      return next;
+    });
+  }, []);
+
+  // One topbar handler for both modes: desktop toggles the collapse, narrow
+  // viewports keep the slide-in overlay behaviour.
+  const handleToggleOutline = useCallback(() => {
+    if (window.matchMedia("(min-width: 900px)").matches) {
+      toggleOutlineCollapsed();
+    } else {
+      setOutlineOpen((open) => !open);
+    }
+  }, [toggleOutlineCollapsed]);
+
+  // Cmd/Ctrl+\ toggles the outline; ignore keystrokes inside editable
+  // surfaces (Cmd+B stays reserved for the V2 rich-text bold).
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== "\\" || !(event.metaKey || event.ctrlKey)) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        target.closest("input, textarea, [contenteditable='true'], [contenteditable='']")
+      ) {
+        return;
+      }
+      event.preventDefault();
+      handleToggleOutline();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [handleToggleOutline]);
+
+  const outlineWrapClasses = [
+    "fe-outline-wrap",
+    outlineOpen ? "fe-outline-wrap-open" : "",
+    outlineCollapsed ? "fe-outline-collapsed" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className="fe-editor">
@@ -35,7 +89,8 @@ export function EditorScreen(): ReactElement {
         device={device}
         onDeviceChange={setDevice}
         onPreview={() => setPreviewOpen(true)}
-        onToggleOutline={() => setOutlineOpen((open) => !open)}
+        onToggleOutline={handleToggleOutline}
+        outlineCollapsed={outlineCollapsed}
       />
 
       {saveStatus === "conflict" ? (
@@ -82,20 +137,27 @@ export function EditorScreen(): ReactElement {
       ) : null}
 
       <div className="fe-editor-body">
+        {/* inert only applies while collapsed AND the mobile overlay is
+            closed, so a stored desktop pref never disables the overlay. */}
         <div
-          className={`fe-outline-wrap${outlineOpen ? " fe-outline-wrap-open" : ""}`}
+          className={outlineWrapClasses}
+          inert={outlineCollapsed && !outlineOpen}
+          aria-hidden={outlineCollapsed && !outlineOpen}
         >
-          <Outline />
+          <Outline
+            collapsed={outlineCollapsed}
+            onToggleCollapse={handleToggleOutline}
+          />
         </div>
         <Canvas />
         {/* The drawer column collapses to width 0 when closed (not merely
             emptied) so the canvas reflows to fill; the width transition
             lives on this wrapper. */}
         <div
-          className={`fe-drawer${hasSelectedBlock ? " fe-drawer-open" : ""}`}
-          aria-hidden={!hasSelectedBlock}
+          className={`fe-drawer${trayOpen ? " fe-drawer-open" : ""}`}
+          aria-hidden={!trayOpen}
         >
-          {hasSelectedBlock ? <SettingsPanel /> : null}
+          {trayOpen ? <SettingsPanel /> : null}
         </div>
       </div>
 
