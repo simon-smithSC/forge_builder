@@ -5,6 +5,7 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import { Check, TriangleAlert } from "lucide-react";
 import { Badge, Button, Input, Select } from "@forge/ui";
+import { courseFontCatalog } from "@forge/player";
 import type { Theme } from "@forge/schema";
 import { defaultTheme, themeSchema } from "@forge/schema";
 import { setTheme } from "../../state/courseToolsActions.js";
@@ -33,6 +34,55 @@ const TYPEFACE_FIELDS = [
 ] as const;
 
 type TypefaceKey = (typeof TYPEFACE_FIELDS)[number]["key"];
+
+// Grouped picker options from the player's font catalog (V4). Embedded faces
+// ship WOFF2 in published packages; system faces resolve locally everywhere.
+const FONT_GROUPS = [
+  { label: "Sans serif", category: "sans" },
+  { label: "Serif", category: "serif" },
+  { label: "System", category: "system" },
+] as const;
+
+function TypefaceSelect({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (next: string) => void;
+}): ReactElement {
+  const known = courseFontCatalog.some((face) => face.name === value);
+  return (
+    <label className="fe-field">
+      <span className="fe-field-label">{label}</span>
+      <Select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        aria-label={label}
+      >
+        {known ? null : <option value={value}>{value} (custom)</option>}
+        {FONT_GROUPS.map((group) => (
+          <optgroup key={group.category} label={group.label}>
+            {courseFontCatalog
+              .filter((face) => face.category === group.category)
+              .map((face) => (
+                // Per-option font preview: honored by most desktop browsers,
+                // harmlessly ignored elsewhere.
+                <option
+                  key={face.name}
+                  value={face.name}
+                  style={{ fontFamily: face.stack }}
+                >
+                  {face.name}
+                </option>
+              ))}
+          </optgroup>
+        ))}
+      </Select>
+    </label>
+  );
+}
 
 interface ThemeDraft {
   primaryColor: string;
@@ -248,15 +298,14 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
       <h3 className="fe-dlg-section-title">Typography and spacing</h3>
       <div className="fe-dlg-grid-2">
         {TYPEFACE_FIELDS.map(({ key, label }) => (
-          <label key={key} className="fe-field">
-            <span className="fe-field-label">{label}</span>
-            <Input
-              value={draft[key]}
-              onChange={(event) =>
-                setDraft((prev) => ({ ...prev, [key]: event.target.value }))
-              }
-            />
-          </label>
+          <TypefaceSelect
+            key={key}
+            label={label}
+            value={draft[key]}
+            onChange={(next) =>
+              setDraft((prev) => ({ ...prev, [key]: next }))
+            }
+          />
         ))}
         <label className="fe-field">
           <span className="fe-field-label">Spacing scale</span>

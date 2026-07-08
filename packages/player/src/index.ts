@@ -52,6 +52,15 @@ export function getPreviewDeviceWidth(device: PreviewDevice): number {
   return previewDeviceWidths[device];
 }
 
-/** Course-theme typeface helpers (shared with the editor canvas so both
- * surfaces resolve the same curated stacks from a bare typeface name). */
-export { fontStackOf, readableTextOn } from "./fonts.js";
+/** Course-theme typeface authority (POLISH-PLAN V4): the curated catalog,
+ * stack resolution, and the pure WOFF2/@font-face helpers shared by the
+ * editor canvas, theme picker, toolbar, and publish pipeline. */
+export {
+  allCourseFontFiles,
+  buildFontFaceCss,
+  courseFontCatalog,
+  fontFilesFor,
+  fontStackOf,
+  readableTextOn,
+} from "./fonts.js";
+export type { CourseFontFace, FontFileRef } from "./fonts.js";

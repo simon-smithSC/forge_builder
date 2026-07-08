@@ -12,6 +12,10 @@ import "@forge/ui/components.css";
 import "@forge/blocks/styles.css";
 import "@forge/player/styles.css";
 import "./ui/styles.css";
+// Course @font-face rules (generated from courseFontCatalog by
+// packages/player/scripts/fetch-course-fonts.mjs) so the canvas and preview
+// render the real embedded faces; falls back to stacks until fonts are built.
+import "./ui/course-fonts.css";
 
 import { queryClient } from "./state/queryClient.js";
 import { App } from "./ui/App.js";

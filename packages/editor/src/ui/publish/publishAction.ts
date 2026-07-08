@@ -5,6 +5,8 @@
 
 import { buildPackage, buildZip } from "@forge/exporter";
 import type { PackageFile, PublishWarning } from "@forge/exporter";
+import { buildFontFaceCss, fontFilesFor } from "@forge/player";
+import type { FontFileRef } from "@forge/player";
 import type { CourseDoc, PublishSettings } from "@forge/schema";
 
 export interface PublishResult {
@@ -61,6 +63,39 @@ export async function runPublish(
   const playerRuntimeMissing = js === null;
   const playerCssMissing = js !== null && css === null;
 
+  // V4: embed the theme's WOFF2 faces. Every path stays plain "fonts.css" /
+  // "fonts/<file>" here - the exporter normalizes both under lib/, so the
+  // stylesheet lands at lib/fonts.css (auto-linked by its index.html) and its
+  // url("fonts/<file>") references resolve to lib/fonts/<file>. System-only
+  // themes contribute zero files and skip fonts.css entirely. Skipped when
+  // the runtime itself is missing (that already raises the blocking alert).
+  const fontWarnings: PublishWarning[] = [];
+  if (js !== null) {
+    const embedded: FontFileRef[] = [];
+    for (const fontFile of fontFilesFor(course.theme)) {
+      const data = await fetchRuntimeAsset(`fonts/${fontFile.file}`);
+      if (data === null) {
+        fontWarnings.push({
+          code: "font_missing",
+          message:
+            `Font file ${fontFile.file} was not found in the runtime bundle; ` +
+            `the package falls back to system fonts for ${fontFile.family}. ` +
+            "Fetch fonts with: node packages/player/scripts/fetch-course-fonts.mjs, " +
+            "then rebuild with: pnpm --filter @forge/player build:runtime",
+        });
+        continue;
+      }
+      embedded.push(fontFile);
+      playerAssets.push({ path: `fonts/${fontFile.file}`, data });
+    }
+    if (embedded.length > 0) {
+      playerAssets.push({
+        path: "fonts.css",
+        data: new TextEncoder().encode(buildFontFaceCss(embedded)),
+      });
+    }
+  }
+
   // "local:<mediaId>" storage keys resolve through the store's object URLs;
   // data:/url: keys never reach the resolver (exporter passthrough).
   const mediaResolver = async (storageKey: string): Promise<Uint8Array | null> => {
@@ -84,16 +119,19 @@ export async function runPublish(
   });
   const zipData = buildZip(files);
 
-  const allWarnings = playerCssMissing
-    ? [
-        ...warnings,
-        {
-          code: "player_css_missing",
-          message:
-            "player.css was not found in the runtime bundle; the package will play unstyled. Rebuild with: pnpm --filter @forge/player build:runtime",
-        },
-      ]
-    : warnings;
+  const allWarnings = [
+    ...warnings,
+    ...(playerCssMissing
+      ? [
+          {
+            code: "player_css_missing",
+            message:
+              "player.css was not found in the runtime bundle; the package will play unstyled. Rebuild with: pnpm --filter @forge/player build:runtime",
+          },
+        ]
+      : []),
+    ...fontWarnings,
+  ];
 
   return {
     fileName: sanitizeFileName(course.title),

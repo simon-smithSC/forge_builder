@@ -56,6 +56,7 @@ function themeVars(course: CourseDoc): CSSProperties {
     // uses, so canvas and published output resolve identical fonts.
     "--forge-heading-font": fontStackOf(theme.headingTypeface),
     "--forge-body-font": fontStackOf(theme.bodyTypeface),
+    "--forge-ui-font": fontStackOf(theme.uiTypeface),
   } as CSSProperties;
 }
 

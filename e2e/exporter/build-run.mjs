@@ -52,6 +52,15 @@ const encoder = new TextEncoder();
 const playerAssets = [
   { path: "lib/player.e2e0stub.js", data: encoder.encode("console.log('forge player stub');\n") },
   { path: "lib/player.e2e0stub.css", data: encoder.encode(":root { --forge: 1; }\n") },
+  // V4 publish shape: fonts.css + woff2 arrive as plain playerAssets paths
+  // and must normalize under lib/ so the css's relative urls resolve.
+  {
+    path: "fonts.css",
+    data: encoder.encode(
+      '@font-face {\n  font-family: E2EStub;\n  src: url("fonts/e2e-stub-400.woff2") format("woff2");\n}\n',
+    ),
+  },
+  { path: "fonts/e2e-stub-400.woff2", data: encoder.encode("stub-woff2-bytes") },
 ];
 const mediaResolver = async (storageKey) =>
   encoder.encode(`stub-bytes for ${storageKey}\n`);
@@ -86,6 +95,19 @@ check("layout: index.html", paths.includes("index.html"));
 check("layout: content/course-data.json", paths.includes("content/course-data.json"));
 check("layout: assets/*", paths.some((p) => p.startsWith("assets/")));
 check("layout: lib/*", paths.some((p) => p.startsWith("lib/")));
+check("layout: fonts.css normalized to lib/fonts.css", paths.includes("lib/fonts.css"));
+check(
+  "layout: font binary normalized to lib/fonts/",
+  paths.includes("lib/fonts/e2e-stub-400.woff2"),
+);
+const indexHtml = new TextDecoder().decode(
+  first.pkg.files.find((f) => f.path === "index.html").data,
+);
+check("index.html links lib/fonts.css", indexHtml.includes('href="lib/fonts.css"'));
+check(
+  "index.html does not script/link the woff2",
+  !indexHtml.includes("e2e-stub-400.woff2"),
+);
 
 const zipPath = "/tmp/forge-package.zip";
 writeFileSync(zipPath, first.zip);

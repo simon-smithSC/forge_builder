@@ -12,8 +12,13 @@ import { defineConfig } from "vite";
 //
 // The published index.html loads lib/player.js with a plain deferred script
 // tag (no type="module"), so the bundle must be IIFE, not ESM.
+// public/ additionally holds the course WOFF2 binaries (fonts/, filled by
+// scripts/fetch-course-fonts.mjs). Vite copies publicDir into outDir for any
+// build regardless of output format, so they land at player-runtime/fonts/
+// with zero extra plumbing; a missing or empty public/ dir is silently fine.
 export default defineConfig({
   base: "./",
+  publicDir: "public",
   plugins: [react()],
   build: {
     outDir: "../editor/public/player-runtime",
