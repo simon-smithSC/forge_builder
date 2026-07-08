@@ -3,7 +3,7 @@
 // collapsed Format section at the bottom (also the target of the rail's
 // Style/Format control).
 import type { ReactElement } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Button, IconButton, Input } from "@forge/ui";
 import { getRegistryEntry } from "@forge/blocks";
@@ -125,14 +125,29 @@ export function SettingsPanel(): ReactElement | null {
   const selectedLessonId = useStore((state) => state.selectedLessonId);
   const selectedBlockId = useStore((state) => state.selectedBlockId);
 
-  const lesson = course?.lessons.find((item) => item.id === selectedLessonId);
-  const block =
-    lesson?.type === "blocks"
-      ? lesson.blocks.find((item) => item.id === selectedBlockId)
+  const liveLesson = course?.lessons.find((item) => item.id === selectedLessonId);
+  const liveBlock =
+    liveLesson?.type === "blocks"
+      ? liveLesson.blocks.find((item) => item.id === selectedBlockId)
       : undefined;
 
-  if (!lesson || !block) return null;
+  // Motion M6: the drawer wrapper (EditorScreen) holds this panel mounted
+  // while its width transition closes. Deselecting clears the live block
+  // immediately, so keep the last rendered pair - the closing (inert) drawer
+  // then slides away still showing its content instead of emptying. Render-
+  // phase ref update; rewriting the same pair is harmless.
+  const lastContentRef = useRef<{ lessonId: string; block: Block } | null>(null);
+  if (liveLesson && liveBlock) {
+    lastContentRef.current = { lessonId: liveLesson.id, block: liveBlock };
+  }
+  const content =
+    liveLesson && liveBlock
+      ? { lessonId: liveLesson.id, block: liveBlock }
+      : lastContentRef.current;
 
+  if (!content) return null;
+
+  const { lessonId, block } = content;
   const entry = getRegistryEntry(block.family);
 
   return (
@@ -155,11 +170,11 @@ export function SettingsPanel(): ReactElement | null {
       </div>
       <section className="fe-settings-section">
         <h3>Content</h3>
-        <PayloadEditor key={`payload-${block.id}-${block.variant}`} lessonId={lesson.id} block={block} />
+        <PayloadEditor key={`payload-${block.id}-${block.variant}`} lessonId={lessonId} block={block} />
       </section>
       <details className="fe-settings-format">
         <summary>Format</summary>
-        <EnvelopeSettings key={`env-${block.id}`} lessonId={lesson.id} block={block} />
+        <EnvelopeSettings key={`env-${block.id}`} lessonId={lessonId} block={block} />
       </details>
     </aside>
   );

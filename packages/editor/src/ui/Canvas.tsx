@@ -3,7 +3,7 @@
 // (BlockEditFrame, insert-between, dnd-kit drag reorder) only wrap the shared
 // renderer.
 import type { CSSProperties, ReactElement } from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Image as ImageIcon, Plus } from "lucide-react";
 import {
   DndContext,
@@ -20,7 +20,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Button, EmptyState, Icon, Input } from "@forge/ui";
+import { Button, EmptyState, Icon, Input, Presence } from "@forge/ui";
 import { BlockRenderContext, getRegistryEntry } from "@forge/blocks";
 import type { InlineEditingPort, RenderContext } from "@forge/blocks";
 import { fontStackOf } from "@forge/player";
@@ -310,6 +310,12 @@ function BlocksCanvas({
     tier: "strip" | "library";
   } | null>(null);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
+  // Motion M5: the library stays mounted (via Presence) while its exit plays,
+  // after insertAt has already gone null - so the last open index is kept for
+  // the closing render. Updated during render; writing the same value twice
+  // is harmless.
+  const lastLibraryIndexRef = useRef(0);
+  if (insertAt?.tier === "library") lastLibraryIndexRef.current = insertAt.index;
 
   // Activation distance 6px keeps plain clicks (select block, toolbar
   // buttons) from starting a drag; the keyboard sensor makes the grip
@@ -416,14 +422,21 @@ function BlocksCanvas({
                   <InsertAffordance
                     onInsert={() => setInsertAt({ index, tier: "strip" })}
                   />
-                  {insertAt?.index === index && insertAt.tier === "strip" ? (
-                    <QuickAddStrip
-                      lessonId={lesson.id}
-                      index={index}
-                      onOpenLibrary={() => setInsertAt({ index, tier: "library" })}
-                      onClose={() => setInsertAt(null)}
-                    />
-                  ) : null}
+                  <Presence
+                    open={insertAt?.index === index && insertAt.tier === "strip"}
+                  >
+                    {(presence) => (
+                      <QuickAddStrip
+                        lessonId={lesson.id}
+                        index={index}
+                        onOpenLibrary={() =>
+                          setInsertAt({ index, tier: "library" })
+                        }
+                        onClose={() => setInsertAt(null)}
+                        presence={presence}
+                      />
+                    )}
+                  </Presence>
                 </div>
                 <BlockEditFrame
                   block={block}
@@ -449,16 +462,23 @@ function BlocksCanvas({
             setInsertAt({ index: lesson.blocks.length, tier: "strip" })
           }
         />
-        {insertAt?.index === lesson.blocks.length && insertAt.tier === "strip" ? (
-          <QuickAddStrip
-            lessonId={lesson.id}
-            index={lesson.blocks.length}
-            onOpenLibrary={() =>
-              setInsertAt({ index: lesson.blocks.length, tier: "library" })
-            }
-            onClose={() => setInsertAt(null)}
-          />
-        ) : null}
+        <Presence
+          open={
+            insertAt?.index === lesson.blocks.length && insertAt.tier === "strip"
+          }
+        >
+          {(presence) => (
+            <QuickAddStrip
+              lessonId={lesson.id}
+              index={lesson.blocks.length}
+              onOpenLibrary={() =>
+                setInsertAt({ index: lesson.blocks.length, tier: "library" })
+              }
+              onClose={() => setInsertAt(null)}
+              presence={presence}
+            />
+          )}
+        </Presence>
       </div>
       {lesson.blocks.length === 0 ? (
         <EmptyState
@@ -477,13 +497,16 @@ function BlocksCanvas({
           }
         />
       ) : null}
-      {insertAt !== null && insertAt.tier === "library" ? (
-        <BlockLibrary
-          lessonId={lesson.id}
-          index={insertAt.index}
-          onClose={() => setInsertAt(null)}
-        />
-      ) : null}
+      <Presence open={insertAt !== null && insertAt.tier === "library"}>
+        {(presence) => (
+          <BlockLibrary
+            lessonId={lesson.id}
+            index={lastLibraryIndexRef.current}
+            onClose={() => setInsertAt(null)}
+            presence={presence}
+          />
+        )}
+      </Presence>
     </div>
   );
 }

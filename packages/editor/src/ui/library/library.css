@@ -26,6 +26,27 @@
   background: var(--an-surface-overlay);
   border-radius: var(--an-radius-full);
   box-shadow: var(--an-elevation-3);
+  /* Motion M5 (#4): springs open from the plus disc; Presence holds the strip
+     mounted while [data-state="closed"] plays the fade/shrink exit. Every
+     transform state restates the centering translateX(-50%). */
+  transform-origin: top center;
+  animation: fe-lib-strip-in var(--an-duration-160) var(--an-ease-spring);
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-exit),
+    transform var(--an-duration-120) var(--an-ease-exit);
+}
+
+@keyframes fe-lib-strip-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px) scale(0.95);
+  }
+}
+
+.fe-lib-strip[data-state="closed"] {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-4px) scale(0.95);
+  pointer-events: none;
 }
 
 /* The "All blocks" chip keeps its accent even at rest; Anvil Chip renders
@@ -47,6 +68,15 @@
   inset: 0;
   z-index: 45;
   background: var(--an-backdrop);
+  /* Motion M5 (#5): the scrim now fades BOTH ways; one Presence (ref on the
+     panel, whose exit runs longer) times the unmount of the pair. */
+  animation: an-fade-in var(--an-duration-120) var(--an-ease-enter);
+  transition: opacity var(--an-duration-120) var(--an-ease-exit);
+}
+
+.fe-lib-scrim[data-state="closed"] {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Overlay polish (5B.4): frost the page behind the scrim, matching the
@@ -70,6 +100,17 @@
   background: var(--an-surface-raised);
   box-shadow: var(--an-elevation-4);
   animation: fe-lib-slide-in var(--an-duration-160) var(--an-ease-enter);
+  /* Exit (M5): slide back toward the edge; Presence watches THIS node's
+     transitionend (160-token, the longest of the pair) before unmounting. */
+  transition:
+    opacity var(--an-duration-160) var(--an-ease-exit),
+    transform var(--an-duration-160) var(--an-ease-exit);
+}
+
+.fe-lib-panel[data-state="closed"] {
+  opacity: 0;
+  transform: translateX(-24px);
+  pointer-events: none;
 }
 
 @keyframes fe-lib-slide-in {
@@ -84,7 +125,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fe-lib-panel {
+  .fe-lib-panel,
+  .fe-lib-scrim,
+  .fe-lib-strip {
     animation: none;
   }
 }
@@ -145,6 +188,11 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--an-text-muted);
+  /* Motion M7 (#16): hover/active tint glides instead of snapping. */
+  transition:
+    background-color var(--an-duration-120) var(--an-ease-standard),
+    color var(--an-duration-120) var(--an-ease-standard),
+    border-color var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-lib-rail-item:hover {

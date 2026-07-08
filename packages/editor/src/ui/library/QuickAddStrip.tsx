@@ -6,6 +6,7 @@
 import type { ReactElement } from "react";
 import { useEffect, useRef } from "react";
 import { Chip, Icon } from "@forge/ui";
+import type { PresenceChildProps } from "@forge/ui";
 import { insertBlockVariant } from "../../state/libraryActions.js";
 import { blockIcon } from "../blockIcons.js";
 import { quickAddItems, recordRecentPick } from "./libraryData.js";
@@ -16,6 +17,8 @@ export interface QuickAddStripProps {
   index: number;
   onOpenLibrary: () => void;
   onClose: () => void;
+  /** Exit plumbing from the Presence at the mount site (motion M5). */
+  presence: PresenceChildProps;
 }
 
 export function QuickAddStrip({
@@ -23,18 +26,23 @@ export function QuickAddStrip({
   index,
   onOpenLibrary,
   onClose,
+  presence,
 }: QuickAddStripProps): ReactElement {
   const ref = useRef<HTMLDivElement | null>(null);
+  const closing = presence["data-state"] === "closed";
 
-  // Focus the first chip on open; dismiss on click-away.
+  // Focus the first chip on open; dismiss on click-away. Both are gated off
+  // while the strip plays its exit, so a fading strip cannot steal focus or
+  // dismiss whatever the author moved on to (e.g. the full library).
   useEffect(() => {
+    if (closing) return;
     ref.current?.querySelector("button")?.focus();
     const onPointerDown = (event: MouseEvent): void => {
       if (ref.current && !ref.current.contains(event.target as Node)) onClose();
     };
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
-  }, [onClose]);
+  }, [onClose, closing]);
 
   const moveFocus = (delta: number): void => {
     const root = ref.current;
@@ -48,7 +56,11 @@ export function QuickAddStrip({
 
   return (
     <div
-      ref={ref}
+      ref={(node) => {
+        ref.current = node;
+        presence.ref(node);
+      }}
+      data-state={presence["data-state"]}
       className="fe-lib-strip"
       role="menu"
       aria-label="Quick add block"

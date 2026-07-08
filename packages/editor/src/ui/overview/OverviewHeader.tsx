@@ -3,7 +3,7 @@
 // title lives in the page body, so the bar only carries status + actions.
 // Owns the same dialogs (theme/labels/publish) and the whole-course preview.
 import type { ReactElement } from "react";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   ArrowLeft,
   Languages,
@@ -14,7 +14,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import type { PreviewDevice } from "@forge/player";
-import { Badge, Button, Divider, IconButton, Wordmark } from "@forge/ui";
+import { Badge, Button, Divider, IconButton, Presence, Wordmark } from "@forge/ui";
 import { closeCourse, redo, undo } from "../../state/actions.js";
 import { useStore } from "../../state/store.js";
 import type { SaveStatus } from "../../state/store.js";
@@ -53,6 +53,22 @@ export function OverviewHeader({ scrolled = false }: OverviewHeaderProps): React
   const [publishOpen, setPublishOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [device, setDevice] = useState<PreviewDevice>("desktop");
+  // Motion M5 (#13): same focus contract as EditorScreen - remember where
+  // focus came from and give it back the moment close STARTS, while the
+  // (inert) overlay is still fading.
+  const previewReturnFocusRef = useRef<HTMLElement | null>(null);
+  const openPreview = useCallback(() => {
+    previewReturnFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setPreviewOpen(true);
+  }, []);
+  const closePreview = useCallback(() => {
+    setPreviewOpen(false);
+    previewReturnFocusRef.current?.focus();
+    previewReturnFocusRef.current = null;
+  }, []);
 
   return (
     <header className="fe-topbar" data-scrolled={scrolled ? "true" : undefined}>
@@ -106,7 +122,7 @@ export function OverviewHeader({ scrolled = false }: OverviewHeaderProps): React
       <Button
         variant="secondary"
         iconStart={<Play size={14} aria-hidden />}
-        onClick={() => setPreviewOpen(true)}
+        onClick={openPreview}
       >
         Preview
       </Button>
@@ -123,13 +139,16 @@ export function OverviewHeader({ scrolled = false }: OverviewHeaderProps): React
       <ThemeEditor open={themeOpen} onClose={() => setThemeOpen(false)} />
       <LabelSetEditor open={labelsOpen} onClose={() => setLabelsOpen(false)} />
       <PublishDialog open={publishOpen} onClose={() => setPublishOpen(false)} />
-      {previewOpen ? (
-        <PreviewOverlay
-          device={device}
-          onDeviceChange={setDevice}
-          onClose={() => setPreviewOpen(false)}
-        />
-      ) : null}
+      <Presence open={previewOpen}>
+        {(presence) => (
+          <PreviewOverlay
+            device={device}
+            onDeviceChange={setDevice}
+            onClose={closePreview}
+            presence={presence}
+          />
+        )}
+      </Presence>
     </header>
   );
 }

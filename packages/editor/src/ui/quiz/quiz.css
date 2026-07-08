@@ -222,6 +222,27 @@
   border-radius: var(--an-radius-lg);
   box-shadow: var(--an-elevation-3);
   padding: 4px;
+  /* Motion M5 (#12): same rise/fall contract as .an-popover, springing from
+     the add button below (menu opens upward, so the origin sits at the
+     bottom edge). Presence holds the exit through [data-state="closed"]. */
+  transform-origin: bottom left;
+  animation: fq-add-menu-in var(--an-duration-160) var(--an-ease-spring);
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-exit),
+    transform var(--an-duration-120) var(--an-ease-exit);
+}
+
+@keyframes fq-add-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem) scale(0.97);
+  }
+}
+
+.fq-add-menu[data-state="closed"] {
+  opacity: 0;
+  transform: translateY(0.25rem) scale(0.97);
+  pointer-events: none;
 }
 
 .fq-add-menu button {

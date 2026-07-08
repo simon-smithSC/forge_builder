@@ -5,7 +5,7 @@ import "./quiz.css";
 import { useState } from "react";
 import type { ReactElement } from "react";
 import { Plus } from "lucide-react";
-import { Input } from "@forge/ui";
+import { Input, Presence } from "@forge/ui";
 import type { QuizLesson } from "@forge/schema";
 import { renameLesson } from "../../state/actions.js";
 import { addQuestion } from "../../state/quizActions.js";
@@ -81,20 +81,31 @@ export function QuizLessonEditor({
           >
             <Plus size={14} aria-hidden /> Add question
           </button>
-          {menuOpen ? (
-            <div className="fq-add-menu" role="menu" aria-label="Question types">
-              {QUESTION_TYPES.map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  role="menuitem"
-                  onClick={() => handleAdd(type)}
-                >
-                  {QUESTION_TYPE_LABELS[type]}
-                </button>
-              ))}
-            </div>
-          ) : null}
+          {/* Presence (motion M5) holds the menu through its
+              [data-state="closed"] fade; CSS drops pointer-events while
+              closing so a fading menu cannot still add questions. */}
+          <Presence open={menuOpen}>
+            {(presence) => (
+              <div
+                ref={presence.ref}
+                data-state={presence["data-state"]}
+                className="fq-add-menu"
+                role="menu"
+                aria-label="Question types"
+              >
+                {QUESTION_TYPES.map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    role="menuitem"
+                    onClick={() => handleAdd(type)}
+                  >
+                    {QUESTION_TYPE_LABELS[type]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </Presence>
           <FieldError message={addError} />
         </div>
       </section>

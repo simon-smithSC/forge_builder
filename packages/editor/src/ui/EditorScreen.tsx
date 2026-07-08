@@ -1,9 +1,9 @@
 // Three-region editor layout per SPEC 4.1: outline / canvas / settings panel,
 // with the top bar, conflict banner, journal restore banner, and preview.
 import type { ReactElement } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { PreviewDevice } from "@forge/player";
-import { Button, toast } from "@forge/ui";
+import { Button, Collapse, Presence, toast } from "@forge/ui";
 import {
   dismissRestore,
   restoreFromJournal,
@@ -24,6 +24,12 @@ import { useScrolled } from "./useScrolled.js";
 export function EditorScreen(): ReactElement {
   const saveStatus = useStore((state) => state.saveStatus);
   const restoreCandidate = useStore((state) => state.restoreCandidate);
+  // Last non-null candidate: the restore banner keeps rendering its lesson
+  // count while its Collapse plays the exit (motion M7). Render-phase update;
+  // rewriting the same value is harmless.
+  const lastRestoreCandidateRef = useRef(restoreCandidate);
+  if (restoreCandidate) lastRestoreCandidateRef.current = restoreCandidate;
+  const lastRestoreCandidate = lastRestoreCandidateRef.current;
   // The tray needs BOTH a selected block and an explicit open flag (V1.1):
   // selection alone paints the ring + rail, never the drawer.
   const hasSelectedBlock = useStore((state) => state.selectedBlockId !== null);
@@ -31,6 +37,22 @@ export function EditorScreen(): ReactElement {
   const trayOpen = settingsOpen && hasSelectedBlock;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [device, setDevice] = useState<PreviewDevice>("desktop");
+  // Motion M5 (#13): the preview steals focus (Player chrome); remember where
+  // it came from and give it back the moment close STARTS, so the author is
+  // never stranded in the fading (inert) overlay.
+  const previewReturnFocusRef = useRef<HTMLElement | null>(null);
+  const openPreview = useCallback(() => {
+    previewReturnFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    setPreviewOpen(true);
+  }, []);
+  const closePreview = useCallback(() => {
+    setPreviewOpen(false);
+    previewReturnFocusRef.current?.focus();
+    previewReturnFocusRef.current = null;
+  }, []);
   // Below 900px the outline is an overlay driven by the topbar toggle; on
   // wider viewports the wrapper is a plain flex column and this is inert.
   const [outlineOpen, setOutlineOpen] = useState(false);
@@ -91,13 +113,23 @@ export function EditorScreen(): ReactElement {
       <TopBar
         device={device}
         onDeviceChange={setDevice}
-        onPreview={() => setPreviewOpen(true)}
+        onPreview={openPreview}
         onToggleOutline={handleToggleOutline}
         outlineCollapsed={outlineCollapsed}
         scrolled={scrolled}
       />
 
-      {saveStatus === "conflict" ? (
+      {/* Motion M7 (#14): Collapse animates the height so the layout column
+          glides instead of jumping; the fe-banner fades against the wrapper's
+          data-state. keepMounted={false} keeps today's role="alert" semantics:
+          the alert enters the DOM only when the condition fires, so screen
+          readers announce it, and while open it is a plain, fully interactive
+          banner - only the enter/exit animates. */}
+      <Collapse
+        className="fe-banner-collapse"
+        open={saveStatus === "conflict"}
+        keepMounted={false}
+      >
         <div className="fe-banner fe-banner-conflict" role="alert">
           <span>
             Someone else changed this course. Your latest edits could not be
@@ -133,29 +165,41 @@ export function EditorScreen(): ReactElement {
             </Button>
           </span>
         </div>
-      ) : null}
+      </Collapse>
 
-      {restoreCandidate ? (
-        <div className="fe-banner fe-banner-restore" role="alert">
-          <span>
-            Unsaved changes from this device were found (
-            {restoreCandidate.lessonIds.length}{" "}
-            {restoreCandidate.lessonIds.length === 1 ? "lesson" : "lessons"}).
-          </span>
-          <span className="fe-banner-actions">
-            <Button size="sm" onClick={() => void dismissRestore()}>
-              Discard
-            </Button>
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={() => void restoreFromJournal()}
-            >
-              Restore unsaved changes from this device
-            </Button>
-          </span>
-        </div>
-      ) : null}
+      <Collapse
+        className="fe-banner-collapse"
+        open={restoreCandidate !== null}
+        keepMounted={false}
+      >
+        {/* The candidate goes null the moment the author acts, but the banner
+            stays mounted while the Collapse closes - render from the last
+            non-null snapshot so the fading copy keeps its lesson count. */}
+        {lastRestoreCandidate ? (
+          <div className="fe-banner fe-banner-restore" role="alert">
+            <span>
+              Unsaved changes from this device were found (
+              {lastRestoreCandidate.lessonIds.length}{" "}
+              {lastRestoreCandidate.lessonIds.length === 1
+                ? "lesson"
+                : "lessons"}
+              ).
+            </span>
+            <span className="fe-banner-actions">
+              <Button size="sm" onClick={() => void dismissRestore()}>
+                Discard
+              </Button>
+              <Button
+                size="sm"
+                variant="primary"
+                onClick={() => void restoreFromJournal()}
+              >
+                Restore unsaved changes from this device
+              </Button>
+            </span>
+          </div>
+        ) : null}
+      </Collapse>
 
       <div className="fe-editor-body">
         {/* inert only applies while collapsed AND the mobile overlay is
@@ -173,22 +217,38 @@ export function EditorScreen(): ReactElement {
         <Canvas scrollRef={scrollRef} />
         {/* The drawer column collapses to width 0 when closed (not merely
             emptied) so the canvas reflows to fill; the width transition
-            lives on this wrapper. */}
-        <div
-          className={`fe-drawer${trayOpen ? " fe-drawer-open" : ""}`}
-          aria-hidden={!trayOpen}
-        >
-          {trayOpen ? <SettingsPanel /> : null}
-        </div>
+            lives on this wrapper. Motion M6: Presence renders the wrapper and
+            keeps SettingsPanel mounted until the width transitionend, so the
+            drawer no longer collapses empty; while closing it goes inert and
+            aria-hidden, matching the old instant unmount for focus and AT. */}
+        <Presence open={trayOpen}>
+          {(presence) => {
+            const closing = presence["data-state"] === "closed";
+            return (
+              <div
+                ref={presence.ref}
+                data-state={presence["data-state"]}
+                className="fe-drawer"
+                aria-hidden={closing || undefined}
+                {...(closing ? { inert: true } : {})}
+              >
+                <SettingsPanel />
+              </div>
+            );
+          }}
+        </Presence>
       </div>
 
-      {previewOpen ? (
-        <PreviewOverlay
-          device={device}
-          onDeviceChange={setDevice}
-          onClose={() => setPreviewOpen(false)}
-        />
-      ) : null}
+      <Presence open={previewOpen}>
+        {(presence) => (
+          <PreviewOverlay
+            device={device}
+            onDeviceChange={setDevice}
+            onClose={closePreview}
+            presence={presence}
+          />
+        )}
+      </Presence>
     </div>
   );
 }

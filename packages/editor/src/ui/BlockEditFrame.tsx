@@ -19,7 +19,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
-import { Chip, IconButton, Tooltip } from "@forge/ui";
+import { Chip, IconButton, Presence, Tooltip } from "@forge/ui";
+import type { PresenceChildProps } from "@forge/ui";
 import { BlockView, getRegistryEntry } from "@forge/blocks";
 import type { BlockRegistryEntry } from "@forge/blocks";
 import type { Block } from "@forge/schema";
@@ -42,31 +43,42 @@ export interface BlockEditFrameProps {
   selected: boolean;
 }
 
-/** Variant menu popover opened from the block-type chip. */
+/** Variant menu popover opened from the block-type chip. Presence (motion M5)
+ * keeps it mounted through the [data-state="closed"] exit transition. */
 function VariantMenu({
   entry,
   block,
   lessonId,
   onClose,
+  presence,
 }: {
   entry: BlockRegistryEntry;
   block: Block;
   lessonId: string;
   onClose: () => void;
+  presence: PresenceChildProps;
 }): ReactElement {
   const ref = useRef<HTMLDivElement | null>(null);
+  const closing = presence["data-state"] === "closed";
 
   useEffect(() => {
+    // Dismiss listeners are gated off while closing so a fading menu cannot
+    // keep swallowing outside pointer-downs (CSS also drops pointer-events).
+    if (closing) return;
     const onPointerDown = (event: MouseEvent): void => {
       if (ref.current && !ref.current.contains(event.target as Node)) onClose();
     };
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
-  }, [onClose]);
+  }, [onClose, closing]);
 
   return (
     <div
-      ref={ref}
+      ref={(node) => {
+        ref.current = node;
+        presence.ref(node);
+      }}
+      data-state={presence["data-state"]}
       className="fe-variant-menu"
       role="menu"
       aria-label={`${entry.palette.label} style`}
@@ -153,14 +165,17 @@ export function BlockEditFrame({
           <FamilyIcon size={14} aria-hidden />
           <span className="fe-rail-chip-label">{entry.palette.label}</span>
         </Chip>
-        {variantMenuOpen ? (
-          <VariantMenu
-            entry={entry}
-            block={block}
-            lessonId={lessonId}
-            onClose={() => setVariantMenuOpen(false)}
-          />
-        ) : null}
+        <Presence open={variantMenuOpen}>
+          {(presence) => (
+            <VariantMenu
+              entry={entry}
+              block={block}
+              lessonId={lessonId}
+              onClose={() => setVariantMenuOpen(false)}
+              presence={presence}
+            />
+          )}
+        </Presence>
         <Tooltip content="Edit settings" placement="bottom">
           <IconButton
             size="sm"

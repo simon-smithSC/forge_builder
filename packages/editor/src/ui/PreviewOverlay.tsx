@@ -3,6 +3,7 @@
 import type { ReactElement } from "react";
 import { useCallback } from "react";
 import { X } from "lucide-react";
+import type { PresenceChildProps } from "@forge/ui";
 import { Player, previewDeviceWidths } from "@forge/player";
 import type { PreviewDevice } from "@forge/player";
 import { useStore } from "../state/store.js";
@@ -11,12 +12,18 @@ export interface PreviewOverlayProps {
   device: PreviewDevice;
   onDeviceChange: (device: PreviewDevice) => void;
   onClose: () => void;
+  /** Exit plumbing from the Presence in EditorScreen (motion M5). While
+   * closing the overlay goes inert: EditorScreen has already restored focus
+   * to the editor, so the fading ghost must not trap it or stay in the
+   * a11y tree as a modal. */
+  presence: PresenceChildProps;
 }
 
 export function PreviewOverlay({
   device,
   onDeviceChange,
   onClose,
+  presence,
 }: PreviewOverlayProps): ReactElement | null {
   const course = useStore((state) => state.course);
   const mediaUrls = useStore((state) => state.mediaUrls);
@@ -26,12 +33,22 @@ export function PreviewOverlay({
     [mediaUrls],
   );
 
+  const closing = presence["data-state"] === "closed";
+
   if (!course) return null;
 
   const width = previewDeviceWidths[device];
 
   return (
-    <div className="fe-preview-overlay" role="dialog" aria-modal="true" aria-label="Course preview">
+    <div
+      ref={presence.ref}
+      data-state={presence["data-state"]}
+      className="fe-preview-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Course preview"
+      {...(closing ? { inert: true } : {})}
+    >
       <div className="fe-preview-topbar">
         <button
           type="button"

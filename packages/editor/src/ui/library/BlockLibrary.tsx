@@ -7,6 +7,7 @@
 import type { KeyboardEvent, ReactElement } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon, IconButton } from "@forge/ui";
+import type { PresenceChildProps } from "@forge/ui";
 import { insertBlockVariant } from "../../state/libraryActions.js";
 import { blockIcon } from "../blockIcons.js";
 import type { LibraryCard, LibraryTint } from "./libraryData.js";
@@ -23,6 +24,10 @@ export interface BlockLibraryProps {
   lessonId: string;
   index: number;
   onClose: () => void;
+  /** Exit plumbing from the Presence at the mount site (motion M5). One
+   * Presence times both nodes: its ref sits on the panel (whose 160-token
+   * exit outlasts the scrim's 120) and data-state is painted onto both. */
+  presence: PresenceChildProps;
 }
 
 function matches(card: LibraryCard, term: string): boolean {
@@ -69,7 +74,9 @@ export function BlockLibrary({
   lessonId,
   index,
   onClose,
+  presence,
 }: BlockLibraryProps): ReactElement {
+  const closing = presence["data-state"] === "closed";
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const sectionsRef = useRef<HTMLDivElement | null>(null);
@@ -97,6 +104,7 @@ export function BlockLibrary({
   }, [term]);
 
   const pick = (card: LibraryCard): void => {
+    if (closing) return; // a fading panel must not still insert
     insertBlockVariant(lessonId, card.family, card.variant, index);
     recordRecentPick(card.family, card.variant);
     onClose();
@@ -125,14 +133,21 @@ export function BlockLibrary({
 
   return (
     <>
-      <div className="fe-lib-scrim" onClick={onClose} />
       <div
+        className="fe-lib-scrim"
+        data-state={presence["data-state"]}
+        onClick={closing ? undefined : onClose}
+      />
+      <div
+        ref={presence.ref}
+        data-state={presence["data-state"]}
         className="fe-lib-panel"
         role="dialog"
         aria-modal="true"
         aria-label="Block library"
+        {...(closing ? { inert: true } : {})}
         onKeyDown={(event) => {
-          if (event.key === "Escape") onClose();
+          if (event.key === "Escape" && !closing) onClose();
         }}
       >
         <div className="fe-lib-header">

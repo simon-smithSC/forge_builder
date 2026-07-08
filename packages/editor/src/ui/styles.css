@@ -289,6 +289,15 @@ button:focus-visible {
   padding: var(--an-space-8) var(--an-space-16);
   font-size: var(--an-font-size-13);
   line-height: var(--an-font-line-13);
+  /* Motion M7 (#14): the banner mounts inside a Collapse, so height glides
+     instead of shifting the column in one frame; the content itself fades in
+     on mount and out against the Collapse's closing data-state. */
+  animation: an-fade-in var(--an-duration-200) var(--an-ease-enter);
+  transition: opacity var(--an-duration-160) var(--an-ease-standard);
+}
+
+.fe-banner-collapse[data-state="closed"] .fe-banner {
+  opacity: 0;
 }
 
 .fe-banner-conflict {
@@ -576,7 +585,7 @@ button:focus-visible {
   top: 8px;
   left: 6px;
   z-index: 6;
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: var(--an-space-2);
@@ -585,12 +594,31 @@ button:focus-visible {
   box-shadow: var(--an-elevation-3);
   padding: var(--an-space-4);
   max-width: 132px;
+  /* Motion M5 (#1): hidden via opacity + visibility instead of display so the
+     rail can fade and settle in. The visibility swap is DELAYED until the fade
+     finishes (duration 0s, delay 120-token), then still removes the rail from
+     the a11y tree and tab order exactly like display: none did. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-2px);
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-standard),
+    transform var(--an-duration-120) var(--an-ease-standard),
+    visibility 0s var(--an-duration-120);
 }
 
 .fe-block-frame:hover .fe-block-rail,
 .fe-block-frame:focus-within .fe-block-rail,
 .fe-block-frame-selected .fe-block-rail {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  /* Visible state drops the visibility delay so the rail is interactive on
+     the first fade-in frame. */
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-standard),
+    transform var(--an-duration-120) var(--an-ease-standard),
+    visibility 0s;
 }
 
 /* Compact sizing for the Anvil Chip serving as the block-type control. */
@@ -622,6 +650,20 @@ button:focus-visible {
   border-radius: var(--an-radius-lg);
   box-shadow: var(--an-elevation-3);
   padding: var(--an-space-6);
+  /* Motion M5 (#2): same rise-in/fall-out contract as .an-popover. The enter
+     keyframe has finished by close time, so the exit transition below owns
+     [data-state="closed"] without fighting it. */
+  transform-origin: top left;
+  animation: an-rise-in var(--an-duration-160) var(--an-ease-spring);
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-exit),
+    transform var(--an-duration-120) var(--an-ease-exit);
+}
+
+.fe-variant-menu[data-state="closed"] {
+  opacity: 0;
+  transform: translateY(0.25rem) scale(0.97);
+  pointer-events: none;
 }
 
 .fe-variant-menu-title {
@@ -789,8 +831,21 @@ button:focus-visible {
   transition: width var(--an-duration-200) var(--an-ease-standard);
 }
 
-.fe-drawer-open {
+/* Motion M6: the wrapper is rendered by Presence and carries data-state
+   instead of the old fe-drawer-open class. Closing drops back to the base
+   width 0 and Presence unmounts the (still-populated) SettingsPanel on the
+   width transitionend, so the drawer no longer collapses empty. */
+.fe-drawer[data-state="open"] {
   width: 320px;
+}
+
+/* Enter: Presence mounts the wrapper already in the open state, so the width
+   slide-up starts from 0 via starting-style. Engines without support show the
+   drawer at full width immediately (content and reflow are unaffected). */
+@starting-style {
+  .fe-drawer[data-state="open"] {
+    width: 0;
+  }
 }
 
 .fe-settings {
@@ -949,7 +1004,7 @@ button:focus-visible {
     z-index: 30;
   }
 
-  .fe-drawer-open {
+  .fe-drawer[data-state="open"] {
     width: min(320px, 90vw);
     box-shadow: var(--an-elevation-4);
   }
@@ -1008,6 +1063,21 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   background: rgba(13, 16, 20, 0.96);
+  /* Motion M5 (#13): backdrop fades in while the stage settles from a slight
+     scale; exit is a straight fade held mounted by Presence. */
+  animation: an-fade-in var(--an-duration-200) var(--an-ease-enter);
+  transition: opacity var(--an-duration-160) var(--an-ease-exit);
+}
+
+.fe-preview-overlay[data-state="closed"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes fe-preview-stage-in {
+  from {
+    transform: scale(0.98);
+  }
 }
 
 .fe-preview-topbar {
@@ -1090,6 +1160,9 @@ button:focus-visible {
   align-items: stretch;
   justify-content: center;
   padding: var(--an-space-16);
+  /* Enter settle only; the transform resets to none once the keyframe ends,
+     so the stage is not a transformed containing block at rest. */
+  animation: fe-preview-stage-in var(--an-duration-200) var(--an-ease-enter);
 }
 
 .fe-preview-frame {
