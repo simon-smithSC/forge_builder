@@ -17,11 +17,13 @@ import { fileURLToPath } from "node:url";
 
 const outDir = join(dirname(fileURLToPath(import.meta.url)), "..", "src", "fonts");
 
+// Geist Sans has NO variable build on Fontsource (api.fontsource.org reports
+// variable: false), so we fetch the four static weights Anvil uses.
 const FONTS = [
-  {
-    file: "geist-sans-variable.woff2",
-    url: "https://cdn.jsdelivr.net/fontsource/fonts/geist-sans:vf@latest/latin-wght-normal.woff2",
-  },
+  ...[400, 500, 600, 700].map((weight) => ({
+    file: `geist-sans-${weight}.woff2`,
+    url: `https://cdn.jsdelivr.net/fontsource/fonts/geist-sans@latest/latin-${weight}-normal.woff2`,
+  })),
   {
     file: "jetbrains-mono-variable.woff2",
     url: "https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono:vf@latest/latin-wght-normal.woff2",
