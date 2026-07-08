@@ -20,6 +20,21 @@
   --fe-danger: var(--an-status-danger-fg);
   --fe-radius: var(--an-radius-lg);
   --fe-shadow: var(--an-elevation-1);
+  /* Chrome type bootstrap: duplicates anvil.css's base rule as a belt.
+     Observed in the field: the @forge/ui stylesheet module can 200 yet its
+     styles fail to inject, leaving chrome on the UA default (Times). This
+     rule lives in the editor's own provably-loading stylesheet so the tool
+     never renders serif even if the design-system sheet is absent. The
+     var() fallbacks make it self-sufficient. */
+  font-family: var(
+    --an-font-family-sans,
+    "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif
+  );
+  font-size: var(--an-font-size-14, 0.875rem);
+  line-height: var(--an-font-line-14, 1.4286);
+  color: var(--an-text-primary, #1f2430);
+  background: var(--an-surface-base, #f7f8fa);
 }
 
 * {
