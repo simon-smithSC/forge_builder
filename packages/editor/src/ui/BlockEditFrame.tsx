@@ -19,6 +19,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
+import { Chip, IconButton, Tooltip } from "@forge/ui";
 import { BlockView, getRegistryEntry } from "@forge/blocks";
 import type { BlockRegistryEntry } from "@forge/blocks";
 import type { Block } from "@forge/schema";
@@ -141,8 +142,7 @@ export function BlockEditFrame({
       }}
     >
       <div className="fe-block-rail" onClick={(event) => event.stopPropagation()}>
-        <button
-          type="button"
+        <Chip
           className="fe-rail-chip"
           onClick={() => setVariantMenuOpen((open) => !open)}
           aria-haspopup="menu"
@@ -151,7 +151,7 @@ export function BlockEditFrame({
         >
           <FamilyIcon size={14} aria-hidden />
           <span className="fe-rail-chip-label">{entry.palette.label}</span>
-        </button>
+        </Chip>
         {variantMenuOpen ? (
           <VariantMenu
             entry={entry}
@@ -160,65 +160,64 @@ export function BlockEditFrame({
             onClose={() => setVariantMenuOpen(false)}
           />
         ) : null}
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
-          onClick={() => selectBlock(block.id)}
-          title="Style and format"
-          aria-label="Open style and format settings"
-        >
-          <SlidersHorizontal size={14} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm fe-drag-grip"
+        <Tooltip content="Style and format" placement="bottom">
+          <IconButton
+            size="sm"
+            label="Open style and format settings"
+            title="Style and format"
+            icon={<SlidersHorizontal size={14} aria-hidden />}
+            onClick={() => selectBlock(block.id)}
+          />
+        </Tooltip>
+        <IconButton
+          className="fe-drag-grip"
+          size="sm"
+          label="Drag to reorder"
+          icon={<GripVertical size={14} aria-hidden />}
           {...attributes}
           {...listeners}
-          title="Drag to reorder"
-          aria-label="Drag to reorder"
-        >
-          <GripVertical size={14} aria-hidden />
-        </button>
+        />
         {index > 0 ? (
-          <button
-            type="button"
-            className="fe-icon-btn fe-icon-btn-sm"
-            onClick={() => moveBlock(lessonId, block.id, "up")}
-            title="Move up"
-            aria-label="Move block up"
-          >
-            <ChevronUp size={14} aria-hidden />
-          </button>
+          <Tooltip content="Move up" placement="bottom">
+            <IconButton
+              size="sm"
+              label="Move block up"
+              title="Move up"
+              icon={<ChevronUp size={14} aria-hidden />}
+              onClick={() => moveBlock(lessonId, block.id, "up")}
+            />
+          </Tooltip>
         ) : null}
         {index < count - 1 ? (
-          <button
-            type="button"
-            className="fe-icon-btn fe-icon-btn-sm"
-            onClick={() => moveBlock(lessonId, block.id, "down")}
-            title="Move down"
-            aria-label="Move block down"
-          >
-            <ChevronDown size={14} aria-hidden />
-          </button>
+          <Tooltip content="Move down" placement="bottom">
+            <IconButton
+              size="sm"
+              label="Move block down"
+              title="Move down"
+              icon={<ChevronDown size={14} aria-hidden />}
+              onClick={() => moveBlock(lessonId, block.id, "down")}
+            />
+          </Tooltip>
         ) : null}
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
-          onClick={() => duplicateBlock(lessonId, block.id)}
-          title="Duplicate"
-          aria-label="Duplicate block"
-        >
-          <Copy size={14} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm fe-icon-btn-danger"
-          onClick={() => deleteBlock(lessonId, block.id)}
-          title="Delete"
-          aria-label="Delete block"
-        >
-          <Trash2 size={14} aria-hidden />
-        </button>
+        <Tooltip content="Duplicate" placement="bottom">
+          <IconButton
+            size="sm"
+            label="Duplicate block"
+            title="Duplicate"
+            icon={<Copy size={14} aria-hidden />}
+            onClick={() => duplicateBlock(lessonId, block.id)}
+          />
+        </Tooltip>
+        <Tooltip content="Delete" placement="bottom">
+          <IconButton
+            size="sm"
+            variant="danger"
+            label="Delete block"
+            title="Delete"
+            icon={<Trash2 size={14} aria-hidden />}
+            onClick={() => deleteBlock(lessonId, block.id)}
+          />
+        </Tooltip>
       </div>
       <BlockView block={block} />
     </div>

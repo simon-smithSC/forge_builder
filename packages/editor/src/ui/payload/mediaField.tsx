@@ -2,6 +2,7 @@
 // parallel at ui/dialogs/MediaPicker.tsx per the R2 media picker contract).
 import type { ReactElement } from "react";
 import { useState } from "react";
+import { Button } from "@forge/ui";
 import type { MediaRef } from "@forge/schema";
 import { MediaPicker } from "../dialogs/MediaPicker.js";
 import { useStore } from "../../state/store.js";
@@ -50,14 +51,14 @@ export function MediaPickerField({
         {required ? <span className="fe-pl-required">Required</span> : null}
       </span>
       <span className="fe-pl-media-row">
-        <button type="button" className="fe-btn fe-btn-sm" onClick={() => setOpen(true)}>
+        <Button size="sm" onClick={() => setOpen(true)}>
           Choose media...
-        </button>
+        </Button>
         <span className="fe-media-current">{currentLabel}</span>
         {onClear && mediaId ? (
-          <button type="button" className="fe-btn fe-btn-sm" onClick={onClear}>
+          <Button size="sm" onClick={onClear}>
             Clear
-          </button>
+          </Button>
         ) : null}
       </span>
       {required && !mediaId ? (
@@ -89,9 +90,9 @@ export function MediaAddButton({
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" className="fe-btn fe-btn-sm" onClick={() => setOpen(true)}>
+      <Button size="sm" onClick={() => setOpen(true)}>
         {label}
-      </button>
+      </Button>
       <MediaPicker
         open={open}
         {...(kind ? { kind } : {})}

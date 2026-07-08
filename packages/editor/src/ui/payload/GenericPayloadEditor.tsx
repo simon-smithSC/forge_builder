@@ -5,6 +5,7 @@
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { Button, Checkbox, IconButton, Input, Textarea } from "@forge/ui";
 import { getRegistryEntry } from "@forge/blocks";
 import type { Block } from "@forge/schema";
 import { createUlid } from "@forge/schema";
@@ -111,13 +112,13 @@ function StringField({
     <label className="fe-field">
       <span className="fe-field-label">{labelFor(fieldKey, htmlish)}</span>
       {htmlish ? (
-        <textarea
+        <Textarea
           value={draft}
           rows={3}
           onChange={(event) => onChange(event.target.value)}
         />
       ) : (
-        <input value={draft} onChange={(event) => onChange(event.target.value)} />
+        <Input value={draft} onChange={(event) => onChange(event.target.value)} />
       )}
       <FieldError message={ctx.errorFor(path)} />
     </label>
@@ -141,7 +142,7 @@ function NumberField({
   return (
     <label className="fe-field">
       <span className="fe-field-label">{labelFor(fieldKey, false)}</span>
-      <input
+      <Input
         type="number"
         value={draft}
         onChange={(event) => {
@@ -231,43 +232,38 @@ function ArrayField({
               {labelFor(fieldKey, false)} {index + 1}
             </span>
             <span className="fe-array-item-controls">
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm"
+              <IconButton
+                icon={<ChevronUp size={12} aria-hidden />}
+                label="Move item up"
+                title="Move up"
+                size="sm"
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
-                title="Move up"
-                aria-label="Move item up"
-              >
-                <ChevronUp size={12} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm"
+              />
+              <IconButton
+                icon={<ChevronDown size={12} aria-hidden />}
+                label="Move item down"
+                title="Move down"
+                size="sm"
                 onClick={() => move(index, 1)}
                 disabled={index === value.length - 1}
-                title="Move down"
-                aria-label="Move item down"
-              >
-                <ChevronDown size={12} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm fe-icon-btn-danger"
-                onClick={() => remove(index)}
+              />
+              <IconButton
+                icon={<Trash2 size={12} aria-hidden />}
+                label="Remove item"
                 title="Remove"
-                aria-label="Remove item"
-              >
-                <Trash2 size={12} aria-hidden />
-              </button>
+                size="sm"
+                variant="danger"
+                onClick={() => remove(index)}
+              />
             </span>
           </legend>
           <ValueFields ctx={ctx} path={[...path, index]} value={item} />
         </fieldset>
       ))}
-      <button type="button" className="fe-btn fe-btn-sm" onClick={add}>
+      <Button size="sm" onClick={add}>
         Add item
-      </button>
+      </Button>
     </div>
   );
 }
@@ -301,15 +297,18 @@ function ValueFields({
         }
         if (typeof item === "boolean") {
           return (
-            <label className="fe-field fe-field-checkbox" key={key}>
-              <input
-                type="checkbox"
-                checked={item}
-                onChange={(event) => ctx.commit(itemPath, event.target.checked)}
-              />
-              <span>{labelFor(key, false)}</span>
-              <FieldError message={ctx.errorFor(itemPath)} />
-            </label>
+            <Checkbox
+              key={key}
+              className="fe-field fe-field-checkbox"
+              label={
+                <>
+                  {labelFor(key, false)}
+                  <FieldError message={ctx.errorFor(itemPath)} />
+                </>
+              }
+              checked={item}
+              onChange={(event) => ctx.commit(itemPath, event.target.checked)}
+            />
           );
         }
         if (typeof item === "number") {

@@ -5,6 +5,7 @@
 import type { ReactElement } from "react";
 import { useMemo, useState } from "react";
 import { Download, TriangleAlert, UploadCloud } from "lucide-react";
+import { Button, Checkbox, Input, ProgressBar, Radio, Select } from "@forge/ui";
 import type { PublishWarning } from "@forge/exporter";
 import type { PublishSettings } from "@forge/schema";
 import { publishSettingsSchema } from "@forge/schema";
@@ -126,19 +127,17 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
       <div className="fe-publish">
         <fieldset className="fe-publish-group" disabled={publishing}>
           <legend>Completion tracking</legend>
-          <label className="fe-publish-radio">
-            <input
-              type="radio"
-              name="fe-publish-tracking"
-              checked={trackingMode === "courseCompletion"}
-              onChange={() => setTrackingMode("courseCompletion")}
-            />
-            <span>Course completion</span>
-          </label>
+          <Radio
+            className="fe-publish-radio"
+            name="fe-publish-tracking"
+            checked={trackingMode === "courseCompletion"}
+            onChange={() => setTrackingMode("courseCompletion")}
+            label="Course completion"
+          />
           {trackingMode === "courseCompletion" ? (
             <label className="fe-publish-inline">
               <span>Required lesson percent</span>
-              <input
+              <Input
                 type="number"
                 min={0}
                 max={100}
@@ -149,23 +148,25 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
               />
             </label>
           ) : null}
-          <label className="fe-publish-radio">
-            <input
-              type="radio"
-              name="fe-publish-tracking"
-              checked={trackingMode === "quizResult"}
-              disabled={quizLessons.length === 0}
-              onChange={selectQuizMode}
-            />
-            <span>
-              Quiz result
-              {quizLessons.length === 0 ? " (this course has no quiz lessons)" : ""}
-            </span>
-          </label>
+          <Radio
+            className="fe-publish-radio"
+            name="fe-publish-tracking"
+            checked={trackingMode === "quizResult"}
+            disabled={quizLessons.length === 0}
+            onChange={selectQuizMode}
+            label={
+              <>
+                Quiz result
+                {quizLessons.length === 0
+                  ? " (this course has no quiz lessons)"
+                  : ""}
+              </>
+            }
+          />
           {trackingMode === "quizResult" ? (
             <label className="fe-publish-inline">
               <span>Tracked quiz</span>
-              <select
+              <Select
                 value={quizLessonId}
                 onChange={(event) => setQuizLessonId(event.target.value)}
               >
@@ -174,7 +175,7 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
                     {quiz.title}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           ) : null}
         </fieldset>
@@ -183,7 +184,7 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
           <legend>Reporting</legend>
           <label className="fe-publish-inline">
             <span>LMS reporting</span>
-            <select
+            <Select
               value={reportingMode}
               onChange={(event) =>
                 setReportingMode(event.target.value as PublishSettings["reportingMode"])
@@ -194,32 +195,26 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
                   {mode.label}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
-          <label className="fe-publish-check">
-            <input
-              type="checkbox"
-              checked={exitCourseLink}
-              onChange={(event) => setExitCourseLink(event.target.checked)}
-            />
-            <span>Show an exit course link</span>
-          </label>
-          <label className="fe-publish-check">
-            <input
-              type="checkbox"
-              checked={hideCoverPage}
-              onChange={(event) => setHideCoverPage(event.target.checked)}
-            />
-            <span>Hide the cover page</span>
-          </label>
-          <label className="fe-publish-check">
-            <input
-              type="checkbox"
-              checked={strictLaunch}
-              onChange={(event) => setStrictLaunch(event.target.checked)}
-            />
-            <span>Strict launch (fail instead of untracked preview)</span>
-          </label>
+          <Checkbox
+            className="fe-publish-check"
+            checked={exitCourseLink}
+            onChange={(event) => setExitCourseLink(event.target.checked)}
+            label="Show an exit course link"
+          />
+          <Checkbox
+            className="fe-publish-check"
+            checked={hideCoverPage}
+            onChange={(event) => setHideCoverPage(event.target.checked)}
+            label="Hide the cover page"
+          />
+          <Checkbox
+            className="fe-publish-check"
+            checked={strictLaunch}
+            onChange={(event) => setStrictLaunch(event.target.checked)}
+            label="Strict launch (fail instead of untracked preview)"
+          />
           <p className="fe-publish-profile">
             Statement profile: <code>forge-v1</code> (rise-compat cut per ADR 0003)
           </p>
@@ -231,19 +226,20 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
           </p>
         ) : null}
 
+        {publishing ? <ProgressBar label="Publishing" /> : null}
+
         <div className="fe-publish-actions">
-          <button type="button" className="fe-btn" onClick={onClose} disabled={publishing}>
+          <Button onClick={onClose} disabled={publishing}>
             Close
-          </button>
-          <button
-            type="button"
-            className="fe-btn fe-btn-primary"
+          </Button>
+          <Button
+            variant="primary"
+            loading={publishing}
+            iconStart={<UploadCloud size={14} aria-hidden />}
             onClick={() => void handlePublish()}
-            disabled={publishing}
           >
-            <UploadCloud size={14} aria-hidden />
-            {publishing ? "Publishing..." : "Publish"}
-          </button>
+            Publish
+          </Button>
         </div>
 
         {result !== null ? (
@@ -295,14 +291,12 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
             ) : (
               <p className="fe-publish-no-warnings">No warnings.</p>
             )}
-            <button
-              type="button"
-              className="fe-btn"
+            <Button
+              iconStart={<Download size={14} aria-hidden />}
               onClick={() => downloadZip(result)}
             >
-              <Download size={14} aria-hidden />
               Download again
-            </button>
+            </Button>
           </section>
         ) : null}
       </div>

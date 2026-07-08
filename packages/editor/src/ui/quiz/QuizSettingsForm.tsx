@@ -3,6 +3,7 @@
 // edits surface the zod message inline and are not committed.
 import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
+import { Input } from "@forge/ui";
 import type { QuizLesson } from "@forge/schema";
 import { setQuizSettings } from "../../state/quizActions.js";
 import type { QuizSettings } from "../../state/quizActions.js";
@@ -47,7 +48,7 @@ function TimeLimitField({
       <span className="fe-field-label">Time limit (empty = none)</span>
       <div className="fq-time-limit">
         <label>
-          <input
+          <Input
             type="number"
             min={0}
             value={minutes}
@@ -61,7 +62,7 @@ function TimeLimitField({
           <span className="fe-muted"> min</span>
         </label>
         <label>
-          <input
+          <Input
             type="number"
             min={0}
             max={59}

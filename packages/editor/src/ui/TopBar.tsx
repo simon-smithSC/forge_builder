@@ -14,6 +14,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import type { PreviewDevice } from "@forge/player";
+import { Badge, Button, IconButton, SegmentedControl } from "@forge/ui";
 import {
   redo,
   setCourseMeta,
@@ -33,17 +34,24 @@ const STATUS_LABEL: Record<SaveStatus, string> = {
   conflict: "Save conflict",
 };
 
-const DEVICES: { id: PreviewDevice; label: string }[] = [
-  { id: "phone", label: "Phone" },
-  { id: "tablet", label: "Tablet" },
-  { id: "desktop", label: "Desktop" },
-];
+const STATUS_TONE: Record<SaveStatus, "success" | "neutral" | "warn" | "danger"> = {
+  saved: "success",
+  saving: "neutral",
+  offline: "warn",
+  conflict: "danger",
+};
 
 function deviceIcon(device: PreviewDevice): ReactElement {
   if (device === "phone") return <Smartphone size={14} aria-hidden />;
   if (device === "tablet") return <Tablet size={14} aria-hidden />;
   return <Monitor size={14} aria-hidden />;
 }
+
+const DEVICES: { id: PreviewDevice; label: string }[] = [
+  { id: "phone", label: "Phone" },
+  { id: "tablet", label: "Tablet" },
+  { id: "desktop", label: "Desktop" },
+];
 
 export interface TopBarProps {
   device: PreviewDevice;
@@ -70,24 +78,17 @@ export function TopBar({
 
   return (
     <header className="fe-topbar">
-      <button
-        type="button"
-        className="fe-icon-btn fe-outline-toggle"
+      <IconButton
+        className="fe-outline-toggle"
+        label="Toggle lesson outline"
+        icon={<PanelLeft size={18} aria-hidden />}
         onClick={onToggleOutline}
-        title="Toggle lesson outline"
-        aria-label="Toggle lesson outline"
-      >
-        <PanelLeft size={18} aria-hidden />
-      </button>
-      <button
-        type="button"
-        className="fe-icon-btn"
+      />
+      <IconButton
+        label="Back to course overview"
+        icon={<ArrowLeft size={18} aria-hidden />}
         onClick={() => showCourseOverview()}
-        title="Back to course overview"
-        aria-label="Back to course overview"
-      >
-        <ArrowLeft size={18} aria-hidden />
-      </button>
+      />
 
       <input
         className="fe-title-input"
@@ -97,85 +98,70 @@ export function TopBar({
         placeholder="Course title"
       />
 
-      <span
-        className={`fe-save-status fe-save-status-${saveStatus}`}
-        aria-live="polite"
-      >
+      <Badge className="fe-save-badge" tone={STATUS_TONE[saveStatus]} aria-live="polite">
         {STATUS_LABEL[saveStatus]}
-      </span>
+      </Badge>
 
       <span className="fe-topbar-spacer" />
 
-      <button
-        type="button"
-        className="fe-icon-btn"
+      <IconButton
+        label="Undo"
+        icon={<Undo2 size={18} aria-hidden />}
         onClick={() => undo()}
         disabled={!canUndo}
-        title="Undo"
-        aria-label="Undo"
-      >
-        <Undo2 size={18} aria-hidden />
-      </button>
-      <button
-        type="button"
-        className="fe-icon-btn"
+      />
+      <IconButton
+        label="Redo"
+        icon={<Redo2 size={18} aria-hidden />}
         onClick={() => redo()}
         disabled={!canRedo}
-        title="Redo"
-        aria-label="Redo"
-      >
-        <Redo2 size={18} aria-hidden />
-      </button>
+      />
 
-      <button
-        type="button"
-        className="fe-btn"
+      <Button
+        iconStart={<Palette size={14} aria-hidden />}
         onClick={() => setThemeOpen(true)}
         title="Edit course theme"
       >
-        <Palette size={14} aria-hidden />
         Theme
-      </button>
-      <button
-        type="button"
-        className="fe-btn"
+      </Button>
+      <Button
+        iconStart={<Languages size={14} aria-hidden />}
         onClick={() => setLabelsOpen(true)}
         title="Edit course labels"
       >
-        <Languages size={14} aria-hidden />
         Labels
-      </button>
+      </Button>
 
-      <span className="fe-device-toggle" role="group" aria-label="Preview device">
-        {DEVICES.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`fe-device-btn${device === item.id ? " fe-device-btn-active" : ""}`}
-            onClick={() => onDeviceChange(item.id)}
-            title={item.label}
-            aria-label={`Preview as ${item.label}`}
-            aria-pressed={device === item.id}
-          >
-            {deviceIcon(item.id)}
-          </button>
-        ))}
-      </span>
+      <SegmentedControl
+        label="Preview device"
+        value={device}
+        onValueChange={(next) => onDeviceChange(next as PreviewDevice)}
+        options={DEVICES.map((item) => ({
+          value: item.id,
+          label: (
+            <span title={item.label} aria-label={`Preview as ${item.label}`}>
+              {deviceIcon(item.id)}
+            </span>
+          ),
+        }))}
+      />
 
-      <button type="button" className="fe-btn fe-btn-primary" onClick={onPreview}>
-        <Play size={14} aria-hidden />
+      <Button
+        variant="primary"
+        iconStart={<Play size={14} aria-hidden />}
+        onClick={onPreview}
+      >
         Preview
-      </button>
+      </Button>
 
-      <button
-        type="button"
-        className="fe-btn fe-btn-primary"
+      <Button
+        variant="primary"
+        iconStart={<UploadCloud size={14} aria-hidden />}
         onClick={() => setPublishOpen(true)}
         title="Publish as xAPI package"
       >
-        <UploadCloud size={14} aria-hidden />
         Publish
-      </button>
+      </Button>
 
       <ThemeEditor open={themeOpen} onClose={() => setThemeOpen(false)} />
       <LabelSetEditor open={labelsOpen} onClose={() => setLabelsOpen(false)} />

@@ -5,6 +5,7 @@
 import type { ChangeEvent, DragEvent, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Captions, Image as ImageIcon, Music, Paperclip, UploadCloud, Video } from "lucide-react";
+import { Button, Input, TabPanel, Tabs } from "@forge/ui";
 import type { MediaRef } from "@forge/schema";
 import { createUlid } from "@forge/schema";
 import { registerMedia } from "../../state/courseToolsActions.js";
@@ -107,6 +108,7 @@ function MediaPickerDialog({
   const [dragOver, setDragOver] = useState(false);
   const [urlValue, setUrlValue] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const committedRef = useRef(false);
   const pendingRef = useRef<PendingUpload | null>(null);
   pendingRef.current = pending;
@@ -241,26 +243,19 @@ function MediaPickerDialog({
 
   return (
     <Dialog title={kind ? `Select ${kind}` : "Select media"} onClose={onClose}>
-      <div className="fe-dlg-tabs" role="tablist" aria-label="Media source">
-        {TABS.map((item) => (
-          <button
-            key={item}
-            type="button"
-            role="tab"
-            aria-selected={tab === item}
-            className={`fe-dlg-tab${tab === item ? " fe-dlg-tab-active" : ""}`}
-            onClick={() => {
-              setTab(item);
-              setError(null);
-            }}
-          >
-            {TAB_LABEL[item]}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        tabs={TABS.map((item) => ({ id: item, label: TAB_LABEL[item] }))}
+        value={tab}
+        onValueChange={(id) => {
+          setTab(id as Tab);
+          setError(null);
+        }}
+        label="Media source"
+        idPrefix="fe-media"
+      />
 
-      {tab === "library" ? (
-        entries.length === 0 ? (
+      <TabPanel tabId="library" value={tab} idPrefix="fe-media">
+        {entries.length === 0 ? (
           <p className="fe-media-empty">
             No {kind ?? "media"} in this course yet. Use Upload or URL to add
             some.
@@ -292,11 +287,11 @@ function MediaPickerDialog({
               );
             })}
           </div>
-        )
-      ) : null}
+        )}
+      </TabPanel>
 
-      {tab === "upload" ? (
-        pending ? (
+      <TabPanel tabId="upload" value={tab} idPrefix="fe-media">
+        {pending ? (
           <div className="fe-media-pending">
             <span className="fe-media-thumb">
               <img src={pending.objectUrl} alt="" />
@@ -305,24 +300,21 @@ function MediaPickerDialog({
               <p className="fe-media-name">{pending.file.name}</p>
               <label className="fe-field">
                 <span className="fe-field-label">Alt text (required)</span>
-                <input
+                <Input
                   value={alt}
                   onChange={(event) => setAlt(event.target.value)}
                   placeholder="Describe this image"
                 />
               </label>
               <div className="fe-dlg-footer">
-                <button type="button" className="fe-btn" onClick={cancelPending}>
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="fe-btn fe-btn-primary"
+                <Button onClick={cancelPending}>Cancel</Button>
+                <Button
+                  variant="primary"
                   disabled={alt.trim().length === 0}
                   onClick={() => commitFile(pending, alt)}
                 >
                   Add image
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -338,24 +330,28 @@ function MediaPickerDialog({
           >
             <UploadCloud size={28} aria-hidden />
             <span>Drag and drop a file here, or</span>
-            <label className="fe-btn">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ACCEPT[kind ?? "attachment"]}
+              onChange={handleFileInput}
+              style={{ display: "none" }}
+            />
+            <Button
+              iconStart={<UploadCloud size={14} aria-hidden />}
+              onClick={() => fileInputRef.current?.click()}
+            >
               Choose file
-              <input
-                type="file"
-                accept={ACCEPT[kind ?? "attachment"]}
-                onChange={handleFileInput}
-                style={{ display: "none" }}
-              />
-            </label>
+            </Button>
           </div>
-        )
-      ) : null}
+        )}
+      </TabPanel>
 
-      {tab === "url" ? (
+      <TabPanel tabId="url" value={tab} idPrefix="fe-media">
         <div>
           <label className="fe-field">
             <span className="fe-field-label">Media URL</span>
-            <input
+            <Input
               value={urlValue}
               onChange={(event) => setUrlValue(event.target.value)}
               placeholder="https://example.com/asset.png"
@@ -367,7 +363,7 @@ function MediaPickerDialog({
               <span className="fe-field-label">
                 Alt text (required for images)
               </span>
-              <input
+              <Input
                 value={alt}
                 onChange={(event) => setAlt(event.target.value)}
                 placeholder="Describe this image"
@@ -375,17 +371,16 @@ function MediaPickerDialog({
             </label>
           ) : null}
           <div className="fe-dlg-footer">
-            <button
-              type="button"
-              className="fe-btn fe-btn-primary"
+            <Button
+              variant="primary"
               disabled={urlValue.trim().length === 0}
               onClick={addFromUrl}
             >
               Add
-            </button>
+            </Button>
           </div>
         </div>
-      ) : null}
+      </TabPanel>
 
       {error ? (
         <p className="fe-field-error" role="alert">

@@ -13,6 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 import type { Lesson } from "@forge/schema";
+import { Badge, Button, IconButton } from "@forge/ui";
 import {
   moveLesson,
   openLessonEditor,
@@ -130,11 +131,12 @@ function OutlineRow({
   return (
     <li className={`fe-ov-row${isSection ? " fe-ov-row-section" : ""}`}>
       {!isSection ? (
-        <span
-          className={`fe-ov-chip${lesson.type === "quiz" ? " fe-ov-chip-quiz" : ""}`}
+        <Badge
+          className="fe-ov-chip"
+          tone={lesson.type === "quiz" ? "primary" : "neutral"}
         >
           {lesson.type === "quiz" ? "Quiz" : "Lesson"}
-        </span>
+        </Badge>
       ) : null}
 
       {editing ? (
@@ -172,55 +174,46 @@ function OutlineRow({
       ) : null}
 
       <span className="fe-ov-row-actions">
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
-          onClick={startRename}
+        <IconButton
+          size="sm"
+          label={`Rename ${lesson.title}`}
           title="Rename"
-          aria-label={`Rename ${lesson.title}`}
-        >
-          <Pencil size={14} aria-hidden />
-        </button>
+          icon={<Pencil size={14} aria-hidden />}
+          onClick={startRename}
+        />
         {isSection ? (
-          <button
-            type="button"
-            className="fe-icon-btn fe-icon-btn-sm"
-            onClick={() => createLessonAt("blocks", "", index + 1)}
+          <IconButton
+            size="sm"
+            label={`Insert lesson below ${lesson.title}`}
             title="Insert lesson below"
-            aria-label={`Insert lesson below ${lesson.title}`}
-          >
-            <Plus size={14} aria-hidden />
-          </button>
+            icon={<Plus size={14} aria-hidden />}
+            onClick={() => createLessonAt("blocks", "", index + 1)}
+          />
         ) : null}
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
+        <IconButton
+          size="sm"
+          label={`Move ${lesson.title} up`}
+          title="Move up"
+          icon={<ChevronUp size={14} aria-hidden />}
           onClick={() => moveLesson(lesson.id, "up")}
           disabled={index === 0}
-          title="Move up"
-          aria-label={`Move ${lesson.title} up`}
-        >
-          <ChevronUp size={14} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
+        />
+        <IconButton
+          size="sm"
+          label={`Move ${lesson.title} down`}
+          title="Move down"
+          icon={<ChevronDown size={14} aria-hidden />}
           onClick={() => moveLesson(lesson.id, "down")}
           disabled={index === count - 1}
-          title="Move down"
-          aria-label={`Move ${lesson.title} down`}
-        >
-          <ChevronDown size={14} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm fe-icon-btn-danger"
-          onClick={confirmDelete}
+        />
+        <IconButton
+          size="sm"
+          variant="danger"
+          label={`Delete ${lesson.title}`}
           title={isSection ? "Remove section" : "Delete"}
-          aria-label={`Delete ${lesson.title}`}
-        >
-          <Trash2 size={14} aria-hidden />
-        </button>
+          icon={<Trash2 size={14} aria-hidden />}
+          onClick={confirmDelete}
+        />
       </span>
     </li>
   );
@@ -260,15 +253,13 @@ function CreationInput({ position }: { position: "top" | "bottom" }): ReactEleme
           Shift + Enter to add as a section
         </span>
       </span>
-      <button
-        type="button"
-        className="fe-btn"
+      <Button
+        iconStart={<HelpCircle size={14} aria-hidden />}
         onClick={() => create("quiz")}
         title="Add a quiz lesson"
       >
-        <HelpCircle size={14} aria-hidden />
         Add quiz
-      </button>
+      </Button>
     </div>
   );
 }

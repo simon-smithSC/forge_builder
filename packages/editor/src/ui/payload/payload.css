@@ -4,19 +4,19 @@
 .fe-pl-error {
   margin: 0 0 8px;
   padding: 6px 8px;
-  border: 1px solid #d1242f;
-  border-radius: 6px;
-  background: #fff1f2;
-  color: #d1242f;
+  border: 1px solid var(--an-status-danger-fg);
+  border-radius: var(--an-radius-md);
+  background: var(--an-status-danger-bg);
+  color: var(--an-status-danger-fg);
   font-size: 12px;
 }
 
 .fe-pl-required {
   margin-left: 6px;
   padding: 0 4px;
-  border-radius: 4px;
-  background: #fff1f2;
-  color: #d1242f;
+  border-radius: var(--an-radius-sm);
+  background: var(--an-status-danger-bg);
+  color: var(--an-status-danger-fg);
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
@@ -24,7 +24,7 @@
 }
 
 .fe-pl-hint {
-  color: #59636e;
+  color: var(--an-text-muted);
   font-size: 11px;
   line-height: 1.4;
   overflow-wrap: anywhere;
@@ -34,9 +34,9 @@
 .fe-pl-snippet {
   margin: 0 0 8px;
   padding: 6px 8px;
-  border-radius: 6px;
-  background: var(--fe-bg, #f4f5f7);
-  color: #59636e;
+  border-radius: var(--an-radius-md);
+  background: var(--an-surface-sunken);
+  color: var(--an-text-muted);
   font-size: 12px;
   line-height: 1.4;
   overflow-wrap: anywhere;
@@ -50,7 +50,7 @@
 }
 
 .fe-pl-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--an-font-family-mono);
   font-size: 12px;
   white-space: pre;
 }

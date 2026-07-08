@@ -1,12 +1,13 @@
 /* Course overview screen (fe-ov- prefix). Rise-style hub: centered ~46rem
-   column on the light page background. Shell tokens (--fe-*) and shared
-   controls (.fe-btn, .fe-icon-btn, .fe-topbar) come from ui/styles.css. */
+   column on the page background. D3: Anvil tokens for color/depth/motion;
+   controls are Anvil components (Badge, Button, IconButton). Layout only
+   here. */
 
 .fe-ov-screen {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--fe-bg);
+  background: var(--an-surface-base);
 }
 
 .fe-ov-main {
@@ -30,22 +31,25 @@
   width: 100%;
   border: 1px solid transparent;
   background: transparent;
-  border-radius: var(--fe-radius);
+  border-radius: var(--an-radius-lg);
   padding: 6px 10px;
   margin-left: -10px;
+  transition:
+    border-color var(--an-duration-120) var(--an-ease-standard),
+    background var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-ov-title-input:hover,
 .fe-ov-author-input:hover,
 .fe-ov-desc-input:hover {
-  border-color: var(--fe-border);
+  border-color: var(--an-border-subtle);
 }
 
 .fe-ov-title-input:focus,
 .fe-ov-author-input:focus,
 .fe-ov-desc-input:focus {
-  border-color: var(--fe-border);
-  background: var(--fe-surface);
+  border-color: var(--an-border-subtle);
+  background: var(--an-surface-raised);
 }
 
 .fe-ov-title-input {
@@ -55,8 +59,8 @@
 }
 
 .fe-ov-author-input {
-  font-size: 14px;
-  color: var(--fe-muted);
+  font-size: var(--an-font-size-14);
+  color: var(--an-text-muted);
   margin-top: 2px;
 }
 
@@ -72,52 +76,47 @@
 
 .fe-ov-outline {
   list-style: none;
-  margin: 20px 0 0;
+  margin: var(--an-space-20) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--an-space-8);
 }
 
 .fe-ov-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: var(--fe-surface);
-  border: 1px solid var(--fe-border);
-  border-radius: var(--fe-radius);
-  box-shadow: var(--fe-shadow);
+  gap: var(--an-space-8);
+  background: var(--an-surface-raised);
+  border-radius: var(--an-radius-lg);
+  box-shadow: var(--an-elevation-1);
   padding: 10px 14px;
   min-height: 52px;
+  transition: box-shadow var(--an-duration-120) var(--an-ease-standard);
+}
+
+.fe-ov-row:hover {
+  box-shadow: var(--an-elevation-2);
 }
 
 .fe-ov-row-section {
   background: transparent;
-  border: none;
   box-shadow: none;
   border-radius: 0;
-  border-bottom: 1px solid var(--fe-border);
+  border-bottom: 1px solid var(--an-border-subtle);
   padding: 22px 14px 6px;
   min-height: 0;
 }
 
-.fe-ov-chip {
-  flex: none;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--fe-muted);
-  background: var(--fe-bg);
-  border: 1px solid var(--fe-border);
-  border-radius: 999px;
-  padding: 2px 9px;
+.fe-ov-row-section:hover {
+  box-shadow: none;
 }
 
-.fe-ov-chip-quiz {
-  color: var(--fe-primary);
-  background: var(--fe-primary-soft);
-  border-color: var(--fe-primary-soft);
+/* Anvil Badge carries the visuals; this keeps the row layout stable. */
+.fe-ov-chip {
+  flex: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .fe-ov-row-title {
@@ -127,55 +126,57 @@
   border: none;
   background: transparent;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--an-font-weight-semibold);
   padding: 4px 8px;
   margin-left: -8px;
-  border-radius: 6px;
+  border-radius: var(--an-radius-md);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  transition: background var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-ov-row-title:hover {
-  background: var(--fe-primary-soft);
+  background: var(--an-interactive-selected);
 }
 
 .fe-ov-row-section .fe-ov-row-title {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--an-font-size-12);
+  font-weight: var(--an-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-ov-rename {
   flex: 1;
   min-width: 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: var(--an-font-weight-semibold);
 }
 
 .fe-ov-edit-link {
   flex: none;
   border: none;
   background: transparent;
-  color: var(--fe-primary);
-  font-weight: 600;
+  color: var(--an-interactive-idle);
+  font-weight: var(--an-font-weight-semibold);
   padding: 4px 8px;
-  border-radius: 6px;
+  border-radius: var(--an-radius-md);
+  transition: background var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-ov-edit-link:hover {
-  background: var(--fe-primary-soft);
+  background: var(--an-interactive-selected);
 }
 
 .fe-ov-row-actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--an-space-2);
   flex: none;
   opacity: 0;
-  transition: opacity 120ms ease;
+  transition: opacity var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-ov-row:hover .fe-ov-row-actions,
@@ -188,8 +189,8 @@
 .fe-ov-create {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 0;
+  gap: var(--an-space-8);
+  padding: var(--an-space-6) 0;
 }
 
 .fe-ov-create-top {
@@ -197,17 +198,18 @@
 }
 
 .fe-ov-create-bottom {
-  margin-top: 8px;
+  margin-top: var(--an-space-8);
 }
 
 .fe-ov-create-input {
   flex: 1;
   min-width: 0;
-  border: 1px dashed var(--fe-border);
-  background: var(--fe-surface);
-  border-radius: var(--fe-radius);
+  border: 1px dashed var(--an-border-strong);
+  background: var(--an-surface-raised);
+  border-radius: var(--an-radius-lg);
   padding: 11px 14px;
   font-size: 15px;
+  transition: border-color var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-ov-create-input:focus {
@@ -217,12 +219,12 @@
 .fe-ov-hint {
   display: block;
   margin: 4px 0 0 14px;
-  font-size: 12px;
-  color: var(--fe-muted);
+  font-size: var(--an-font-size-12);
+  color: var(--an-text-muted);
 }
 
 .fe-ov-empty {
-  margin: 24px 0 0;
-  color: var(--fe-muted);
-  font-size: 14px;
+  margin: var(--an-space-24) 0 0;
+  color: var(--an-text-muted);
+  font-size: var(--an-font-size-14);
 }

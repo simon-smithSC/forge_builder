@@ -2,8 +2,9 @@
 // JSON export/import validated against labelSetSchema. Commits through the
 // course-meta update path; the translations key is carried over untouched.
 import type { ChangeEvent, ReactElement } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Download, Upload } from "lucide-react";
+import { Button, Input } from "@forge/ui";
 import type { LabelSet } from "@forge/schema";
 import { defaultLabelSet, labelSetSchema } from "@forge/schema";
 import { setLabelSet } from "../../state/courseToolsActions.js";
@@ -75,6 +76,7 @@ function LabelSetEditorDialog({ onClose }: { onClose: () => void }): ReactElemen
   const [draft, setDraft] = useState<LabelDraft>(() => draftFromLabelSet(current));
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const importInputRef = useRef<HTMLInputElement | null>(null);
 
   const assemble = (): LabelSet => ({
     ...draft,
@@ -158,7 +160,7 @@ function LabelSetEditorDialog({ onClose }: { onClose: () => void }): ReactElemen
             {group.keys.map(({ key, label }) => (
               <label key={key} className="fe-field">
                 <span className="fe-field-label">{label}</span>
-                <input
+                <Input
                   value={draft[key]}
                   onChange={(event) =>
                     setDraft((prev) => ({ ...prev, [key]: event.target.value }))
@@ -179,27 +181,30 @@ function LabelSetEditorDialog({ onClose }: { onClose: () => void }): ReactElemen
 
       <div className="fe-dlg-footer">
         <span className="fe-dlg-footer-start">
-          <button type="button" className="fe-btn" onClick={exportJson}>
-            <Download size={14} aria-hidden />
+          <Button
+            iconStart={<Download size={14} aria-hidden />}
+            onClick={exportJson}
+          >
             Export JSON
-          </button>
-          <label className="fe-btn">
-            <Upload size={14} aria-hidden />
+          </Button>
+          <input
+            ref={importInputRef}
+            type="file"
+            accept="application/json,.json"
+            onChange={importJson}
+            style={{ display: "none" }}
+          />
+          <Button
+            iconStart={<Upload size={14} aria-hidden />}
+            onClick={() => importInputRef.current?.click()}
+          >
             Import JSON
-            <input
-              type="file"
-              accept="application/json,.json"
-              onChange={importJson}
-              style={{ display: "none" }}
-            />
-          </label>
+          </Button>
         </span>
-        <button type="button" className="fe-btn" onClick={onClose}>
-          Cancel
-        </button>
-        <button type="button" className="fe-btn fe-btn-primary" onClick={save}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="primary" onClick={save}>
           Save
-        </button>
+        </Button>
       </div>
     </Dialog>
   );

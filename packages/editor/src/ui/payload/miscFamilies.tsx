@@ -1,6 +1,7 @@
 // Purpose-built editors for flashcard, buttons, and divider families.
 import type { ReactElement } from "react";
 import { useId, useState } from "react";
+import { Radio } from "@forge/ui";
 import type { Block, Lesson } from "@forge/schema";
 import { createUlid } from "@forge/schema";
 import { useStore } from "../../state/store.js";
@@ -30,28 +31,24 @@ function CardSideEditor({
     <fieldset className="fe-object">
       <legend>{label}</legend>
       <div className="fe-field-row fe-pl-kind-row">
-        <label className="fe-radio">
-          <input
-            type="radio"
-            name={group}
-            checked={side.kind === "text"}
-            onChange={() => {
-              if (side.kind !== "text") onCommit({ kind: "text", html: "Text" });
-            }}
-          />
-          Text
-        </label>
-        <label className="fe-radio">
-          <input
-            type="radio"
-            name={group}
-            checked={side.kind === "image"}
-            onChange={() => {
-              if (side.kind !== "image") setPickerOpen(true);
-            }}
-          />
-          Image
-        </label>
+        <Radio
+          className="fe-radio"
+          label="Text"
+          name={group}
+          checked={side.kind === "text"}
+          onChange={() => {
+            if (side.kind !== "text") onCommit({ kind: "text", html: "Text" });
+          }}
+        />
+        <Radio
+          className="fe-radio"
+          label="Image"
+          name={group}
+          checked={side.kind === "image"}
+          onChange={() => {
+            if (side.kind !== "image") setPickerOpen(true);
+          }}
+        />
       </div>
       {side.kind === "text" ? (
         <HtmlField

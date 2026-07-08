@@ -20,6 +20,18 @@ export function App(): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!hasCourse) return <CourseList />;
-  return screen === "overview" ? <CourseOverview /> : <EditorScreen />;
+  // The "anvil" scope class turns on the design-system tokens for the tool
+  // chrome. Course content inside the canvas stays author-themed: block and
+  // player styles read --forge-*/--fb-* which Anvil never defines.
+  return (
+    <div className="anvil fe-app">
+      {!hasCourse ? (
+        <CourseList />
+      ) : screen === "overview" ? (
+        <CourseOverview />
+      ) : (
+        <EditorScreen />
+      )}
+    </div>
+  );
 }

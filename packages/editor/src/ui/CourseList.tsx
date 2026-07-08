@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { BookOpen, Plus } from "lucide-react";
+import { Button, EmptyState } from "@forge/ui";
 import { useCourseOpener, useCoursesQuery } from "../state/courseQueries.js";
 import { useStore } from "../state/store.js";
 
@@ -30,15 +31,14 @@ export function CourseList(): ReactElement {
     <div className="fe-course-list">
       <header className="fe-course-list-header">
         <h1>Forge</h1>
-        <button
-          type="button"
-          className="fe-btn fe-btn-primary"
+        <Button
+          variant="primary"
+          iconStart={<Plus size={16} aria-hidden />}
           onClick={() => void opener.create()}
           disabled={busy}
         >
-          <Plus size={16} aria-hidden />
           New course
-        </button>
+        </Button>
       </header>
 
       {actionError ? (
@@ -50,14 +50,13 @@ export function CourseList(): ReactElement {
       {listError ? (
         <p className="fe-error" role="alert">
           {listError}{" "}
-          <button
-            type="button"
-            className="fe-btn"
+          <Button
+            size="sm"
             onClick={() => void coursesQuery.refetch()}
             disabled={coursesQuery.isFetching}
           >
             Retry
-          </button>
+          </Button>
         </p>
       ) : null}
 
@@ -66,10 +65,11 @@ export function CourseList(): ReactElement {
       ) : null}
 
       {coursesQuery.isSuccess && courses.length === 0 ? (
-        <div className="fe-empty">
-          <BookOpen size={32} aria-hidden />
-          <p>No courses yet. Create your first course to get started.</p>
-        </div>
+        <EmptyState
+          icon={<BookOpen size={32} aria-hidden />}
+          title="No courses yet"
+          description="Create your first course to get started."
+        />
       ) : null}
 
       <div className="fe-course-grid">

@@ -90,6 +90,8 @@ function resolveSpec(spec, importerAbs) {
     let cssPath;
     if (spec === "@forge/blocks/styles.css") cssPath = join(root, "packages/blocks/src/styles.css");
     else if (spec === "@forge/player/styles.css") cssPath = join(root, "packages/player/src/styles.css");
+    else if (spec === "@forge/ui/anvil.css") cssPath = join(root, "packages/ui/src/anvil.css");
+    else if (spec === "@forge/ui/components.css") cssPath = join(root, "packages/ui/src/components.css");
     else {
       // relative to the package's src (dist mirrors src layout)
       const distDir = dirname(importerAbs);

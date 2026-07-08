@@ -6,6 +6,7 @@
 import type { ReactElement } from "react";
 import { useEffect, useRef } from "react";
 import { LayoutGrid } from "lucide-react";
+import { Chip } from "@forge/ui";
 import { insertBlockVariant } from "../../state/libraryActions.js";
 import { blockIcon } from "../blockIcons.js";
 import { quickAddItems, recordRecentPick } from "./libraryData.js";
@@ -65,24 +66,21 @@ export function QuickAddStrip({
         }
       }}
     >
-      <button
-        type="button"
+      <Chip
         role="menuitem"
-        className="fe-lib-chip fe-lib-chip-library"
+        className="fe-lib-chip-library"
         onClick={onOpenLibrary}
       >
         <LayoutGrid size={14} aria-hidden />
         <span>All blocks</span>
-      </button>
+      </Chip>
       <span className="fe-lib-strip-rule" aria-hidden />
       {quickAddItems.map((item) => {
         const Icon = blockIcon(item.icon);
         return (
-          <button
+          <Chip
             key={item.label}
-            type="button"
             role="menuitem"
-            className="fe-lib-chip"
             onClick={() => {
               insertBlockVariant(lessonId, item.family, item.variant, index);
               recordRecentPick(item.family, item.variant);
@@ -91,7 +89,7 @@ export function QuickAddStrip({
           >
             <Icon size={14} aria-hidden />
             <span>{item.label}</span>
-          </button>
+          </Chip>
         );
       })}
     </div>

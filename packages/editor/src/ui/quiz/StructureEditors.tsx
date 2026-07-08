@@ -4,6 +4,7 @@
 import { useState } from "react";
 import type { ReactElement } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { IconButton, Radio } from "@forge/ui";
 import type { Question } from "@forge/schema";
 import { createUlid } from "@forge/schema";
 import {
@@ -58,22 +59,20 @@ export function MatchingEditor({
               onCommit={(value) => setPair(pair.id, { match: value })}
             />
           </div>
-          <button
-            type="button"
-            className="fe-icon-btn fe-icon-btn-sm"
-            disabled={question.pairs.length <= 1}
-            onClick={() =>
-              setPairs(question.pairs.filter((item) => item.id !== pair.id))
-            }
+          <IconButton
+            icon={<Trash2 size={13} aria-hidden />}
+            label={`Remove pair ${index + 1}`}
             title={
               question.pairs.length <= 1
                 ? "At least one pair is required"
                 : "Remove pair"
             }
-            aria-label={`Remove pair ${index + 1}`}
-          >
-            <Trash2 size={13} aria-hidden />
-          </button>
+            size="sm"
+            disabled={question.pairs.length <= 1}
+            onClick={() =>
+              setPairs(question.pairs.filter((item) => item.id !== pair.id))
+            }
+          />
         </div>
       ))}
       <button
@@ -146,42 +145,36 @@ export function SequencingEditor({
             />
           </div>
           <span className="fq-row-controls">
-            <button
-              type="button"
-              className="fe-icon-btn fe-icon-btn-sm"
+            <IconButton
+              icon={<ArrowUp size={13} aria-hidden />}
+              label={`Move item ${index + 1} up`}
+              title="Move item up"
+              size="sm"
               disabled={index === 0}
               onClick={() => move(index, -1)}
-              title="Move item up"
-              aria-label={`Move item ${index + 1} up`}
-            >
-              <ArrowUp size={13} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className="fe-icon-btn fe-icon-btn-sm"
+            />
+            <IconButton
+              icon={<ArrowDown size={13} aria-hidden />}
+              label={`Move item ${index + 1} down`}
+              title="Move item down"
+              size="sm"
               disabled={index === ordered.length - 1}
               onClick={() => move(index, 1)}
-              title="Move item down"
-              aria-label={`Move item ${index + 1} down`}
-            >
-              <ArrowDown size={13} aria-hidden />
-            </button>
-            <button
-              type="button"
-              className="fe-icon-btn fe-icon-btn-sm"
-              disabled={ordered.length <= 2}
-              onClick={() =>
-                commitItems(ordered.filter((existing) => existing.id !== item.id))
-              }
+            />
+            <IconButton
+              icon={<Trash2 size={13} aria-hidden />}
+              label={`Remove item ${index + 1}`}
               title={
                 ordered.length <= 2
                   ? "At least two items are required"
                   : "Remove item"
               }
-              aria-label={`Remove item ${index + 1}`}
-            >
-              <Trash2 size={13} aria-hidden />
-            </button>
+              size="sm"
+              disabled={ordered.length <= 2}
+              onClick={() =>
+                commitItems(ordered.filter((existing) => existing.id !== item.id))
+              }
+            />
           </span>
         </div>
       ))}
@@ -246,24 +239,20 @@ export function NumericEditor({
     <div className="fq-subsection">
       <fieldset className="fq-mode">
         <legend className="fe-field-label">Grading mode</legend>
-        <label className="fq-correct">
-          <input
-            type="radio"
-            name={`fq-numeric-mode-${question.id}`}
-            checked={grading.mode === "exact"}
-            onChange={() => setMode("exact")}
-          />
-          <span>Exact value</span>
-        </label>
-        <label className="fq-correct">
-          <input
-            type="radio"
-            name={`fq-numeric-mode-${question.id}`}
-            checked={grading.mode === "range"}
-            onChange={() => setMode("range")}
-          />
-          <span>Range</span>
-        </label>
+        <Radio
+          className="fq-correct"
+          label="Exact value"
+          name={`fq-numeric-mode-${question.id}`}
+          checked={grading.mode === "exact"}
+          onChange={() => setMode("exact")}
+        />
+        <Radio
+          className="fq-correct"
+          label="Range"
+          name={`fq-numeric-mode-${question.id}`}
+          checked={grading.mode === "range"}
+          onChange={() => setMode("range")}
+        />
       </fieldset>
       {grading.mode === "exact" ? (
         <div className="fq-grid">
@@ -362,22 +351,20 @@ export function LikertEditor({
               }}
             />
           </div>
-          <button
-            type="button"
-            className="fe-icon-btn fe-icon-btn-sm"
-            disabled={question.scale.length <= 2}
-            onClick={() =>
-              setScale(question.scale.filter((item) => item.id !== step.id))
-            }
+          <IconButton
+            icon={<Trash2 size={13} aria-hidden />}
+            label={`Remove scale point ${index + 1}`}
             title={
               question.scale.length <= 2
                 ? "At least two scale points are required"
                 : "Remove scale point"
             }
-            aria-label={`Remove scale point ${index + 1}`}
-          >
-            <Trash2 size={13} aria-hidden />
-          </button>
+            size="sm"
+            disabled={question.scale.length <= 2}
+            onClick={() =>
+              setScale(question.scale.filter((item) => item.id !== step.id))
+            }
+          />
         </div>
       ))}
       <button

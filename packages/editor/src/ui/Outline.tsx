@@ -29,6 +29,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { Lesson } from "@forge/schema";
+import { Button, IconButton, Input } from "@forge/ui";
 import {
   addLesson,
   moveLesson,
@@ -94,19 +95,19 @@ function LessonRow({
         .filter(Boolean)
         .join(" ")}
     >
-      <button
-        type="button"
-        className="fe-icon-btn fe-icon-btn-sm fe-drag-grip fe-outline-grip"
+      <IconButton
+        className="fe-drag-grip fe-outline-grip"
+        size="sm"
+        label={`Drag to reorder ${lesson.title}`}
+        title="Drag to reorder"
+        icon={<GripVertical size={13} aria-hidden />}
         {...attributes}
         {...listeners}
-        title="Drag to reorder"
-        aria-label={`Drag to reorder ${lesson.title}`}
-      >
-        <GripVertical size={13} aria-hidden />
-      </button>
+      />
       {editing ? (
-        <input
+        <Input
           className="fe-outline-rename"
+          size="sm"
           value={draft}
           autoFocus
           onChange={(event) => setDraft(event.target.value)}
@@ -133,44 +134,37 @@ function LessonRow({
       )}
 
       <span className="fe-outline-controls">
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
-          onClick={() => setEditing(true)}
+        <IconButton
+          size="sm"
+          label={`Rename ${lesson.title}`}
           title="Rename"
-          aria-label={`Rename ${lesson.title}`}
-        >
-          <Pencil size={13} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
+          icon={<Pencil size={13} aria-hidden />}
+          onClick={() => setEditing(true)}
+        />
+        <IconButton
+          size="sm"
+          label={`Move ${lesson.title} up`}
+          title="Move up"
+          icon={<ChevronUp size={13} aria-hidden />}
           onClick={() => moveLesson(lesson.id, "up")}
           disabled={index === 0}
-          title="Move up"
-          aria-label={`Move ${lesson.title} up`}
-        >
-          <ChevronUp size={13} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm"
+        />
+        <IconButton
+          size="sm"
+          label={`Move ${lesson.title} down`}
+          title="Move down"
+          icon={<ChevronDown size={13} aria-hidden />}
           onClick={() => moveLesson(lesson.id, "down")}
           disabled={index === count - 1}
-          title="Move down"
-          aria-label={`Move ${lesson.title} down`}
-        >
-          <ChevronDown size={13} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className="fe-icon-btn fe-icon-btn-sm fe-icon-btn-danger"
-          onClick={confirmDelete}
+        />
+        <IconButton
+          size="sm"
+          variant="danger"
+          label={`Delete ${lesson.title}`}
           title="Delete"
-          aria-label={`Delete ${lesson.title}`}
-        >
-          <Trash2 size={13} aria-hidden />
-        </button>
+          icon={<Trash2 size={13} aria-hidden />}
+          onClick={confirmDelete}
+        />
       </span>
     </li>
   );
@@ -249,15 +243,15 @@ export function Outline(): ReactElement {
         </DragOverlay>
       </DndContext>
       <div className="fe-outline-actions">
-        <button type="button" className="fe-btn" onClick={() => addLesson("blocks")}>
+        <Button size="sm" onClick={() => addLesson("blocks")}>
           + Lesson
-        </button>
-        <button type="button" className="fe-btn" onClick={() => addLesson("section")}>
+        </Button>
+        <Button size="sm" onClick={() => addLesson("section")}>
           + Section
-        </button>
-        <button type="button" className="fe-btn" onClick={() => addLesson("quiz")}>
+        </Button>
+        <Button size="sm" onClick={() => addLesson("quiz")}>
           + Quiz
-        </button>
+        </Button>
       </div>
     </aside>
   );

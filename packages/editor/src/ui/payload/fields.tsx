@@ -4,6 +4,7 @@
 import type { ReactElement, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { Button, Checkbox, IconButton, Input, Select, Textarea } from "@forge/ui";
 import { RichTextField } from "../rich/RichTextField.js";
 
 interface TextCommonProps {
@@ -54,7 +55,7 @@ export function StringField({
         {label}
         <RequiredTag show={required} />
       </span>
-      <input
+      <Input
         value={draft}
         placeholder={placeholder}
         onChange={(event) => {
@@ -86,7 +87,7 @@ export function TextAreaField({
         {label}
         <RequiredTag show={required} />
       </span>
-      <textarea
+      <Textarea
         value={draft}
         rows={rows}
         placeholder={placeholder}
@@ -153,7 +154,7 @@ export function NumberField({
   return (
     <label className="fe-field">
       <span className="fe-field-label">{label}</span>
-      <input
+      <Input
         type="number"
         value={draft}
         min={min}
@@ -180,14 +181,12 @@ export function ToggleField({
   onCommit: (checked: boolean) => void;
 }): ReactElement {
   return (
-    <label className="fe-field fe-field-checkbox">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(event) => onCommit(event.target.checked)}
-      />
-      <span>{label}</span>
-    </label>
+    <Checkbox
+      className="fe-field fe-field-checkbox"
+      label={label}
+      checked={checked}
+      onChange={(event) => onCommit(event.target.checked)}
+    />
   );
 }
 
@@ -213,7 +212,7 @@ export function SelectField({
   return (
     <label className="fe-field">
       <span className="fe-field-label">{label}</span>
-      <select value={value} onChange={(event) => onCommit(event.target.value)}>
+      <Select value={value} onChange={(event) => onCommit(event.target.value)}>
         {known ? null : (
           <option value={value}>{value === "" ? "Choose..." : `Unknown (${value})`}</option>
         )}
@@ -222,7 +221,7 @@ export function SelectField({
             {option.label}
           </option>
         ))}
-      </select>
+      </Select>
       <Hint text={hint} />
     </label>
   );
@@ -279,36 +278,31 @@ export function ItemListEditor<T extends { id: string }>({
               {itemLabel} {index + 1}
             </span>
             <span className="fe-array-item-controls">
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm"
+              <IconButton
+                icon={<ChevronUp size={12} aria-hidden />}
+                label={`Move ${itemLabel.toLowerCase()} up`}
+                title="Move up"
+                size="sm"
                 onClick={() => move(index, -1)}
                 disabled={index === 0}
-                title="Move up"
-                aria-label={`Move ${itemLabel.toLowerCase()} up`}
-              >
-                <ChevronUp size={12} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm"
+              />
+              <IconButton
+                icon={<ChevronDown size={12} aria-hidden />}
+                label={`Move ${itemLabel.toLowerCase()} down`}
+                title="Move down"
+                size="sm"
                 onClick={() => move(index, 1)}
                 disabled={index === items.length - 1}
-                title="Move down"
-                aria-label={`Move ${itemLabel.toLowerCase()} down`}
-              >
-                <ChevronDown size={12} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm fe-icon-btn-danger"
+              />
+              <IconButton
+                icon={<Trash2 size={12} aria-hidden />}
+                label={`Remove ${itemLabel.toLowerCase()}`}
+                title="Remove"
+                size="sm"
+                variant="danger"
                 onClick={() => onCommit(items.filter((_, i) => i !== index))}
                 disabled={items.length <= minItems}
-                title="Remove"
-                aria-label={`Remove ${itemLabel.toLowerCase()}`}
-              >
-                <Trash2 size={12} aria-hidden />
-              </button>
+              />
             </span>
           </legend>
           {renderItem(
@@ -319,13 +313,9 @@ export function ItemListEditor<T extends { id: string }>({
         </fieldset>
       ))}
       {createItem ? (
-        <button
-          type="button"
-          className="fe-btn fe-btn-sm"
-          onClick={() => append(createItem())}
-        >
+        <Button size="sm" onClick={() => append(createItem())}>
           {addLabel ?? `Add ${itemLabel.toLowerCase()}`}
-        </button>
+        </Button>
       ) : null}
       {extraAdd ? extraAdd(append) : null}
     </div>

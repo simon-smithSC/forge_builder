@@ -1,18 +1,25 @@
-/* Forge editor chrome (fe- prefix). Rise-like: light, clean, generous
-   whitespace. Block/player visuals come from @forge/blocks and @forge/player
-   stylesheets; this file styles only the authoring shell. */
+/* Forge editor chrome (fe- prefix), D3: skinned by the Anvil design system
+   (@forge/ui, --an-* tokens on the .anvil root; see docs/DESIGN-SYSTEM-PLAN.md).
+   Controls (buttons, inputs, badges, chips, dialogs, tabs, segmented,
+   progress) are Anvil components; this file keeps LAYOUT and Forge-specific
+   composites only. Block/player visuals come from @forge/blocks and
+   @forge/player stylesheets (--forge-*/--fb-*), which Anvil never touches. */
 
-:root {
-  --fe-bg: #f4f5f7;
-  --fe-surface: #ffffff;
-  --fe-border: #e3e6ea;
-  --fe-text: #1f2328;
-  --fe-muted: #6b7280;
-  --fe-primary: #1f6feb;
-  --fe-primary-soft: #e8f0fe;
-  --fe-danger: #c0392b;
-  --fe-radius: 8px;
-  --fe-shadow: 0 1px 3px rgba(20, 23, 28, 0.08);
+/* ---- temporary --fe- token bridge (D3) ----
+   Maps the legacy chrome tokens onto Anvil semantics so any css not yet
+   migrated (ui/inline/inline.css) keeps working. No other --fe- definitions
+   may exist anywhere. Delete at the end of D3 once inline.css is retokened. */
+.anvil {
+  --fe-bg: var(--an-surface-base);
+  --fe-surface: var(--an-surface-raised);
+  --fe-border: var(--an-border-subtle);
+  --fe-text: var(--an-text-primary);
+  --fe-muted: var(--an-text-muted);
+  --fe-primary: var(--an-interactive-idle);
+  --fe-primary-soft: var(--an-interactive-selected);
+  --fe-danger: var(--an-status-danger-fg);
+  --fe-radius: var(--an-radius-lg);
+  --fe-shadow: var(--an-elevation-1);
 }
 
 * {
@@ -26,11 +33,9 @@ body,
   margin: 0;
 }
 
-body {
-  font-family: Inter, "Segoe UI", system-ui, sans-serif;
-  background: var(--fe-bg);
-  color: var(--fe-text);
-  font-size: 14px;
+/* App root carrying the .anvil scope; type/color/background come from it. */
+.fe-app {
+  height: 100%;
 }
 
 button {
@@ -39,93 +44,35 @@ button {
   cursor: pointer;
 }
 
+/* Base skin for the few raw inputs left in the chrome (color/file/range and
+   class-styled specials). Anvil Input/Textarea/Select override via .an-*. */
 input,
 textarea,
 select {
   font: inherit;
   color: inherit;
-  border: 1px solid var(--fe-border);
-  border-radius: 6px;
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-md);
   padding: 6px 8px;
-  background: var(--fe-surface);
+  background: var(--an-surface-raised);
 }
 
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 button:focus-visible {
-  outline: 2px solid var(--fe-primary);
+  outline: 2px solid var(--an-focus-ring-color);
   outline-offset: 1px;
 }
 
-/* ---- shared controls ---- */
-
-.fe-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid var(--fe-border);
-  background: var(--fe-surface);
-  border-radius: 6px;
-  padding: 7px 12px;
-}
-
-.fe-btn:hover:not(:disabled) {
-  border-color: var(--fe-primary);
-}
-
-.fe-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.fe-btn-primary {
-  background: var(--fe-primary);
-  border-color: var(--fe-primary);
-  color: #ffffff;
-}
-
-.fe-btn-sm {
-  padding: 4px 8px;
-  font-size: 12px;
-}
-
-.fe-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  border-radius: 6px;
-  padding: 6px;
-  color: var(--fe-muted);
-}
-
-.fe-icon-btn:hover:not(:disabled) {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
-}
-
-.fe-icon-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.fe-icon-btn-sm {
-  padding: 3px;
-}
-
-.fe-icon-btn-danger:hover:not(:disabled) {
-  background: #fdecea;
-  color: var(--fe-danger);
-}
+/* ---- shared helpers ---- */
 
 .fe-muted {
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-error {
-  color: var(--fe-danger);
+  color: var(--an-status-danger-fg);
 }
 
 /* ---- course list ---- */
@@ -133,60 +80,62 @@ button:focus-visible {
 .fe-course-list {
   max-width: 960px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: var(--an-space-48) var(--an-space-24);
 }
 
 .fe-course-list-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: var(--an-space-32);
 }
 
 .fe-course-list-header h1 {
   margin: 0;
-  font-size: 26px;
+  font-size: var(--an-font-size-28);
+  line-height: var(--an-font-line-28);
 }
 
 .fe-course-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
+  gap: var(--an-space-16);
 }
 
 .fe-course-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--an-space-6);
   text-align: left;
-  background: var(--fe-surface);
-  border: 1px solid var(--fe-border);
-  border-radius: var(--fe-radius);
-  padding: 20px;
-  box-shadow: var(--fe-shadow);
+  background: var(--an-surface-raised);
+  border: none;
+  border-radius: var(--an-radius-lg);
+  padding: var(--an-space-20);
+  box-shadow: var(--an-elevation-1);
+  transition:
+    box-shadow var(--an-duration-120) var(--an-ease-standard),
+    transform var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-course-card:hover {
-  border-color: var(--fe-primary);
+  box-shadow: var(--an-elevation-2);
+  transform: translateY(-1px);
+}
+
+.fe-course-card:active {
+  transform: translateY(0) scale(0.995);
 }
 
 .fe-course-card-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--an-font-size-16);
+  line-height: var(--an-font-line-16);
+  font-weight: var(--an-font-weight-semibold);
 }
 
 .fe-course-card-meta {
-  color: var(--fe-muted);
-  font-size: 12px;
-}
-
-.fe-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 64px 0;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
 }
 
 /* ---- editor frame ---- */
@@ -208,85 +157,69 @@ button:focus-visible {
 .fe-topbar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  background: var(--fe-surface);
-  border-bottom: 1px solid var(--fe-border);
+  gap: var(--an-space-8);
+  padding: var(--an-space-8) var(--an-space-16);
+  background: var(--an-surface-raised);
+  border-bottom: 1px solid var(--an-border-subtle);
+  box-shadow: var(--an-elevation-1);
+  position: relative;
+  z-index: var(--an-z-raised);
 }
 
 .fe-title-input {
   border: 1px solid transparent;
   background: transparent;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--an-font-size-16);
+  line-height: var(--an-font-line-16);
+  font-weight: var(--an-font-weight-semibold);
   min-width: 220px;
   padding: 6px 8px;
+  border-radius: var(--an-radius-md);
+  transition:
+    border-color var(--an-duration-120) var(--an-ease-standard),
+    background var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-title-input:hover,
 .fe-title-input:focus {
-  border-color: var(--fe-border);
-  background: var(--fe-surface);
+  border-color: var(--an-border-subtle);
+  background: var(--an-surface-raised);
 }
 
 .fe-topbar-spacer {
   flex: 1;
 }
 
-.fe-save-status {
-  font-size: 12px;
-  color: var(--fe-muted);
+/* Save status Badge needs room; never wrap mid-word. */
+.fe-save-badge {
   white-space: nowrap;
-}
-
-.fe-save-status-offline,
-.fe-save-status-conflict {
-  color: var(--fe-danger);
-  font-weight: 600;
-}
-
-.fe-device-toggle {
-  display: inline-flex;
-  border: 1px solid var(--fe-border);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.fe-device-btn {
-  border: none;
-  background: var(--fe-surface);
-  padding: 6px 10px;
-  color: var(--fe-muted);
-  text-transform: capitalize;
-}
-
-.fe-device-btn-active {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
 }
 
 .fe-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 10px 16px;
-  font-size: 13px;
+  gap: var(--an-space-16);
+  padding: var(--an-space-8) var(--an-space-16);
+  font-size: var(--an-font-size-13);
+  line-height: var(--an-font-line-13);
 }
 
 .fe-banner-conflict {
-  background: #fdecea;
-  border-bottom: 1px solid #f5c6c0;
+  background: var(--an-status-danger-bg);
+  color: var(--an-status-danger-fg);
+  border-bottom: 1px solid var(--an-status-danger-border);
 }
 
 .fe-banner-restore {
-  background: #fef7e6;
-  border-bottom: 1px solid #f1e0b0;
+  background: var(--an-status-warn-bg);
+  color: var(--an-status-warn-fg);
+  border-bottom: 1px solid var(--an-status-warn-border);
 }
 
 .fe-banner-actions {
   display: inline-flex;
-  gap: 8px;
+  gap: var(--an-space-8);
   flex-shrink: 0;
 }
 
@@ -303,8 +236,8 @@ button:focus-visible {
 .fe-outline {
   width: 260px;
   flex-shrink: 0;
-  background: var(--fe-surface);
-  border-right: 1px solid var(--fe-border);
+  background: var(--an-surface-raised);
+  border-right: 1px solid var(--an-border-subtle);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -313,29 +246,31 @@ button:focus-visible {
 .fe-outline-list {
   list-style: none;
   margin: 0;
-  padding: 12px 8px;
+  padding: var(--an-space-12) var(--an-space-8);
   flex: 1;
 }
 
 .fe-outline-item {
   display: flex;
   align-items: center;
-  border-radius: 6px;
+  border-radius: var(--an-radius-md);
   padding: 2px 4px;
+  transition: background var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-outline-item:hover {
-  background: var(--fe-bg);
+  background: var(--an-surface-sunken);
 }
 
-.fe-outline-item-selected {
-  background: var(--fe-primary-soft);
+.fe-outline-item-selected,
+.fe-outline-item-selected:hover {
+  background: var(--an-interactive-selected);
 }
 
 .fe-outline-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--an-space-8);
   flex: 1;
   min-width: 0;
   border: none;
@@ -351,15 +286,15 @@ button:focus-visible {
 }
 
 .fe-outline-section {
-  margin-top: 10px;
+  margin-top: var(--an-space-8);
 }
 
 .fe-outline-section .fe-outline-label {
   text-transform: uppercase;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--an-font-size-11);
+  font-weight: var(--an-font-weight-semibold);
   letter-spacing: 0.06em;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-outline-controls {
@@ -380,9 +315,9 @@ button:focus-visible {
 
 .fe-outline-actions {
   display: flex;
-  gap: 6px;
-  padding: 12px;
-  border-top: 1px solid var(--fe-border);
+  gap: var(--an-space-6);
+  padding: var(--an-space-12);
+  border-top: 1px solid var(--an-border-subtle);
 }
 
 /* ---- canvas ---- */
@@ -404,7 +339,8 @@ button:focus-visible {
 
 /* The authoring sheet is the full center area, Rise-style: no max-width, no
    horizontal padding, no rounding. Block bands paint edge to edge; the
-   lesson title and block content center via their own 46rem inner columns. */
+   lesson title and block content center via their own 46rem inner columns.
+   COURSE-THEMED (--forge-*): this is learner content, not Anvil chrome. */
 .fe-canvas-lesson {
   width: 100%;
   min-height: 100%;
@@ -414,7 +350,8 @@ button:focus-visible {
   padding: 40px 0 96px;
 }
 
-/* Lesson title edited in place (P1): an input styled as the h1. */
+/* Lesson title edited in place (P1): an input styled as the h1. The hover /
+   focus affordance is editor chrome, so it uses Anvil tokens. */
 .fe-canvas-lesson-title {
   display: block;
   width: 100%;
@@ -426,36 +363,38 @@ button:focus-visible {
   padding: 0 1.5rem;
   box-sizing: border-box;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--an-radius-sm);
   background: transparent;
   color: inherit;
 }
 
 .fe-canvas-lesson-title:hover {
-  box-shadow: 0 0 0 1px var(--fe-border);
+  box-shadow: 0 0 0 1px var(--an-border-subtle);
 }
 
 .fe-canvas-lesson-title:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--fe-primary-soft), 0 0 0 1px var(--fe-primary);
+  box-shadow:
+    0 0 0 2px var(--an-interactive-selected),
+    0 0 0 1px var(--an-interactive-idle);
 }
 
 .fe-canvas-panel {
   max-width: 640px;
   margin: 0 auto;
   width: 100%;
-  background: var(--fe-surface);
-  border-radius: var(--fe-radius);
-  box-shadow: var(--fe-shadow);
-  padding: 32px;
+  background: var(--an-surface-raised);
+  border-radius: var(--an-radius-lg);
+  box-shadow: var(--an-elevation-1);
+  padding: var(--an-space-32);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--an-space-16);
 }
 
 .fe-canvas-empty {
   text-align: center;
-  padding: 24px 0;
+  padding: var(--an-space-24) 0;
 }
 
 /* ---- block frame ---- */
@@ -467,18 +406,17 @@ button:focus-visible {
 }
 
 .fe-block-frame:hover {
-  box-shadow: inset 0 0 0 1px var(--fe-border);
+  box-shadow: inset 0 0 0 1px var(--an-border-subtle);
 }
 
 .fe-block-frame-selected,
 .fe-block-frame-selected:hover {
-  box-shadow: inset 0 0 0 2px var(--fe-primary);
+  box-shadow: inset 0 0 0 2px var(--an-interactive-idle);
 }
 
-/* Contextual block rail (P2, Rise teardown "Contextual Block Rail"):
-   compact vertical icon stack attached to the block's left edge, shown on
-   hover/selection. The block band's content column is centered, so the
-   left gutter is empty and the rail never overlaps content. */
+/* Contextual block rail (P2): compact vertical icon stack attached to the
+   block's left edge, shown on hover/selection. Anvil overlay surface at
+   popover elevation; controls inside are Anvil IconButtons + a Chip. */
 .fe-block-rail {
   position: absolute;
   top: 8px;
@@ -487,12 +425,11 @@ button:focus-visible {
   display: none;
   flex-direction: column;
   align-items: stretch;
-  gap: 2px;
-  background: var(--fe-surface);
-  border: 1px solid var(--fe-border);
-  border-radius: 8px;
-  box-shadow: var(--fe-shadow);
-  padding: 4px;
+  gap: var(--an-space-2);
+  background: var(--an-surface-overlay);
+  border-radius: var(--an-radius-lg);
+  box-shadow: var(--an-elevation-3);
+  padding: var(--an-space-4);
   max-width: 132px;
 }
 
@@ -502,23 +439,14 @@ button:focus-visible {
   display: flex;
 }
 
-.fe-rail-chip {
+/* Compact sizing for the Anvil Chip serving as the block-type control. */
+.fe-rail-chip .an-chip-body {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  border: 1px solid var(--fe-border);
-  background: var(--fe-bg);
-  border-radius: 6px;
-  padding: 3px 6px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--fe-text);
-  white-space: nowrap;
-}
-
-.fe-rail-chip:hover {
-  border-color: var(--fe-primary);
-  color: var(--fe-primary);
+  gap: var(--an-space-4);
+  padding: var(--an-space-2) var(--an-space-8);
+  font-size: var(--an-font-size-11);
+  line-height: var(--an-font-line-11);
 }
 
 .fe-rail-chip-label {
@@ -536,42 +464,45 @@ button:focus-visible {
   flex-direction: column;
   gap: 1px;
   min-width: 190px;
-  background: var(--fe-surface);
-  border: 1px solid var(--fe-border);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(20, 23, 28, 0.18);
-  padding: 6px;
+  background: var(--an-surface-overlay);
+  border-radius: var(--an-radius-lg);
+  box-shadow: var(--an-elevation-3);
+  padding: var(--an-space-6);
 }
 
 .fe-variant-menu-title {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: var(--an-font-size-11);
+  font-weight: var(--an-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
   padding: 2px 8px 6px;
 }
 
 .fe-variant-option {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--an-space-6);
   border: none;
   background: transparent;
-  border-radius: 6px;
-  padding: 6px 8px;
-  font-size: 13px;
+  border-radius: var(--an-radius-md);
+  padding: var(--an-space-6) var(--an-space-8);
+  font-size: var(--an-font-size-13);
+  line-height: var(--an-font-line-13);
   text-align: left;
+  transition:
+    background var(--an-duration-120) var(--an-ease-standard),
+    color var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-variant-option:hover {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
+  background: var(--an-interactive-selected);
+  color: var(--an-interactive-idle);
 }
 
 .fe-variant-option-active {
-  font-weight: 600;
-  color: var(--fe-primary);
+  font-weight: var(--an-font-weight-semibold);
+  color: var(--an-interactive-idle);
 }
 
 .fe-variant-option-check {
@@ -580,8 +511,9 @@ button:focus-visible {
   justify-content: center;
 }
 
-/* Insert affordances (P2): Rise-style round accent plus, revealed above the
-   hovered block, below it (the next slot's plus), and on direct hover. */
+/* Insert affordances (P2): Rise-style round accent plus. Accent slot comes
+   from the COURSE theme (--forge-primary) with an Anvil fallback; depth and
+   motion are Anvil. */
 .fe-insert {
   display: flex;
   justify-content: center;
@@ -595,14 +527,16 @@ button:focus-visible {
   justify-content: center;
   width: 26px;
   height: 26px;
-  border-radius: 50%;
+  border-radius: var(--an-radius-full);
   border: none;
-  background: var(--forge-primary, var(--fe-primary));
+  background: var(--forge-primary, var(--an-interactive-idle));
   color: #ffffff;
-  box-shadow: var(--fe-shadow);
+  box-shadow: var(--an-elevation-2);
   opacity: 0;
   transform: scale(0.85);
-  transition: opacity 120ms ease, transform 120ms ease;
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-standard),
+    transform var(--an-duration-120) var(--an-ease-spring);
 }
 
 .fe-insert:hover .fe-insert-btn,
@@ -622,13 +556,16 @@ button:focus-visible {
 
 /* Drawer column owned by EditorScreen: animates to width 0 when closed so
    the canvas reflows to fill (the column is gone, not merely emptied). The
-   inner panel keeps its fixed width so content does not squash mid-slide. */
+   inner panel keeps its fixed width so content does not squash mid-slide.
+   NOTE (D3): kept bespoke instead of Anvil Drawer because the panel owns a
+   composite header (block title + close) and swaps to an absolute overlay
+   below 1100px; revisit with Drawer in D5. Depth/motion are Anvil tokens. */
 .fe-drawer {
   display: flex;
   flex-shrink: 0;
   width: 0;
   overflow: hidden;
-  transition: width 200ms ease;
+  transition: width var(--an-duration-200) var(--an-ease-standard);
 }
 
 .fe-drawer-open {
@@ -638,8 +575,8 @@ button:focus-visible {
 .fe-settings {
   width: 320px;
   flex-shrink: 0;
-  background: var(--fe-surface);
-  border-left: 1px solid var(--fe-border);
+  background: var(--an-surface-raised);
+  border-left: 1px solid var(--an-border-subtle);
   overflow-y: auto;
 }
 
@@ -647,41 +584,42 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--fe-border);
-  font-weight: 600;
+  padding: var(--an-space-12) var(--an-space-16);
+  border-bottom: 1px solid var(--an-border-subtle);
+  font-weight: var(--an-font-weight-semibold);
 }
 
 .fe-settings-section {
-  padding: 16px;
-  border-bottom: 1px solid var(--fe-border);
+  padding: var(--an-space-16);
+  border-bottom: 1px solid var(--an-border-subtle);
 }
 
 .fe-settings-section h3 {
-  margin: 0 0 12px;
-  font-size: 12px;
+  margin: 0 0 var(--an-space-12);
+  font-size: var(--an-font-size-12);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 /* Envelope settings demoted into a collapsed Format group (P3-lite). */
 .fe-settings-format {
-  border-bottom: 1px solid var(--fe-border);
+  border-bottom: 1px solid var(--an-border-subtle);
 }
 
 .fe-settings-format > summary {
   cursor: pointer;
-  padding: 12px 16px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: var(--an-space-12) var(--an-space-16);
+  font-size: var(--an-font-size-12);
+  font-weight: var(--an-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
+  transition: color var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-settings-format > summary:hover {
-  color: var(--fe-primary);
+  color: var(--an-interactive-idle);
 }
 
 .fe-settings-format[open] > summary {
@@ -690,78 +628,80 @@ button:focus-visible {
 
 .fe-settings-format .fe-settings-section {
   border-bottom: none;
-  padding-top: 12px;
+  padding-top: var(--an-space-12);
 }
 
 .fe-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
+  gap: var(--an-space-4);
+  margin-bottom: var(--an-space-12);
 }
 
 .fe-field-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--fe-muted);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
+  font-weight: var(--an-font-weight-semibold);
+  color: var(--an-text-secondary);
 }
 
 .fe-field-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--an-space-8);
 }
 
 .fe-field-checkbox {
   flex-direction: row;
   align-items: center;
-  gap: 8px;
+  gap: var(--an-space-8);
 }
 
 .fe-field-error {
-  color: var(--fe-danger);
-  font-size: 12px;
+  color: var(--an-status-danger-fg);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
 }
 
+/* Layout hook kept for Anvil Radio instances in dense rows. */
 .fe-radio {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
+  white-space: nowrap;
 }
 
 .fe-media-current {
-  font-size: 12px;
-  color: var(--fe-muted);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
+  color: var(--an-text-muted);
   word-break: break-all;
 }
 
 .fe-array-item,
 .fe-object {
-  border: 1px solid var(--fe-border);
-  border-radius: 6px;
-  padding: 10px;
-  margin: 6px 0;
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-md);
+  padding: var(--an-space-8);
+  margin: var(--an-space-6) 0;
 }
 
 .fe-array-item-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--fe-muted);
+  gap: var(--an-space-8);
+  font-size: var(--an-font-size-12);
+  font-weight: var(--an-font-weight-semibold);
+  color: var(--an-text-secondary);
 }
 
 .fe-array-item-controls {
   display: inline-flex;
-  gap: 2px;
+  gap: var(--an-space-2);
 }
 
 /* ---- responsive editor shell ---- */
 
 /* Outline toggle lives in the topbar; only relevant once the outline
-   collapses to an overlay. */
+   collapses to an overlay. Overrides the Anvil IconButton display (this
+   stylesheet intentionally loads after components.css). */
 .fe-outline-toggle {
   display: none;
 }
@@ -779,7 +719,7 @@ button:focus-visible {
 
   .fe-drawer-open {
     width: min(320px, 90vw);
-    box-shadow: -12px 0 32px rgba(20, 23, 28, 0.22);
+    box-shadow: var(--an-elevation-4);
   }
 
   .fe-drawer .fe-settings {
@@ -809,14 +749,14 @@ button:focus-visible {
     bottom: 0;
     z-index: 30;
     transform: translateX(-100%);
-    transition: transform 200ms ease;
+    transition: transform var(--an-duration-200) var(--an-ease-standard);
     pointer-events: none;
   }
 
   .fe-outline-wrap-open {
     transform: none;
     pointer-events: auto;
-    box-shadow: 12px 0 32px rgba(20, 23, 28, 0.22);
+    box-shadow: var(--an-elevation-4);
   }
 }
 
@@ -828,8 +768,10 @@ button:focus-visible {
 }
 
 /* ---- preview overlay (Rise-like learner preview shell: dim backdrop,
-   top bar with back-to-editing + centered title + device switcher,
-   centered device frame with bezel on tablet/phone; teardown 210-274) ---- */
+   top bar with back-to-editing + centered title + device switcher, centered
+   device frame with bezel on tablet/phone). Deliberately bespoke DARK stage
+   chrome around light course content; hex/rgba here are the stage's own
+   palette, not chrome tokens. Revisit in D5/D6 with dark-mode semantics. ---- */
 
 .fe-preview-overlay {
   position: fixed;
@@ -843,8 +785,8 @@ button:focus-visible {
 .fe-preview-topbar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 8px 16px;
+  gap: var(--an-space-16);
+  padding: var(--an-space-8) var(--an-space-16);
   color: #ffffff;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
@@ -855,7 +797,7 @@ button:focus-visible {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  font-weight: 600;
+  font-weight: var(--an-font-weight-semibold);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -873,33 +815,44 @@ button:focus-visible {
 .fe-preview-close {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--an-space-6);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
+  border-radius: var(--an-radius-full);
   background: transparent;
   color: #ffffff;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--an-font-size-13);
   padding: 6px 14px;
   cursor: pointer;
+  transition: background var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-preview-close:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.fe-preview-topbar .fe-device-btn {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.65);
+/* Device switcher on the dark stage (only remaining fe-device- consumer). */
+.fe-device-toggle {
+  display: inline-flex;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--an-radius-md);
+  overflow: hidden;
 }
 
-.fe-preview-topbar .fe-device-btn-active {
+.fe-device-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 10px;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: capitalize;
+  transition:
+    background var(--an-duration-120) var(--an-ease-standard),
+    color var(--an-duration-120) var(--an-ease-standard);
+}
+
+.fe-device-btn-active {
   background: rgba(255, 255, 255, 0.16);
   color: #ffffff;
-}
-
-.fe-preview-topbar .fe-device-toggle {
-  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .fe-preview-stage {
@@ -908,7 +861,7 @@ button:focus-visible {
   display: flex;
   align-items: stretch;
   justify-content: center;
-  padding: 16px;
+  padding: var(--an-space-16);
 }
 
 .fe-preview-frame {

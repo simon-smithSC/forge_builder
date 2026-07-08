@@ -1,51 +1,8 @@
 /* Course-level tool dialogs (theme, labels, media picker). fe-dlg- prefix
-   so nothing collides with the fe-modal palette classes in ui/styles.css. */
-
-.fe-dlg-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(20, 23, 28, 0.4);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 8vh;
-  z-index: 60;
-}
-
-.fe-dlg {
-  width: 640px;
-  max-width: calc(100vw - 32px);
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--fe-surface);
-  border-radius: var(--fe-radius);
-  box-shadow: 0 12px 40px rgba(20, 23, 28, 0.25);
-  overflow: hidden;
-}
-
-.fe-dlg-wide {
-  width: 760px;
-}
-
-.fe-dlg-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--fe-border);
-}
-
-.fe-dlg-title {
-  margin: 0;
-  font-size: 16px;
-}
-
-.fe-dlg-body {
-  overflow-y: auto;
-  padding: 16px 20px 20px;
-}
+   so nothing collides with the fe-modal palette classes in ui/styles.css.
+   The dialog shell (backdrop/panel/header/body), tabs, and badges are owned
+   by the Anvil design system (@forge/ui); only layout helpers and the
+   media/theme-specific pieces live here, consuming --an-* tokens. */
 
 .fe-dlg-footer {
   display: flex;
@@ -54,7 +11,7 @@
   gap: 8px;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid var(--fe-border);
+  border-top: 1px solid var(--an-border-subtle);
 }
 
 .fe-dlg-footer-start {
@@ -67,7 +24,7 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
   margin: 18px 0 8px;
 }
 
@@ -83,28 +40,6 @@
 
 /* ---- media picker ---- */
 
-.fe-dlg-tabs {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--fe-border);
-  margin-bottom: 14px;
-}
-
-.fe-dlg-tab {
-  border: none;
-  background: transparent;
-  padding: 8px 12px;
-  color: var(--fe-muted);
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  font-weight: 600;
-}
-
-.fe-dlg-tab-active {
-  color: var(--fe-primary);
-  border-bottom-color: var(--fe-primary);
-}
-
 .fe-media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -115,16 +50,16 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  border: 1px solid var(--fe-border);
-  border-radius: 6px;
-  background: var(--fe-surface);
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-md);
+  background: var(--an-surface-raised);
   padding: 8px;
   text-align: left;
 }
 
 .fe-media-item:hover {
-  border-color: var(--fe-primary);
-  background: var(--fe-primary-soft);
+  border-color: var(--an-interactive-idle);
+  background: var(--an-interactive-selected);
 }
 
 .fe-media-thumb {
@@ -132,9 +67,9 @@
   align-items: center;
   justify-content: center;
   height: 76px;
-  border-radius: 4px;
-  background: var(--fe-bg);
-  color: var(--fe-muted);
+  border-radius: var(--an-radius-sm);
+  background: var(--an-surface-sunken);
+  color: var(--an-text-muted);
   overflow: hidden;
 }
 
@@ -153,14 +88,14 @@
 
 .fe-media-kind {
   font-size: 11px;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
   text-transform: capitalize;
 }
 
 .fe-media-empty {
   padding: 28px 0;
   text-align: center;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-dropzone {
@@ -168,17 +103,17 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  border: 2px dashed var(--fe-border);
-  border-radius: var(--fe-radius);
+  border: 2px dashed var(--an-border-subtle);
+  border-radius: var(--an-radius-lg);
   padding: 32px 16px;
   text-align: center;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-dropzone-active {
-  border-color: var(--fe-primary);
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
+  border-color: var(--an-interactive-idle);
+  background: var(--an-interactive-selected);
+  color: var(--an-interactive-idle);
 }
 
 .fe-media-pending {
@@ -215,7 +150,7 @@
 
 .fe-color-row input[type="text"] {
   width: 110px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--an-font-family-mono);
   font-size: 12px;
 }
 
@@ -241,8 +176,8 @@
   justify-content: center;
   width: 44px;
   height: 24px;
-  border-radius: 4px;
-  border: 1px solid var(--fe-border);
+  border-radius: var(--an-radius-sm);
+  border: 1px solid var(--an-border-subtle);
   font-size: 11px;
   font-weight: 700;
   flex-shrink: 0;
@@ -250,25 +185,4 @@
 
 .fe-contrast-label {
   flex: 1;
-}
-
-.fe-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border-radius: 999px;
-  padding: 2px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.fe-badge-ok {
-  background: #e6f4ea;
-  color: #1e7e34;
-}
-
-.fe-badge-warn {
-  background: #fdecea;
-  color: var(--fe-danger);
 }

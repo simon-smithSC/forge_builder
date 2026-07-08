@@ -14,6 +14,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import type { PreviewDevice } from "@forge/player";
+import { Badge, Button, IconButton } from "@forge/ui";
 import { closeCourse, redo, undo } from "../../state/actions.js";
 import { useStore } from "../../state/store.js";
 import type { SaveStatus } from "../../state/store.js";
@@ -29,6 +30,13 @@ const STATUS_LABEL: Record<SaveStatus, string> = {
   conflict: "Save conflict",
 };
 
+const STATUS_TONE: Record<SaveStatus, "success" | "neutral" | "warn" | "danger"> = {
+  saved: "success",
+  saving: "neutral",
+  offline: "warn",
+  conflict: "danger",
+};
+
 export function OverviewHeader(): ReactElement {
   const saveStatus = useStore((state) => state.saveStatus);
   const canUndo = useStore((state) => state.canUndo);
@@ -41,83 +49,62 @@ export function OverviewHeader(): ReactElement {
 
   return (
     <header className="fe-topbar">
-      <button
-        type="button"
-        className="fe-icon-btn"
+      <IconButton
+        label="Back to courses"
+        icon={<ArrowLeft size={18} aria-hidden />}
         onClick={() => closeCourse()}
-        title="Back to courses"
-        aria-label="Back to courses"
-      >
-        <ArrowLeft size={18} aria-hidden />
-      </button>
+      />
 
-      <span
-        className={`fe-save-status fe-save-status-${saveStatus}`}
-        aria-live="polite"
-      >
+      <Badge className="fe-save-badge" tone={STATUS_TONE[saveStatus]} aria-live="polite">
         {STATUS_LABEL[saveStatus]}
-      </span>
+      </Badge>
 
       <span className="fe-topbar-spacer" />
 
-      <button
-        type="button"
-        className="fe-icon-btn"
+      <IconButton
+        label="Undo"
+        icon={<Undo2 size={18} aria-hidden />}
         onClick={() => undo()}
         disabled={!canUndo}
-        title="Undo"
-        aria-label="Undo"
-      >
-        <Undo2 size={18} aria-hidden />
-      </button>
-      <button
-        type="button"
-        className="fe-icon-btn"
+      />
+      <IconButton
+        label="Redo"
+        icon={<Redo2 size={18} aria-hidden />}
         onClick={() => redo()}
         disabled={!canRedo}
-        title="Redo"
-        aria-label="Redo"
-      >
-        <Redo2 size={18} aria-hidden />
-      </button>
+      />
 
-      <button
-        type="button"
-        className="fe-btn"
+      <Button
+        iconStart={<Palette size={14} aria-hidden />}
         onClick={() => setThemeOpen(true)}
         title="Edit course theme"
       >
-        <Palette size={14} aria-hidden />
         Theme
-      </button>
-      <button
-        type="button"
-        className="fe-btn"
+      </Button>
+      <Button
+        iconStart={<Languages size={14} aria-hidden />}
         onClick={() => setLabelsOpen(true)}
         title="Edit course labels"
       >
-        <Languages size={14} aria-hidden />
         Labels
-      </button>
+      </Button>
 
-      <button
-        type="button"
-        className="fe-btn fe-btn-primary"
+      <Button
+        variant="primary"
+        iconStart={<Play size={14} aria-hidden />}
         onClick={() => setPreviewOpen(true)}
       >
-        <Play size={14} aria-hidden />
         Preview
-      </button>
+      </Button>
 
-      <button
-        type="button"
-        className="fe-btn fe-btn-primary"
+      <Button
+        variant="primary"
+        iconStart={<UploadCloud size={14} aria-hidden />}
         onClick={() => setPublishOpen(true)}
         title="Publish as xAPI package"
       >
-        <UploadCloud size={14} aria-hidden />
         Publish
-      </button>
+      </Button>
 
       <ThemeEditor open={themeOpen} onClose={() => setThemeOpen(false)} />
       <LabelSetEditor open={labelsOpen} onClose={() => setLabelsOpen(false)} />

@@ -2,6 +2,7 @@
 // multiple response, fill in the blank, and matching.
 import type { ReactElement } from "react";
 import { useId } from "react";
+import { Radio } from "@forge/ui";
 import type { Block } from "@forge/schema";
 import { createUlid } from "@forge/schema";
 import { HtmlField, ItemListEditor, StringField, ToggleField } from "./fields.js";
@@ -97,23 +98,21 @@ function ChoiceEditor({
             />
             {single ? (
               // Radio semantics: marking one answer correct clears the others.
-              <label className="fe-field fe-field-checkbox">
-                <input
-                  type="radio"
-                  name={group}
-                  checked={answer.correct}
-                  onChange={() =>
-                    onChange({
-                      ...payload,
-                      answers: payload.answers.map((existing, i) => ({
-                        ...existing,
-                        correct: i === index,
-                      })),
-                    })
-                  }
-                />
-                <span>Correct answer</span>
-              </label>
+              <Radio
+                className="fe-field fe-field-checkbox"
+                label="Correct answer"
+                name={group}
+                checked={answer.correct}
+                onChange={() =>
+                  onChange({
+                    ...payload,
+                    answers: payload.answers.map((existing, i) => ({
+                      ...existing,
+                      correct: i === index,
+                    })),
+                  })
+                }
+              />
             ) : (
               <ToggleField
                 label="Correct answer"

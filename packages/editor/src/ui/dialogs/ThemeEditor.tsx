@@ -4,6 +4,7 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
 import { Check, TriangleAlert } from "lucide-react";
+import { Badge, Button, Input, Select } from "@forge/ui";
 import type { Theme } from "@forge/schema";
 import { defaultTheme, themeSchema } from "@forge/schema";
 import { setTheme } from "../../state/courseToolsActions.js";
@@ -128,12 +129,12 @@ function ContrastRow({
       </span>
       <span className="fe-contrast-label">{label}</span>
       {ratio === null ? (
-        <span className="fe-badge fe-badge-warn">not checkable</span>
+        <Badge tone="danger">not checkable</Badge>
       ) : (
-        <span className={`fe-badge ${pass ? "fe-badge-ok" : "fe-badge-warn"}`}>
+        <Badge tone={pass ? "success" : "danger"}>
           {pass ? <Check size={12} aria-hidden /> : <TriangleAlert size={12} aria-hidden />}
           {ratio.toFixed(2)}:1 {pass ? "AA pass" : "below AA 4.5:1"}
-        </span>
+        </Badge>
       )}
     </li>
   );
@@ -207,7 +208,7 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
                   onChange={(event) => setColor(key, event.target.value)}
                   aria-label={`${label} color swatch`}
                 />
-                <input
+                <Input
                   type="text"
                   value={value}
                   onChange={(event) => setColor(key, event.target.value)}
@@ -249,7 +250,7 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
         {TYPEFACE_FIELDS.map(({ key, label }) => (
           <label key={key} className="fe-field">
             <span className="fe-field-label">{label}</span>
-            <input
+            <Input
               value={draft[key]}
               onChange={(event) =>
                 setDraft((prev) => ({ ...prev, [key]: event.target.value }))
@@ -259,7 +260,7 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
         ))}
         <label className="fe-field">
           <span className="fe-field-label">Spacing scale</span>
-          <select
+          <Select
             value={draft.spacingScale}
             onChange={(event) =>
               setDraft((prev) => ({
@@ -271,7 +272,7 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
             <option value="compact">Compact</option>
             <option value="comfortable">Comfortable</option>
             <option value="spacious">Spacious</option>
-          </select>
+          </Select>
         </label>
       </div>
 
@@ -280,21 +281,16 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
         <span className="fe-media-current">
           {logoRef ? logoRef.filename : "No logo selected."}
         </span>
-        <button
-          type="button"
-          className="fe-btn fe-btn-sm"
-          onClick={() => setLogoPickerOpen(true)}
-        >
+        <Button size="sm" onClick={() => setLogoPickerOpen(true)}>
           {logoRef ? "Replace" : "Choose logo"}
-        </button>
+        </Button>
         {draft.logoMediaId ? (
-          <button
-            type="button"
-            className="fe-btn fe-btn-sm"
+          <Button
+            size="sm"
             onClick={() => setDraft((prev) => ({ ...prev, logoMediaId: null }))}
           >
             Remove
-          </button>
+          </Button>
         ) : null}
       </div>
 
@@ -306,20 +302,14 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
 
       <div className="fe-dlg-footer">
         <span className="fe-dlg-footer-start">
-          <button
-            type="button"
-            className="fe-btn"
-            onClick={() => setDraft(draftFromTheme(defaultTheme))}
-          >
+          <Button onClick={() => setDraft(draftFromTheme(defaultTheme))}>
             Reset to default
-          </button>
+          </Button>
         </span>
-        <button type="button" className="fe-btn" onClick={onClose}>
-          Cancel
-        </button>
-        <button type="button" className="fe-btn fe-btn-primary" onClick={apply}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="primary" onClick={apply}>
           Apply
-        </button>
+        </Button>
       </div>
 
       <MediaPicker

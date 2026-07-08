@@ -3,6 +3,7 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
 import type { PreviewDevice } from "@forge/player";
+import { Button } from "@forge/ui";
 import {
   dismissRestore,
   restoreFromJournal,
@@ -44,20 +45,16 @@ export function EditorScreen(): ReactElement {
             saved.
           </span>
           <span className="fe-banner-actions">
-            <button
-              type="button"
-              className="fe-btn"
-              onClick={() => void reloadServerCopy()}
-            >
+            <Button size="sm" onClick={() => void reloadServerCopy()}>
               Reload server copy
-            </button>
-            <button
-              type="button"
-              className="fe-btn fe-btn-primary"
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
               onClick={() => void overwriteServerCopy()}
             >
               Overwrite
-            </button>
+            </Button>
           </span>
         </div>
       ) : null}
@@ -70,20 +67,16 @@ export function EditorScreen(): ReactElement {
             {restoreCandidate.lessonIds.length === 1 ? "lesson" : "lessons"}).
           </span>
           <span className="fe-banner-actions">
-            <button
-              type="button"
-              className="fe-btn"
-              onClick={() => void dismissRestore()}
-            >
+            <Button size="sm" onClick={() => void dismissRestore()}>
               Discard
-            </button>
-            <button
-              type="button"
-              className="fe-btn fe-btn-primary"
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
               onClick={() => void restoreFromJournal()}
             >
               Restore unsaved changes from this device
-            </button>
+            </Button>
           </span>
         </div>
       ) : null}

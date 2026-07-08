@@ -3,6 +3,7 @@
 // QuestionCard, where the whole lesson is schema-validated.
 import type { ReactElement } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { Checkbox, IconButton, Radio } from "@forge/ui";
 import type { Question } from "@forge/schema";
 import { createUlid } from "@forge/schema";
 import { CheckboxField, QuizHtmlField, TextField } from "./fields.js";
@@ -75,16 +76,24 @@ export function ChoiceAnswersEditor({
       </span>
       {question.answers.map((answer, index) => (
         <div key={answer.id} className="fq-item-row">
-          <label className="fq-correct">
-            <input
-              type={single ? "radio" : "checkbox"}
-              name={single ? `fq-correct-${question.id}` : undefined}
+          {single ? (
+            <Radio
+              className="fq-correct"
+              label="Correct"
+              name={`fq-correct-${question.id}`}
               checked={answer.correct}
               onChange={(event) => setCorrect(answer.id, event.target.checked)}
               aria-label={`Answer ${index + 1} is correct`}
             />
-            <span>Correct</span>
-          </label>
+          ) : (
+            <Checkbox
+              className="fq-correct"
+              label="Correct"
+              checked={answer.correct}
+              onChange={(event) => setCorrect(answer.id, event.target.checked)}
+              aria-label={`Answer ${index + 1} is correct`}
+            />
+          )}
           <div className="fq-item-fields">
             <QuizHtmlField
               label={`Answer ${index + 1} (HTML)`}
@@ -97,20 +106,18 @@ export function ChoiceAnswersEditor({
               onCommit={(value) => setAnswerFeedback(answer.id, value)}
             />
           </div>
-          <button
-            type="button"
-            className="fe-icon-btn fe-icon-btn-sm"
-            disabled={question.answers.length <= 2}
-            onClick={() => removeAnswer(answer.id)}
+          <IconButton
+            icon={<Trash2 size={13} aria-hidden />}
+            label={`Remove answer ${index + 1}`}
             title={
               question.answers.length <= 2
                 ? "At least two answers are required"
                 : "Remove answer"
             }
-            aria-label={`Remove answer ${index + 1}`}
-          >
-            <Trash2 size={13} aria-hidden />
-          </button>
+            size="sm"
+            disabled={question.answers.length <= 2}
+            onClick={() => removeAnswer(answer.id)}
+          />
         </div>
       ))}
       <button type="button" className="fq-add-inline" onClick={addAnswer}>
@@ -151,24 +158,22 @@ export function FillBlankEditor({
               }
             />
           </div>
-          <button
-            type="button"
-            className="fe-icon-btn fe-icon-btn-sm"
+          <IconButton
+            icon={<Trash2 size={13} aria-hidden />}
+            label={`Remove accepted answer ${index + 1}`}
+            title={
+              question.acceptedAnswers.length <= 1
+                ? "At least one accepted answer is required"
+                : "Remove accepted answer"
+            }
+            size="sm"
             disabled={question.acceptedAnswers.length <= 1}
             onClick={() =>
               setAccepted(
                 question.acceptedAnswers.filter((item) => item.id !== accepted.id),
               )
             }
-            title={
-              question.acceptedAnswers.length <= 1
-                ? "At least one accepted answer is required"
-                : "Remove accepted answer"
-            }
-            aria-label={`Remove accepted answer ${index + 1}`}
-          >
-            <Trash2 size={13} aria-hidden />
-          </button>
+          />
         </div>
       ))}
       <button

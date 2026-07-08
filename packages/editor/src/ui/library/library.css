@@ -1,6 +1,7 @@
 /* P4 two-tier insertion styles (fe-lib- prefix). Rise-flavored: light panel
    sliding from the left edge, category rail with small-caps labels, accent
-   active states. Base tokens come from ui/styles.css (--fe-*). */
+   active states. Chips come from the Anvil design system (@forge/ui); the
+   rest consumes --an-* tokens from the app root .anvil scope. */
 
 /* ---- quick-add strip (popover anchored at the insertion point) ---- */
 
@@ -21,39 +22,22 @@
   gap: 4px;
   max-width: 560px;
   padding: 6px;
-  background: var(--fe-surface);
-  border: 1px solid var(--fe-border);
-  border-radius: 999px;
-  box-shadow: 0 8px 24px rgba(20, 23, 28, 0.18);
+  background: var(--an-surface-overlay);
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-full);
+  box-shadow: var(--an-elevation-3);
 }
 
-.fe-lib-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  color: var(--fe-text);
-}
-
-.fe-lib-chip:hover {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
-}
-
-.fe-lib-chip-library {
-  color: var(--fe-primary);
+/* The "All blocks" chip keeps its accent even at rest; Anvil Chip renders
+   the interactive surface on the inner .an-chip-body button. */
+.fe-lib-chip-library .an-chip-body {
+  color: var(--an-interactive-idle);
 }
 
 .fe-lib-strip-rule {
   width: 1px;
   align-self: stretch;
-  background: var(--fe-border);
+  background: var(--an-border-subtle);
 }
 
 /* ---- full library: scrim + panel sliding from the left edge ---- */
@@ -62,7 +46,7 @@
   position: fixed;
   inset: 0;
   z-index: 45;
-  background: rgba(20, 23, 28, 0.25);
+  background: var(--an-backdrop);
 }
 
 .fe-lib-panel {
@@ -75,10 +59,10 @@
   max-width: 92vw;
   display: flex;
   flex-direction: column;
-  background: var(--fe-surface);
-  border-right: 1px solid var(--fe-border);
-  box-shadow: 12px 0 40px rgba(20, 23, 28, 0.18);
-  animation: fe-lib-slide-in 160ms ease-out;
+  background: var(--an-surface-raised);
+  border-right: 1px solid var(--an-border-subtle);
+  box-shadow: var(--an-elevation-4);
+  animation: fe-lib-slide-in var(--an-duration-160) var(--an-ease-enter);
 }
 
 @keyframes fe-lib-slide-in {
@@ -103,7 +87,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--fe-border);
+  border-bottom: 1px solid var(--an-border-subtle);
 }
 
 .fe-lib-search {
@@ -111,7 +95,7 @@
   align-items: center;
   gap: 8px;
   flex: 1;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-lib-search input {
@@ -133,8 +117,8 @@
   flex-shrink: 0;
   overflow-y: auto;
   padding: 12px 8px;
-  border-right: 1px solid var(--fe-border);
-  background: var(--fe-bg);
+  border-right: 1px solid var(--an-border-subtle);
+  background: var(--an-surface-sunken);
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -144,24 +128,24 @@
   text-align: left;
   border: none;
   background: transparent;
-  border-radius: 6px;
+  border-radius: var(--an-radius-md);
   padding: 7px 10px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-lib-rail-item:hover {
-  color: var(--fe-text);
-  background: var(--fe-surface);
+  color: var(--an-text-primary);
+  background: var(--an-surface-raised);
 }
 
 .fe-lib-rail-item-active,
 .fe-lib-rail-item-active:hover {
-  color: var(--fe-primary);
-  background: var(--fe-primary-soft);
+  color: var(--an-interactive-idle);
+  background: var(--an-interactive-selected);
 }
 
 /* ---- sections + variant cards ---- */
@@ -178,7 +162,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
   margin: 16px 0 8px;
 }
 
@@ -197,15 +181,17 @@
   align-items: center;
   gap: 10px;
   text-align: left;
-  border: 1px solid var(--fe-border);
-  border-radius: var(--fe-radius);
-  background: var(--fe-surface);
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-lg);
+  background: var(--an-surface-raised);
   padding: 10px;
+  box-shadow: var(--an-elevation-1);
 }
 
 .fe-lib-card:hover {
-  border-color: var(--fe-primary);
-  background: var(--fe-primary-soft);
+  border-color: var(--an-interactive-idle);
+  background: var(--an-interactive-selected);
+  box-shadow: var(--an-elevation-2);
 }
 
 .fe-lib-card-thumb {
@@ -215,9 +201,9 @@
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  border-radius: 6px;
-  background: var(--fe-bg);
-  color: var(--fe-primary);
+  border-radius: var(--an-radius-md);
+  background: var(--an-surface-sunken);
+  color: var(--an-interactive-idle);
 }
 
 .fe-lib-card-text {
@@ -233,10 +219,10 @@
 
 .fe-lib-card-desc {
   font-size: 12px;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-lib-empty {
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
   padding: 12px 0;
 }

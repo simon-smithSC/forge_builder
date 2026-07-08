@@ -5,6 +5,7 @@ import "./quiz.css";
 import { useState } from "react";
 import type { ReactElement } from "react";
 import { Plus } from "lucide-react";
+import { Input } from "@forge/ui";
 import type { QuizLesson } from "@forge/schema";
 import { renameLesson } from "../../state/actions.js";
 import { addQuestion } from "../../state/quizActions.js";
@@ -37,7 +38,7 @@ export function QuizLessonEditor({
       <header className="fq-header">
         <label className="fe-field">
           <span className="fe-field-label">Lesson title</span>
-          <input
+          <Input
             value={lesson.title}
             onChange={(event) => renameLesson(lesson.id, event.target.value)}
             aria-label="Lesson title"

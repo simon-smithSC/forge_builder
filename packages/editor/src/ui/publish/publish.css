@@ -1,5 +1,6 @@
-/* Publish dialog. Form scaffolding (fe-btn, fe-dlg-*) comes from
-   ui/styles.css and dialogs/dialogs.css; everything here is fe-publish-*. */
+/* Publish dialog. Buttons, radios, checkboxes, selects, and the dialog
+   shell come from the Anvil design system (@forge/ui); everything here is
+   fe-publish-* layout, consuming --an-* tokens. */
 
 .fe-publish {
   display: flex;
@@ -10,8 +11,8 @@
 }
 
 .fe-publish-group {
-  border: 1px solid var(--fe-border, #d0d7de);
-  border-radius: 8px;
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-lg);
   padding: 0.75rem 1rem 1rem;
   display: flex;
   flex-direction: column;
@@ -60,7 +61,7 @@
   align-items: center;
   gap: 0.4rem;
   margin: 0;
-  color: #b42318;
+  color: var(--an-status-danger-fg);
   font-size: 0.85rem;
 }
 
@@ -71,7 +72,7 @@
 }
 
 .fe-publish-result {
-  border-top: 1px solid var(--fe-border, #d0d7de);
+  border-top: 1px solid var(--an-border-subtle);
   padding-top: 0.75rem;
 }
 
@@ -85,10 +86,10 @@
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.6rem 0.75rem;
-  border: 1px solid #b42318;
-  border-radius: 6px;
-  background: #fef3f2;
-  color: #b42318;
+  border: 1px solid var(--an-status-danger-border);
+  border-radius: var(--an-radius-md);
+  background: var(--an-status-danger-bg);
+  color: var(--an-status-danger-fg);
   font-size: 0.85rem;
 }
 

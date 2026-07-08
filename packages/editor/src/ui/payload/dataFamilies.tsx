@@ -1,6 +1,7 @@
 // Purpose-built editors for the data families: chart and table.
 import type { ReactElement } from "react";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { Button, IconButton } from "@forge/ui";
 import type { Block } from "@forge/schema";
 import { createUlid } from "@forge/schema";
 import {
@@ -158,36 +159,30 @@ function ColumnListEditor({
           <legend className="fe-array-item-head">
             <span>Column {index + 1}</span>
             <span className="fe-array-item-controls">
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm"
+              <IconButton
+                icon={<ChevronUp size={12} aria-hidden />}
+                label="Move column left"
+                title="Move left"
+                size="sm"
                 onClick={() => moveColumn(index, -1)}
                 disabled={index === 0}
-                title="Move left"
-                aria-label="Move column left"
-              >
-                <ChevronUp size={12} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm"
+              />
+              <IconButton
+                icon={<ChevronDown size={12} aria-hidden />}
+                label="Move column right"
+                title="Move right"
+                size="sm"
                 onClick={() => moveColumn(index, 1)}
                 disabled={index === columns.length - 1}
-                title="Move right"
-                aria-label="Move column right"
-              >
-                <ChevronDown size={12} aria-hidden />
-              </button>
-              <button
-                type="button"
-                className="fe-icon-btn fe-icon-btn-sm fe-icon-btn-danger"
+              />
+              <IconButton
+                icon={<Trash2 size={12} aria-hidden />}
+                label="Remove column"
+                size="sm"
+                variant="danger"
                 onClick={() => removeColumn(index)}
                 disabled={columns.length <= 1}
-                title="Remove column"
-                aria-label="Remove column"
-              >
-                <Trash2 size={12} aria-hidden />
-              </button>
+              />
             </span>
           </legend>
           <HtmlField
@@ -206,9 +201,9 @@ function ColumnListEditor({
           />
         </fieldset>
       ))}
-      <button type="button" className="fe-btn fe-btn-sm" onClick={addColumn}>
+      <Button size="sm" onClick={addColumn}>
         Add column
-      </button>
+      </Button>
     </div>
   );
 }
@@ -256,10 +251,9 @@ export function TableEditor({ block, onChange }: FamilyEditorProps): ReactElemen
               const cell = row.cells.find((c) => c.columnId === column.id);
               if (!cell) {
                 return (
-                  <button
+                  <Button
                     key={column.id}
-                    type="button"
-                    className="fe-btn fe-btn-sm"
+                    size="sm"
                     onClick={() =>
                       update({
                         ...row,
@@ -271,7 +265,7 @@ export function TableEditor({ block, onChange }: FamilyEditorProps): ReactElemen
                     }
                   >
                     Add missing cell for column {colIndex + 1}
-                  </button>
+                  </Button>
                 );
               }
               return (

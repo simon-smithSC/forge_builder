@@ -7,6 +7,7 @@
 import type { KeyboardEvent, ReactElement } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
+import { IconButton } from "@forge/ui";
 import { insertBlockVariant } from "../../state/libraryActions.js";
 import { blockIcon } from "../blockIcons.js";
 import type { LibraryCard } from "./libraryData.js";
@@ -142,15 +143,11 @@ export function BlockLibrary({
               aria-label="Search all blocks"
             />
           </span>
-          <button
-            type="button"
-            className="fe-icon-btn"
+          <IconButton
+            label="Close block library"
+            icon={<X size={16} aria-hidden />}
             onClick={onClose}
-            title="Close"
-            aria-label="Close block library"
-          >
-            <X size={16} aria-hidden />
-          </button>
+          />
         </div>
         <div className="fe-lib-body">
           <nav className="fe-lib-rail" aria-label="Block categories">

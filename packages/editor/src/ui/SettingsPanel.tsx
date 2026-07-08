@@ -5,6 +5,7 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
 import { X } from "lucide-react";
+import { Button, IconButton, Input, Radio } from "@forge/ui";
 import { getRegistryEntry } from "@forge/blocks";
 import type { Block } from "@forge/schema";
 import { selectBlock, setBlockSettings } from "../state/actions.js";
@@ -95,46 +96,41 @@ function EnvelopeSettings({
             }
             aria-label="Background color"
           />
-          <button
-            type="button"
-            className="fe-btn fe-btn-sm"
+          <Button
+            size="sm"
             onClick={() =>
               setBlockSettings(lessonId, block.id, { backgroundColor: undefined })
             }
             disabled={block.settings.backgroundColor === undefined}
           >
             Clear
-          </button>
+          </Button>
         </span>
       </div>
 
       <div className="fe-field">
         <span className="fe-field-label">Text color</span>
         <span className="fe-field-row">
-          <label className="fe-radio">
-            <input
-              type="radio"
-              name={`fe-tcm-${block.id}`}
-              checked={block.settings.textColorMode === "auto"}
-              onChange={() =>
-                setBlockSettings(lessonId, block.id, { textColorMode: "auto" })
-              }
-            />
-            Auto
-          </label>
-          <label className="fe-radio">
-            <input
-              type="radio"
-              name={`fe-tcm-${block.id}`}
-              checked={block.settings.textColorMode !== "auto"}
-              onChange={() =>
-                setBlockSettings(lessonId, block.id, {
-                  textColorMode: { mode: "explicit", color: explicitColor },
-                })
-              }
-            />
-            Explicit
-          </label>
+          <Radio
+            className="fe-radio"
+            label="Auto"
+            name={`fe-tcm-${block.id}`}
+            checked={block.settings.textColorMode === "auto"}
+            onChange={() =>
+              setBlockSettings(lessonId, block.id, { textColorMode: "auto" })
+            }
+          />
+          <Radio
+            className="fe-radio"
+            label="Explicit"
+            name={`fe-tcm-${block.id}`}
+            checked={block.settings.textColorMode !== "auto"}
+            onChange={() =>
+              setBlockSettings(lessonId, block.id, {
+                textColorMode: { mode: "explicit", color: explicitColor },
+              })
+            }
+          />
           {block.settings.textColorMode !== "auto" ? (
             <input
               type="color"
@@ -152,10 +148,11 @@ function EnvelopeSettings({
 
       <label className="fe-field">
         <span className="fe-field-label">Anchor id</span>
-        <input
+        <Input
           value={anchorDraft}
           onChange={(event) => commitAnchor(event.target.value)}
           placeholder="e.g. key-takeaways"
+          invalid={anchorError !== null}
         />
         {anchorError ? <span className="fe-field-error">{anchorError}</span> : null}
       </label>
@@ -182,15 +179,11 @@ export function SettingsPanel(): ReactElement | null {
     <aside className="fe-settings" aria-label="Block settings">
       <div className="fe-settings-header">
         <span>{editTitle(entry.palette.label, block.variant)}</span>
-        <button
-          type="button"
-          className="fe-icon-btn"
+        <IconButton
+          label="Close settings"
+          icon={<X size={16} aria-hidden />}
           onClick={() => selectBlock(null)}
-          title="Close settings"
-          aria-label="Close settings"
-        >
-          <X size={16} aria-hidden />
-        </button>
+        />
       </div>
       <section className="fe-settings-section">
         <h3>Content</h3>

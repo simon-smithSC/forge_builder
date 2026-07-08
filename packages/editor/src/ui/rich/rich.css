@@ -1,16 +1,16 @@
-/* Rich text field chrome (fe-rich- prefix). Base field layout (.fe-field,
-   .fe-field-label, .fe-field-error) lives in ui/styles.css; required/hint
-   accents come from payload/payload.css. */
+/* Rich text field chrome (fe-rich- prefix), Anvil-tokened. Base field layout
+   (.fe-field, .fe-field-label, .fe-field-error) lives in ui/styles.css;
+   required/hint accents come from payload/payload.css. */
 
 .fe-rich-editor {
-  border: 1px solid var(--fe-border);
-  border-radius: 6px;
-  background: var(--fe-surface);
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-md);
+  background: var(--an-surface-raised);
   overflow: hidden;
 }
 
 .fe-rich-editor:focus-within {
-  outline: 2px solid var(--fe-primary);
+  outline: 2px solid var(--an-focus-ring-color);
   outline-offset: 1px;
 }
 
@@ -19,8 +19,8 @@
   flex-wrap: wrap;
   gap: 2px;
   padding: 4px 6px;
-  border-bottom: 1px solid var(--fe-border);
-  background: var(--fe-bg);
+  border-bottom: 1px solid var(--an-border-subtle);
+  background: var(--an-surface-sunken);
 }
 
 .fe-rich-btn {
@@ -29,19 +29,19 @@
   justify-content: center;
   border: none;
   background: transparent;
-  border-radius: 4px;
+  border-radius: var(--an-radius-sm);
   padding: 4px;
-  color: var(--fe-muted);
+  color: var(--an-text-muted);
 }
 
 .fe-rich-btn:hover:not(:disabled) {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
+  background: var(--an-interactive-selected);
+  color: var(--an-interactive-idle);
 }
 
 .fe-rich-btn-active {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
+  background: var(--an-interactive-selected);
+  color: var(--an-interactive-idle);
 }
 
 /* ProseMirror content area: roughly match block text rendering. */
@@ -95,24 +95,24 @@
 .fe-rich-content blockquote {
   margin: 0;
   padding: 2px 12px;
-  border-left: 3px solid var(--fe-border);
-  color: var(--fe-muted);
+  border-left: 3px solid var(--an-border-subtle);
+  color: var(--an-text-muted);
 }
 
 .fe-rich-content code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--an-font-family-mono);
   font-size: 12px;
-  background: var(--fe-bg);
-  border-radius: 4px;
+  background: var(--an-surface-sunken);
+  border-radius: var(--an-radius-sm);
   padding: 1px 4px;
 }
 
 .fe-rich-content pre {
   margin: 0;
   padding: 8px 10px;
-  background: var(--fe-bg);
-  border: 1px solid var(--fe-border);
-  border-radius: 6px;
+  background: var(--an-surface-sunken);
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-md);
   overflow-x: auto;
 }
 

@@ -4,6 +4,7 @@
 // from the committed value on blur or external change (undo, duplicate...).
 import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
+import { Checkbox, Input, Select, Textarea } from "@forge/ui";
 import { RichTextField } from "../rich/RichTextField.js";
 
 export function FieldError({
@@ -35,7 +36,7 @@ export function TextField({
   return (
     <label className="fe-field">
       <span className="fe-field-label">{label}</span>
-      <input
+      <Input
         value={draft}
         placeholder={placeholder}
         onChange={(event) => {
@@ -66,7 +67,7 @@ export function TextAreaField({
   return (
     <label className="fe-field">
       <span className="fe-field-label">{label}</span>
-      <textarea
+      <Textarea
         value={draft}
         rows={rows}
         placeholder={placeholder}
@@ -126,7 +127,7 @@ export function NumberField({
   return (
     <label className="fe-field">
       <span className="fe-field-label">{label}</span>
-      <input
+      <Input
         type="number"
         value={draft}
         min={min}
@@ -161,15 +162,13 @@ export function CheckboxField({
   disabled?: boolean;
 }): ReactElement {
   return (
-    <label className="fe-field-checkbox">
-      <input
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.checked)}
-      />
-      <span>{label}</span>
-    </label>
+    <Checkbox
+      className="fe-field-checkbox"
+      label={label}
+      checked={checked}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.checked)}
+    />
   );
 }
 
@@ -187,13 +186,13 @@ export function SelectField({
   return (
     <label className="fe-field">
       <span className="fe-field-label">{label}</span>
-      <select value={value} onChange={(event) => onChange(event.target.value)}>
+      <Select value={value} onChange={(event) => onChange(event.target.value)}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
-      </select>
+      </Select>
     </label>
   );
 }
