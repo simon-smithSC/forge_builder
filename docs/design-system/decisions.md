@@ -166,3 +166,63 @@ graduate to ADRs in `docs/adr/`; API changes follow semver in
   journal restore banner) STAY banners; form-level validation stays inline
   `role="alert"`. The course-list loading text is replaced by a Skeleton card
   grid matching the real card geometry.
+
+## 2026-07-08: V5B depth system and rhythm
+
+- **Elevation is theme-mapped.** `--an-elevation-0..4` moved from tier-1
+  primitives into the light/dark semantic maps in build.ts. The DTCG source
+  keeps the shadow stacks as primitives (`elevation.0-4` plus a parallel
+  `elevation.dark.0-4` group); build.ts hides the group from tier-1 emission
+  and resolves the literals into both maps, so light values are byte-identical
+  and the public names never changed. Dark variants keep each level's
+  geometry but swap the border-tint ring for a light inner keyline
+  (`#ffffff12`, i.e. white at 7% - dark surfaces cannot cast a darker ring)
+  and deepen key/ambient alphas ~1.5x. Every `--an-elevation-N` consumer
+  inherited dark-mode depth with zero call-site changes (completes V1.4's
+  "usable but flat" dark mode).
+- **Border/elevation rule: a raised surface gets elevation, and its ring IS
+  the border; hairline borders only divide regions WITHIN a surface.** Fixed
+  offenders: `.fe-lib-card` and `.fe-lib-strip` dropped their 1px borders,
+  `.fe-lib-panel` its border-right, `.fq-add-menu` its border, and the
+  editor topbar its always-on elevation (below). Settings-tray sections now
+  separate by spacing + their small-caps headers instead of striping the
+  tray with hairlines (the panel header keeps its hairline). Anvil
+  secondary Button/IconButton keep border + elevation deliberately: control
+  edges are an affordance (border-color shifts on hover), not surface
+  chrome. `.an-drawer`'s side hairline also stays: closed it has no
+  elevation, so the hairline is its only edge.
+- **New semantic tokens: `--an-border-faint` and `--an-backdrop-blur`.**
+  border-faint is `color-mix(in srgb, var(--an-border-subtle) 60%,
+  transparent)` in both maps - the within-surface divider for elevated
+  panels (Anvil dialog header/footer, `.fe-dlg-footer`), one step quieter
+  than border-subtle so it never doubles the elevation ring. backdrop-blur
+  (4px, both maps) drives `backdrop-filter: blur() saturate(1.1)` on the
+  dialog backdrop and library scrim, `@supports`-guarded so engines without
+  backdrop-filter keep the plain tint. Popovers now spring from their
+  anchor: transform-origin follows data-placement and the entrance runs
+  `--an-ease-spring` at `--an-duration-160`.
+- **Scroll-aware topbar.** `.fe-topbar` idles FLAT (hairline only; constant
+  elevation over nothing was a double edge) and gains elevation-2 while its
+  scroll container is off the top. Mechanism: `ui/useScrolled.ts` (callback
+  ref + rAF-throttled scrollTop check) feeds a `data-scrolled` attribute;
+  EditorScreen watches `.fe-canvas`, CourseOverview watches `.fe-ov-main`.
+- **Token rhythm sweep + --fe- bridge retired.** overview.css, publish.css,
+  library.css, dialogs.css, and inline.css lost their off-scale raw values
+  (10/11/14/15/18/22px paddings, 15px/0.85rem type, `100ms ease`) for the
+  nearest `--an-space-*` / `--an-font-size-*` / motion tokens. Deliberate
+  literals stay: 46rem measure, 96px scroll headroom, hairlines, fixed
+  thumb/swatch geometry, dialog min/max widths. inline.css was the last
+  `--fe-*` consumer; it now reads `--an-*` directly and the D3 bridge block
+  in ui/styles.css is DELETED - the editor greps clean of `--fe-`.
+- **Library personality.** Card thumbs carry `data-cat` from a per-category
+  `tint` field in libraryData.ts, painting family pairs from existing
+  primitives: text-ish (text/statement/quote/list/callout) cobalt-50/600,
+  media (image/gallery/multimedia/chart/code/table/audio) info-50/600,
+  interactive (interactive/scenario/checklist/divider) ember-50/600,
+  knowledge check success-50/600. Dark mode mixes the 500 step to 18% over
+  transparent with a 300-step icon so the 50-tints never glare. Thumb icons
+  scale 1.08 on card hover (`--an-ease-spring`, `--an-duration-160`), and
+  the category rail's active item gains a 2px left indicator in
+  `--an-interactive-idle` on top of the existing tint (the tint alone was a
+  weak position signal). Duotone icon re-vendor stays REJECTED (104-asset
+  cost, marginal gain).

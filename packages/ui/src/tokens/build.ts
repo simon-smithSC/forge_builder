@@ -128,6 +128,20 @@ const isPath = (v: string): boolean => flat.has(v);
 const css = (v: string): string => (isPath(v) ? `var(${cssVarName(v)})` : v);
 const resolved = (v: string): string => flat.get(v) ?? v;
 
+// Elevation is theme-mapped (5B.1): the shadow stacks live in the DTCG source
+// (elevation.N light, elevation.dark.N dark) but emit ONLY through the
+// light/dark semantic maps, keeping the public names --an-elevation-0..4.
+// Values resolve to literals here; emitting var() refs would self-reference
+// (the semantic name and the primitive path share the CSS var name).
+const elevationShadow = (path: string): string => {
+  const value = flat.get(path);
+  if (value === undefined) throw new Error(`missing shadow token: ${path}`);
+  return value;
+};
+/** Primitive paths hidden from tier-1 emission (moved to the semantic tier). */
+const isSemanticOnlyPrimitive = (path: string): boolean =>
+  path.startsWith("elevation.");
+
 const semanticLight: Record<string, string> = {
   "surface-sunken": "color.neutral.100",
   "surface-base": "color.neutral.50",
@@ -146,6 +160,10 @@ const semanticLight: Record<string, string> = {
   "accent-soft": "color.ember.100",
   "border-subtle": "color.neutral.200",
   "border-strong": "color.neutral.300",
+  // Faintest hairline (5B.3): divides regions WITHIN an elevated surface
+  // (dialog header/footer) where a full border-subtle line double-edges the
+  // elevation ring. Derives from border-subtle so both themes track it.
+  "border-faint": "color-mix(in srgb, var(--an-border-subtle) 60%, transparent)",
   "focus-ring-color": "color.cobalt.500",
   "focus-ring":
     "0 0 0 2px var(--an-surface-base), 0 0 0 4px var(--an-focus-ring-color)",
@@ -162,6 +180,15 @@ const semanticLight: Record<string, string> = {
   "accent-gradient":
     "linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600))",
   "backdrop": "rgba(11, 12, 15, 0.4)",
+  // Overlay polish knob (5B.4): backdrop-filter blur radius for scrims.
+  "backdrop-blur": "4px",
+  // Elevation ladder (5B.1): light values are the primitive shadow stacks
+  // verbatim, so moving them here is byte-identical in light mode.
+  "elevation-0": elevationShadow("elevation.0"),
+  "elevation-1": elevationShadow("elevation.1"),
+  "elevation-2": elevationShadow("elevation.2"),
+  "elevation-3": elevationShadow("elevation.3"),
+  "elevation-4": elevationShadow("elevation.4"),
   "status-success-fg": "color.success.600",
   "status-success-bg": "color.success.50",
   "status-success-border": "color.success.200",
@@ -209,6 +236,9 @@ const semanticDark: Record<string, string> = {
   "accent-soft": "color.ember.950",
   "border-subtle": "color.neutral.800",
   "border-strong": "color.neutral.700",
+  // Restated so the dark map is explicit; the mix re-resolves against the
+  // dark border-subtle either way.
+  "border-faint": "color-mix(in srgb, var(--an-border-subtle) 60%, transparent)",
   "focus-ring-color": "color.cobalt.400",
   // Dark surfaces swallow soft halos; boost the mix to keep the glow legible.
   "focus-glow":
@@ -222,6 +252,16 @@ const semanticDark: Record<string, string> = {
   "accent-gradient":
     "linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600))",
   "backdrop": "rgba(11, 12, 15, 0.6)",
+  "backdrop-blur": "4px",
+  // Dark elevation remap (5B.1): dark surfaces cannot cast a darker ring, so
+  // the border-tint part becomes a light inner keyline (white at 7%) and the
+  // key/ambient alphas deepen ~1.5x. Same geometry per level; every consumer
+  // of --an-elevation-N inherits depth back for free.
+  "elevation-0": elevationShadow("elevation.dark.0"),
+  "elevation-1": elevationShadow("elevation.dark.1"),
+  "elevation-2": elevationShadow("elevation.dark.2"),
+  "elevation-3": elevationShadow("elevation.dark.3"),
+  "elevation-4": elevationShadow("elevation.dark.4"),
   "status-success-fg": "color.success.400",
   "status-success-bg": "color.success.950",
   "status-success-border": "color.success.800",
@@ -266,6 +306,9 @@ lines.push(".anvil {");
 lines.push("  /* tier 1: primitives */");
 let lastGroup = "";
 for (const [path, value] of flat.entries()) {
+  // Elevation emits through the light/dark semantic maps (5B.1), not tier 1;
+  // tokens.ts keeps the nested primitives for programmatic consumers.
+  if (isSemanticOnlyPrimitive(path)) continue;
   const group = path.split(".")[0] ?? "";
   if (group !== lastGroup) {
     if (lastGroup !== "") lines.push("");

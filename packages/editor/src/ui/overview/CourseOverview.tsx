@@ -28,6 +28,7 @@ import { useStore } from "../../state/store.js";
 import { MediaPicker } from "../dialogs/MediaPicker.js";
 import { InlineRichText } from "../rich/InlineRichText.js";
 import { plainTextOfHtml } from "../rich/plainText.js";
+import { useScrolled } from "../useScrolled.js";
 import { OverviewHeader } from "./OverviewHeader.js";
 import "./overview.css";
 
@@ -392,11 +393,13 @@ function CreationInput({ position }: { position: "top" | "bottom" }): ReactEleme
 
 export function CourseOverview(): ReactElement {
   const lessons = useStore((state) => state.course?.lessons ?? []);
+  // Scroll-aware header (5B.2): flat at rest, elevation while scrolled.
+  const { scrollRef, scrolled } = useScrolled<HTMLElement>();
 
   return (
     <div className="fe-ov-screen">
-      <OverviewHeader />
-      <main className="fe-ov-main">
+      <OverviewHeader scrolled={scrolled} />
+      <main className="fe-ov-main" ref={scrollRef}>
         <div className="fe-ov-column">
           <CourseMeta />
           <CreationInput position="top" />

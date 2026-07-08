@@ -38,7 +38,13 @@ const STATUS_TONE: Record<SaveStatus, "success" | "neutral" | "warn" | "danger">
   conflict: "danger",
 };
 
-export function OverviewHeader(): ReactElement {
+export interface OverviewHeaderProps {
+  /** Overview scroll state (5B.2): the bar idles flat and gains elevation
+      only while content is scrolled beneath it. */
+  scrolled?: boolean;
+}
+
+export function OverviewHeader({ scrolled = false }: OverviewHeaderProps): ReactElement {
   const saveStatus = useStore((state) => state.saveStatus);
   const canUndo = useStore((state) => state.canUndo);
   const canRedo = useStore((state) => state.canRedo);
@@ -49,7 +55,7 @@ export function OverviewHeader(): ReactElement {
   const [device, setDevice] = useState<PreviewDevice>("desktop");
 
   return (
-    <header className="fe-topbar">
+    <header className="fe-topbar" data-scrolled={scrolled ? "true" : undefined}>
       <Wordmark />
       <IconButton
         label="Back to courses"

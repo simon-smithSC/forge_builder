@@ -16,9 +16,16 @@ export interface LibraryCard {
   icon: string;
 }
 
+/** Thumb tint group (5B.6): rendered as data-cat on .fe-lib-card-thumb.
+ * text-ish -> cobalt, media -> info, interactive -> ember, knowledge ->
+ * success (styling in library.css, existing primitives only). */
+export type LibraryTint = "text" | "media" | "interactive" | "quiz";
+
 export interface LibraryCategory {
   id: string;
   label: string;
+  /** Thumb tint for every card in this category. */
+  tint: LibraryTint;
   cards: readonly LibraryCard[];
 }
 
@@ -78,6 +85,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "text",
     label: "Text",
+    tint: "text",
     cards: [
       card("text", "paragraph", "A single body paragraph."),
       card("text", "heading", "A standalone heading."),
@@ -90,6 +98,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "statement",
     label: "Statement",
+    tint: "text",
     cards: [
       card("impact", "a", "High-impact statement, treatment A."),
       card("impact", "b", "High-impact statement, treatment B."),
@@ -100,6 +109,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "quote",
     label: "Quote",
+    tint: "text",
     cards: [
       card("impact", "note", "Quoted text on a note card with attribution.", "Quote"),
     ],
@@ -107,6 +117,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "list",
     label: "List",
+    tint: "text",
     cards: [
       card("list", "bulleted", "Bulleted list of items."),
       card("list", "numbered", "Numbered list of items."),
@@ -116,6 +127,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "image",
     label: "Image",
+    tint: "media",
     cards: [
       card("image", "hero", "Large hero image treatment."),
       card("image", "full width", "Image spanning the full column."),
@@ -127,6 +139,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "gallery",
     label: "Gallery",
+    tint: "media",
     cards: [
       card("gallery", "carousel (centered)", "Carousel with a 1 of N counter."),
       card("gallery", "two column grid", "Image grid, two columns."),
@@ -137,6 +150,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "multimedia",
     label: "Multimedia",
+    tint: "media",
     cards: [
       card("multimedia", "video", "Video with captions and a transcript."),
       card("multimedia", "embed", "Embed external content by URL."),
@@ -146,6 +160,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "interactive",
     label: "Interactive",
+    tint: "interactive",
     cards: [
       card("interactive", "accordion", "Expandable sections, one per topic."),
       card("interactive", "tabs", "Tabbed panels, keyboard accessible."),
@@ -163,6 +178,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "knowledge-check",
     label: "Knowledge check",
+    tint: "quiz",
     cards: [
       card("knowledgeCheck", "multiple choice", "Pick the one correct answer."),
       card("knowledgeCheck", "multiple response", "Pick every correct answer."),
@@ -173,6 +189,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "chart",
     label: "Chart",
+    tint: "media",
     cards: [
       card("chart", "bar", "Bar chart with a data table.", "Bar chart"),
       card("chart", "line", "Line chart with a data table.", "Line chart"),
@@ -182,6 +199,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "divider",
     label: "Divider",
+    tint: "interactive",
     cards: [
       card("divider", "line", "Thin horizontal rule."),
       card("divider", "numbered", "Numbered section divider."),
@@ -192,6 +210,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "code",
     label: "Code",
+    tint: "media",
     cards: [
       card("multimedia", "code", "Code snippet with copy and line numbers.", "Code"),
     ],
@@ -199,6 +218,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "table",
     label: "Table",
+    tint: "media",
     cards: [
       card("table", "basic", "Simple data table.", "Table"),
       card(
@@ -212,6 +232,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "callout",
     label: "Callout",
+    tint: "text",
     cards: [
       card("callout", "info", "Informational note.", "Info callout"),
       card("callout", "warning", "Warning note.", "Warning callout"),
@@ -222,6 +243,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "scenario",
     label: "Scenario",
+    tint: "interactive",
     cards: [
       card("scenario", "branching scene", "Branching scenes with choices and feedback."),
     ],
@@ -229,11 +251,13 @@ export const libraryCategories: readonly LibraryCategory[] = [
   {
     id: "checklist",
     label: "Checklist",
+    tint: "interactive",
     cards: [card("checklist", "task checklist", "Tasks learners tick off.")],
   },
   {
     id: "audio",
     label: "Audio",
+    tint: "media",
     cards: [card("audio", "standalone audio", "Audio clip with a transcript.", "Audio")],
   },
 ];
@@ -265,6 +289,21 @@ export function findCard(family: BlockFamily, variant: string): LibraryCard | un
       (item) => item.family === family && item.variant === variant,
     );
     if (match) return match;
+  }
+  return undefined;
+}
+
+/** Tint group of the category owning a family+variant pair (5B.6), for
+ * cards rendered outside their category section (Recently used). */
+export function cardTint(family: BlockFamily, variant: string): LibraryTint | undefined {
+  for (const category of libraryCategories) {
+    if (
+      category.cards.some(
+        (item) => item.family === family && item.variant === variant,
+      )
+    ) {
+      return category.tint;
+    }
   }
   return undefined;
 }

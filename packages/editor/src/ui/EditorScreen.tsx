@@ -19,6 +19,7 @@ import { PreviewOverlay } from "./PreviewOverlay.js";
 import { SettingsPanel } from "./SettingsPanel.js";
 import { TopBar } from "./TopBar.js";
 import { OUTLINE_COLLAPSED_PREF, readPref, writePref } from "./uiPrefs.js";
+import { useScrolled } from "./useScrolled.js";
 
 export function EditorScreen(): ReactElement {
   const saveStatus = useStore((state) => state.saveStatus);
@@ -37,6 +38,8 @@ export function EditorScreen(): ReactElement {
   const [outlineCollapsed, setOutlineCollapsed] = useState(
     () => readPref(OUTLINE_COLLAPSED_PREF) === "1",
   );
+  // Scroll-aware topbar (5B.2): flat at rest, elevation once the canvas moves.
+  const { scrollRef, scrolled } = useScrolled<HTMLElement>();
 
   const toggleOutlineCollapsed = useCallback(() => {
     setOutlineCollapsed((prev) => {
@@ -91,6 +94,7 @@ export function EditorScreen(): ReactElement {
         onPreview={() => setPreviewOpen(true)}
         onToggleOutline={handleToggleOutline}
         outlineCollapsed={outlineCollapsed}
+        scrolled={scrolled}
       />
 
       {saveStatus === "conflict" ? (
@@ -166,7 +170,7 @@ export function EditorScreen(): ReactElement {
             onToggleCollapse={handleToggleOutline}
           />
         </div>
-        <Canvas />
+        <Canvas scrollRef={scrollRef} />
         {/* The drawer column collapses to width 0 when closed (not merely
             emptied) so the canvas reflows to fill; the width transition
             lives on this wrapper. */}

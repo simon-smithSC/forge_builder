@@ -2,22 +2,23 @@
    so nothing collides with the fe-modal palette classes in ui/styles.css.
    The dialog shell (backdrop/panel/header/body), tabs, and badges are owned
    by the Anvil design system (@forge/ui); only layout helpers and the
-   media/theme-specific pieces live here, consuming --an-* tokens. */
+   media/theme-specific pieces live here, consuming --an-* tokens. Fixed
+   swatch/thumb geometry (56/76/90/120px etc.) stays literal. */
 
 .fe-dlg-footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--an-border-subtle);
+  gap: var(--an-space-8);
+  margin-top: var(--an-space-16);
+  padding-top: var(--an-space-12);
+  border-top: 1px solid var(--an-border-faint);
 }
 
 .fe-dlg-footer-start {
   margin-right: auto;
   display: inline-flex;
-  gap: 8px;
+  gap: var(--an-space-8);
 }
 
 .fe-dlg-section-title {
@@ -25,7 +26,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--an-text-muted);
-  margin: 18px 0 8px;
+  margin: var(--an-space-16) 0 var(--an-space-8);
 }
 
 .fe-dlg-section-title:first-child {
@@ -35,7 +36,7 @@
 .fe-dlg-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 16px;
+  gap: 0 var(--an-space-16);
 }
 
 /* ---- media picker ---- */
@@ -43,17 +44,17 @@
 .fe-media-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 10px;
+  gap: var(--an-space-8);
 }
 
 .fe-media-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--an-space-6);
   border: 1px solid var(--an-border-subtle);
   border-radius: var(--an-radius-md);
   background: var(--an-surface-raised);
-  padding: 8px;
+  padding: var(--an-space-8);
   text-align: left;
 }
 
@@ -80,7 +81,7 @@
 }
 
 .fe-media-name {
-  font-size: 12px;
+  font-size: var(--an-font-size-12);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -93,7 +94,7 @@
 }
 
 .fe-media-empty {
-  padding: 28px 0;
+  padding: var(--an-space-24) 0;
   text-align: center;
   color: var(--an-text-muted);
 }
@@ -102,10 +103,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: var(--an-space-8);
   border: 2px dashed var(--an-border-subtle);
   border-radius: var(--an-radius-lg);
-  padding: 32px 16px;
+  padding: var(--an-space-32) var(--an-space-16);
   text-align: center;
   color: var(--an-text-muted);
 }
@@ -118,7 +119,7 @@
 
 .fe-media-pending {
   display: flex;
-  gap: 14px;
+  gap: var(--an-space-12);
   align-items: flex-start;
 }
 
@@ -149,26 +150,26 @@
 .fe-color-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--an-space-8);
 }
 
 .fe-color-row input[type="color"] {
   width: 36px;
   height: 30px;
-  padding: 2px;
+  padding: var(--an-space-2);
   flex-shrink: 0;
 }
 
 .fe-color-row input[type="text"] {
   width: 110px;
   font-family: var(--an-font-family-mono);
-  font-size: 12px;
+  font-size: var(--an-font-size-12);
 }
 
 .fe-contrast-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--an-space-6);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -177,8 +178,8 @@
 .fe-contrast-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: var(--an-space-8);
+  font-size: var(--an-font-size-13);
 }
 
 .fe-contrast-swatch {

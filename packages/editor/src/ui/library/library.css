@@ -9,9 +9,10 @@
   position: relative;
 }
 
+/* Raised surface: the elevation ring IS the border (5B.3). */
 .fe-lib-strip {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + var(--an-space-4));
   left: 50%;
   transform: translateX(-50%);
   z-index: 35;
@@ -19,11 +20,10 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4px;
+  gap: var(--an-space-4);
   max-width: 560px;
-  padding: 6px;
+  padding: var(--an-space-6);
   background: var(--an-surface-overlay);
-  border: 1px solid var(--an-border-subtle);
   border-radius: var(--an-radius-full);
   box-shadow: var(--an-elevation-3);
 }
@@ -49,6 +49,14 @@
   background: var(--an-backdrop);
 }
 
+/* Overlay polish (5B.4): frost the page behind the scrim, matching the
+   Anvil dialog backdrop. Guarded for engines without backdrop-filter. */
+@supports (backdrop-filter: blur(1px)) {
+  .fe-lib-scrim {
+    backdrop-filter: blur(var(--an-backdrop-blur)) saturate(1.1);
+  }
+}
+
 .fe-lib-panel {
   position: fixed;
   top: 0;
@@ -60,7 +68,6 @@
   display: flex;
   flex-direction: column;
   background: var(--an-surface-raised);
-  border-right: 1px solid var(--an-border-subtle);
   box-shadow: var(--an-elevation-4);
   animation: fe-lib-slide-in var(--an-duration-160) var(--an-ease-enter);
 }
@@ -85,15 +92,15 @@
 .fe-lib-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
+  gap: var(--an-space-8);
+  padding: var(--an-space-12) var(--an-space-16);
   border-bottom: 1px solid var(--an-border-subtle);
 }
 
 .fe-lib-search {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--an-space-8);
   flex: 1;
   color: var(--an-text-muted);
 }
@@ -101,7 +108,7 @@
 .fe-lib-search input {
   flex: 1;
   border: none;
-  padding: 6px 0;
+  padding: var(--an-space-6) 0;
 }
 
 .fe-lib-body {
@@ -116,20 +123,23 @@
   width: 168px;
   flex-shrink: 0;
   overflow-y: auto;
-  padding: 12px 8px;
+  padding: var(--an-space-12) var(--an-space-8);
   border-right: 1px solid var(--an-border-subtle);
   background: var(--an-surface-sunken);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--an-space-2);
 }
 
+/* Transparent left edge on every item so the active indicator (5B.6) never
+   shifts the label; the tint alone was a weak "where am I" signal. */
 .fe-lib-rail-item {
   text-align: left;
   border: none;
+  border-left: 2px solid transparent;
   background: transparent;
   border-radius: var(--an-radius-md);
-  padding: 7px 10px;
+  padding: var(--an-space-6) var(--an-space-8);
   font-size: var(--an-font-size-12);
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -146,6 +156,7 @@
 .fe-lib-rail-item-active:hover {
   color: var(--an-interactive-idle);
   background: var(--an-interactive-selected);
+  border-left-color: var(--an-interactive-idle);
 }
 
 /* ---- sections + variant cards ---- */
@@ -153,8 +164,8 @@
 .fe-lib-sections {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 16px 24px;
-  scroll-padding-top: 12px;
+  padding: var(--an-space-12) var(--an-space-16) var(--an-space-24);
+  scroll-padding-top: var(--an-space-12);
 }
 
 .fe-lib-section h3 {
@@ -163,33 +174,37 @@
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--an-text-muted);
-  margin: 16px 0 8px;
+  margin: var(--an-space-16) 0 var(--an-space-8);
 }
 
 .fe-lib-section:first-child h3 {
-  margin-top: 2px;
+  margin-top: var(--an-space-2);
 }
 
 .fe-lib-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: var(--an-space-8);
 }
 
+/* Raised card: elevation only, no 1px border (5B.3) - the ring in the
+   elevation stack is the edge. Hover keeps the 1 -> 2 lift + tint. */
 .fe-lib-card {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--an-space-8);
   text-align: left;
-  border: 1px solid var(--an-border-subtle);
+  border: none;
   border-radius: var(--an-radius-lg);
   background: var(--an-surface-raised);
-  padding: 10px;
+  padding: var(--an-space-12);
   box-shadow: var(--an-elevation-1);
+  transition:
+    background var(--an-duration-120) var(--an-ease-standard),
+    box-shadow var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-lib-card:hover {
-  border-color: var(--an-interactive-idle);
   background: var(--an-interactive-selected);
   box-shadow: var(--an-elevation-2);
 }
@@ -206,10 +221,65 @@
   color: var(--an-interactive-idle);
 }
 
+/* Per-category thumb tints (5B.6): existing primitives only. text-ish ->
+   cobalt, media -> info, interactive -> ember, knowledge -> success. Cards
+   without a mapped category keep the neutral sunken thumb above. */
+.fe-lib-card-thumb[data-cat="text"] {
+  background: var(--an-color-cobalt-50);
+  color: var(--an-color-cobalt-600);
+}
+
+.fe-lib-card-thumb[data-cat="media"] {
+  background: var(--an-color-info-50);
+  color: var(--an-color-info-600);
+}
+
+.fe-lib-card-thumb[data-cat="interactive"] {
+  background: var(--an-color-ember-50);
+  color: var(--an-color-ember-600);
+}
+
+.fe-lib-card-thumb[data-cat="quiz"] {
+  background: var(--an-color-success-50);
+  color: var(--an-color-success-600);
+}
+
+/* Dark chrome: the 50-tints glare on near-black, so mix the ramp toward
+   transparent and lift the icon to the 300 step. */
+.anvil[data-theme="dark"] .fe-lib-card-thumb[data-cat="text"] {
+  background: color-mix(in srgb, var(--an-color-cobalt-500) 18%, transparent);
+  color: var(--an-color-cobalt-300);
+}
+
+.anvil[data-theme="dark"] .fe-lib-card-thumb[data-cat="media"] {
+  background: color-mix(in srgb, var(--an-color-info-500) 18%, transparent);
+  color: var(--an-color-info-300);
+}
+
+.anvil[data-theme="dark"] .fe-lib-card-thumb[data-cat="interactive"] {
+  background: color-mix(in srgb, var(--an-color-ember-500) 18%, transparent);
+  color: var(--an-color-ember-300);
+}
+
+.anvil[data-theme="dark"] .fe-lib-card-thumb[data-cat="quiz"] {
+  background: color-mix(in srgb, var(--an-color-success-500) 18%, transparent);
+  color: var(--an-color-success-300);
+}
+
+/* Springy icon pop on card hover (5B.6); duration token collapses to 0ms
+   under prefers-reduced-motion. */
+.fe-lib-card-thumb svg {
+  transition: transform var(--an-duration-160) var(--an-ease-spring);
+}
+
+.fe-lib-card:hover .fe-lib-card-thumb svg {
+  transform: scale(1.08);
+}
+
 .fe-lib-card-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--an-space-2);
   min-width: 0;
 }
 
@@ -218,11 +288,11 @@
 }
 
 .fe-lib-card-desc {
-  font-size: 12px;
+  font-size: var(--an-font-size-12);
   color: var(--an-text-muted);
 }
 
 .fe-lib-empty {
   color: var(--an-text-muted);
-  padding: 12px 0;
+  padding: var(--an-space-12) 0;
 }

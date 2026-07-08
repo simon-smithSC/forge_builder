@@ -5,21 +5,10 @@
    composites only. Block/player visuals come from @forge/blocks and
    @forge/player stylesheets (the --forge- and --fb- tokens), which Anvil never touches. */
 
-/* ---- temporary --fe- token bridge (D3) ----
-   Maps the legacy chrome tokens onto Anvil semantics so any css not yet
-   migrated (ui/inline/inline.css) keeps working. No other --fe- definitions
-   may exist anywhere. Delete at the end of D3 once inline.css is retokened. */
+/* The temporary --fe- token bridge (D3) is GONE (5B.5): inline.css was the
+   last consumer and now reads --an-* directly. No --fe- definitions or
+   consumers may exist anywhere in the editor. */
 .anvil {
-  --fe-bg: var(--an-surface-base);
-  --fe-surface: var(--an-surface-raised);
-  --fe-border: var(--an-border-subtle);
-  --fe-text: var(--an-text-primary);
-  --fe-muted: var(--an-text-muted);
-  --fe-primary: var(--an-interactive-idle);
-  --fe-primary-soft: var(--an-interactive-selected);
-  --fe-danger: var(--an-status-danger-fg);
-  --fe-radius: var(--an-radius-lg);
-  --fe-shadow: var(--an-elevation-1);
   /* Chrome type bootstrap: duplicates anvil.css's base rule as a belt.
      Observed in the field: the @forge/ui stylesheet module can 200 yet its
      styles fail to inject, leaving chrome on the UA default (Times). This
@@ -236,6 +225,9 @@ button:focus-visible {
   position: relative;
 }
 
+/* Scroll-aware (5B.2): idles FLAT with only the hairline (elevation on a bar
+   with nothing beneath it is a double edge); gains elevation-2 (sticky-bar
+   tier) once canvas/overview content actually scrolls under it. */
 .fe-topbar {
   display: flex;
   align-items: center;
@@ -243,9 +235,14 @@ button:focus-visible {
   padding: var(--an-space-8) var(--an-space-16);
   background: var(--an-surface-raised);
   border-bottom: 1px solid var(--an-border-subtle);
-  box-shadow: var(--an-elevation-1);
+  box-shadow: none;
   position: relative;
   z-index: var(--an-z-raised);
+  transition: box-shadow var(--an-duration-160) var(--an-ease-standard);
+}
+
+.fe-topbar[data-scrolled="true"] {
+  box-shadow: var(--an-elevation-2);
 }
 
 .fe-title-input {
@@ -801,9 +798,11 @@ button:focus-visible {
   font-weight: var(--an-font-weight-semibold);
 }
 
+/* Sections separate by spacing + their small-caps headers (5B.3): the old
+   per-section hairline striped the tray with edges the headers already
+   provide. Only the panel header keeps its hairline. */
 .fe-settings-section {
   padding: var(--an-space-16);
-  border-bottom: 1px solid var(--an-border-subtle);
 }
 
 .fe-settings-section h3 {
@@ -815,10 +814,6 @@ button:focus-visible {
 }
 
 /* Envelope settings demoted into a collapsed Format group (P3-lite). */
-.fe-settings-format {
-  border-bottom: 1px solid var(--an-border-subtle);
-}
-
 .fe-settings-format > summary {
   cursor: pointer;
   padding: var(--an-space-12) var(--an-space-16);

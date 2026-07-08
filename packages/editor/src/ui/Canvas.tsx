@@ -488,7 +488,13 @@ function BlocksCanvas({
   );
 }
 
-export function Canvas(): ReactElement {
+export interface CanvasProps {
+  /** Scroll-container ref from useScrolled (5B.2): EditorScreen watches the
+      canvas scroll position to raise the topbar off its flat idle state. */
+  scrollRef?: (node: HTMLElement | null) => void;
+}
+
+export function Canvas({ scrollRef }: CanvasProps): ReactElement {
   const course = useStore((state) => state.course);
   const selectedLessonId = useStore((state) => state.selectedLessonId);
 
@@ -496,7 +502,7 @@ export function Canvas(): ReactElement {
 
   if (!course || !lesson) {
     return (
-      <main className="fe-canvas">
+      <main className="fe-canvas" ref={scrollRef}>
         <EmptyState
           className="fe-canvas-empty"
           icon={<Icon name="list" size={24} />}
@@ -511,7 +517,7 @@ export function Canvas(): ReactElement {
     // fe-canvas-blocks removes the scroll container's padding so block bands
     // span the full center area edge to edge (layout contract).
     return (
-      <main className="fe-canvas fe-canvas-blocks">
+      <main className="fe-canvas fe-canvas-blocks" ref={scrollRef}>
         <BlocksCanvas lesson={lesson} course={course} />
       </main>
     );
@@ -519,14 +525,14 @@ export function Canvas(): ReactElement {
 
   if (lesson.type === "quiz") {
     return (
-      <main className="fe-canvas">
+      <main className="fe-canvas" ref={scrollRef}>
         <QuizLessonEditor lesson={lesson} />
       </main>
     );
   }
 
   return (
-    <main className="fe-canvas">
+    <main className="fe-canvas" ref={scrollRef}>
       <div className="fe-canvas-panel">
         <LessonTitleField lesson={lesson} />
         <label className="fe-field">

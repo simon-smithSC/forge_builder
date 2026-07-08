@@ -218,7 +218,7 @@
   flex-direction: column;
   min-width: 180px;
   background: var(--an-surface-overlay);
-  border: 1px solid var(--an-border-subtle);
+  /* Raised surface: the elevation ring is the border (5B.3). */
   border-radius: var(--an-radius-lg);
   box-shadow: var(--an-elevation-3);
   padding: 4px;

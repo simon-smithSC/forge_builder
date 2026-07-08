@@ -58,6 +58,9 @@ export interface TopBarProps {
   onToggleOutline: () => void;
   /** Desktop collapse state, for aria-expanded + the tooltip verb. */
   outlineCollapsed: boolean;
+  /** Canvas scroll state (5B.2): the bar idles flat and gains elevation
+      only while content is scrolled beneath it. */
+  scrolled?: boolean;
 }
 
 export function TopBar({
@@ -66,6 +69,7 @@ export function TopBar({
   onPreview,
   onToggleOutline,
   outlineCollapsed,
+  scrolled = false,
 }: TopBarProps): ReactElement {
   const title = useStore((state) => state.course?.title ?? "");
   const saveStatus = useStore((state) => state.saveStatus);
@@ -76,7 +80,7 @@ export function TopBar({
   const [publishOpen, setPublishOpen] = useState(false);
 
   return (
-    <header className="fe-topbar">
+    <header className="fe-topbar" data-scrolled={scrolled ? "true" : undefined}>
       <Wordmark />
       <IconButton
         className="fe-outline-toggle"

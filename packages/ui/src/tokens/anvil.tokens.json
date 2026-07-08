@@ -264,6 +264,42 @@
         { "color": "#14161b1a", "offsetX": "0px", "offsetY": "8px", "blur": "16px", "spread": "0px" },
         { "color": "#14161b1f", "offsetX": "0px", "offsetY": "16px", "blur": "48px", "spread": "0px" }
       ]
+    },
+    "dark": {
+      "$description": "5B.1 dark-theme remap, geometry identical per level: the border-tint ring becomes a light inner keyline (#ffffff12, i.e. rgba(255,255,255,0.07)) because dark surfaces cannot cast a darker ring, and key/ambient alphas deepen ~1.5x so depth survives on near-black. Emitted via the semantic maps in build.ts, never as extra --an-elevation-* names.",
+      "0": {
+        "$value": [
+          { "color": "#ffffff12", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "1px" }
+        ]
+      },
+      "1": {
+        "$value": [
+          { "color": "#ffffff12", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "1px" },
+          { "color": "#14161b1b", "offsetX": "0px", "offsetY": "1px", "blur": "2px", "spread": "0px" },
+          { "color": "#14161b14", "offsetX": "0px", "offsetY": "2px", "blur": "6px", "spread": "0px" }
+        ]
+      },
+      "2": {
+        "$value": [
+          { "color": "#ffffff12", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "1px" },
+          { "color": "#14161b1e", "offsetX": "0px", "offsetY": "2px", "blur": "4px", "spread": "0px" },
+          { "color": "#14161b17", "offsetX": "0px", "offsetY": "4px", "blur": "12px", "spread": "0px" }
+        ]
+      },
+      "3": {
+        "$value": [
+          { "color": "#ffffff12", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "1px" },
+          { "color": "#14161b23", "offsetX": "0px", "offsetY": "4px", "blur": "8px", "spread": "0px" },
+          { "color": "#14161b1e", "offsetX": "0px", "offsetY": "8px", "blur": "24px", "spread": "0px" }
+        ]
+      },
+      "4": {
+        "$value": [
+          { "color": "#ffffff12", "offsetX": "0px", "offsetY": "0px", "blur": "0px", "spread": "1px" },
+          { "color": "#14161b27", "offsetX": "0px", "offsetY": "8px", "blur": "16px", "spread": "0px" },
+          { "color": "#14161b2f", "offsetX": "0px", "offsetY": "16px", "blur": "48px", "spread": "0px" }
+        ]
+      }
     }
   },
   "bevel": {

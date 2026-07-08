@@ -2,7 +2,8 @@
    carries the same fb-html classes the shared Html component emits, so the
    text renders exactly like the player output; this file only adds the
    hover/focus ring and the transient error chip. Formatting controls live in
-   the shared selection toolbar (rich/selectionToolbar.css). */
+   the shared selection toolbar (rich/selectionToolbar.css).
+   Anvil-tokened directly (5B.5); the legacy --fe- bridge is retired. */
 
 .fe-inline-editor {
   position: relative;
@@ -11,17 +12,19 @@
 /* Borderless at rest; a quiet ring only on hover, a firm one while editing. */
 .fe-inline-content {
   outline: none;
-  border-radius: 4px;
-  transition: box-shadow 100ms ease;
+  border-radius: var(--an-radius-sm);
+  transition: box-shadow var(--an-duration-120) var(--an-ease-standard);
 }
 
 .fe-inline-editor:hover .fe-inline-content {
-  box-shadow: 0 0 0 1px var(--fe-border);
+  box-shadow: 0 0 0 1px var(--an-border-subtle);
 }
 
 .fe-inline-editor-focused .fe-inline-content,
 .fe-inline-content:focus {
-  box-shadow: 0 0 0 2px var(--fe-primary-soft), 0 0 0 1px var(--fe-primary);
+  box-shadow:
+    0 0 0 2px var(--an-interactive-selected),
+    0 0 0 1px var(--an-interactive-idle);
 }
 
 /* Transient validation error under the field. Semantic status tokens so the
@@ -32,14 +35,14 @@
   top: 100%;
   left: 0;
   z-index: 30;
-  margin-top: 4px;
-  padding: 2px 8px;
-  border-radius: 4px;
+  margin-top: var(--an-space-4);
+  padding: var(--an-space-2) var(--an-space-8);
+  border-radius: var(--an-radius-sm);
   background: var(--an-status-danger-bg);
   color: var(--an-status-danger-fg);
   border: 1px solid var(--an-status-danger-border);
-  font-family: Inter, "Segoe UI", system-ui, sans-serif;
-  font-size: 12px;
+  font-family: var(--an-font-family-sans);
+  font-size: var(--an-font-size-12);
   white-space: nowrap;
-  box-shadow: var(--fe-shadow);
+  box-shadow: var(--an-elevation-1);
 }

@@ -585,6 +585,13 @@
   padding: var(--an-space-24);
   animation: an-fade-in var(--an-duration-120) var(--an-ease-enter);
 }
+/* Overlay polish (5B.4): frost the page behind modal scrims. Guarded so
+   engines without backdrop-filter keep the plain tinted backdrop. */
+@supports (backdrop-filter: blur(1px)) {
+  .an-dialog-backdrop {
+    backdrop-filter: blur(var(--an-backdrop-blur)) saturate(1.1);
+  }
+}
 .an-dialog {
   display: flex;
   flex-direction: column;
@@ -604,7 +611,9 @@
   justify-content: space-between;
   gap: var(--an-gap-md);
   padding: var(--an-inset-md) var(--an-inset-lg);
-  border-bottom: 1px solid var(--an-border-subtle);
+  /* Faint hairline (5B.3): the dialog's elevation ring is its border; inner
+     region dividers step down to border-faint so edges never double up. */
+  border-bottom: 1px solid var(--an-border-faint);
 }
 .an-dialog-title {
   margin: 0;
@@ -621,7 +630,7 @@
   justify-content: flex-end;
   gap: var(--an-gap-sm);
   padding: var(--an-inset-md) var(--an-inset-lg);
-  border-top: 1px solid var(--an-border-subtle);
+  border-top: 1px solid var(--an-border-faint);
 }
 
 /* ---- Popover / Menu ----------------------------------------------------------------- */
@@ -638,12 +647,15 @@
   border-radius: var(--an-radius-lg);
   box-shadow: var(--an-elevation-3);
   padding: var(--an-inset-sm);
-  animation: an-rise-in var(--an-duration-120) var(--an-ease-enter);
+  /* Entrance springs from the anchor edge (5B.4): transform-origin follows
+     data-placement so the scale-in grows out of the trigger. */
+  transform-origin: top center;
+  animation: an-rise-in var(--an-duration-160) var(--an-ease-spring);
 }
-.an-popover[data-placement="bottom-start"] { top: calc(100% + var(--an-space-4)); left: 0; }
-.an-popover[data-placement="bottom-end"] { top: calc(100% + var(--an-space-4)); right: 0; }
-.an-popover[data-placement="top-start"] { bottom: calc(100% + var(--an-space-4)); left: 0; }
-.an-popover[data-placement="top-end"] { bottom: calc(100% + var(--an-space-4)); right: 0; }
+.an-popover[data-placement="bottom-start"] { top: calc(100% + var(--an-space-4)); left: 0; transform-origin: top left; }
+.an-popover[data-placement="bottom-end"] { top: calc(100% + var(--an-space-4)); right: 0; transform-origin: top right; }
+.an-popover[data-placement="top-start"] { bottom: calc(100% + var(--an-space-4)); left: 0; transform-origin: bottom left; }
+.an-popover[data-placement="top-end"] { bottom: calc(100% + var(--an-space-4)); right: 0; transform-origin: bottom right; }
 
 .an-menu {
   display: flex;

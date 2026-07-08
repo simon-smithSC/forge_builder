@@ -9,8 +9,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon, IconButton } from "@forge/ui";
 import { insertBlockVariant } from "../../state/libraryActions.js";
 import { blockIcon } from "../blockIcons.js";
-import type { LibraryCard } from "./libraryData.js";
+import type { LibraryCard, LibraryTint } from "./libraryData.js";
 import {
+  cardTint,
   findCard,
   getRecentPicks,
   libraryCategories,
@@ -35,10 +36,13 @@ function matches(card: LibraryCard, term: string): boolean {
 
 function CardButton({
   card,
+  tint,
   onPick,
   onArrow,
 }: {
   card: LibraryCard;
+  /** Category tint group (5B.6) painted onto the thumb via data-cat. */
+  tint?: LibraryTint | undefined;
   onPick: (card: LibraryCard) => void;
   onArrow: (event: KeyboardEvent<HTMLButtonElement>) => void;
 }): ReactElement {
@@ -50,7 +54,7 @@ function CardButton({
       onClick={() => onPick(card)}
       onKeyDown={onArrow}
     >
-      <span className="fe-lib-card-thumb" aria-hidden>
+      <span className="fe-lib-card-thumb" data-cat={tint} aria-hidden>
         <Icon size={20} />
       </span>
       <span className="fe-lib-card-text">
@@ -175,6 +179,7 @@ export function BlockLibrary({
                     <CardButton
                       key={`recent:${card.family}:${card.variant}`}
                       card={card}
+                      tint={cardTint(card.family, card.variant)}
                       onPick={pick}
                       onArrow={onArrow}
                     />
@@ -197,6 +202,7 @@ export function BlockLibrary({
                     <CardButton
                       key={`${card.family}:${card.variant}`}
                       card={card}
+                      tint={category.tint}
                       onPick={pick}
                       onArrow={onArrow}
                     />
