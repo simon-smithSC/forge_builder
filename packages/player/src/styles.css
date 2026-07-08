@@ -1,7 +1,93 @@
 /*
  * @forge/player chrome only (layout, sidebar, cover, quiz). Block visuals
  * come from @forge/blocks/styles.css; hosts import both stylesheets.
+ *
+ * D4 (docs/DESIGN-SYSTEM-PLAN.md): player chrome adopts the Anvil design
+ * system's STRUCTURAL VALUES. The player ships self-contained inside
+ * published zips, so it never imports the design-system package; instead the
+ * token values (space, radius, elevation, motion, type pairs) are copied into
+ * --fp- custom properties below, each annotated with its Anvil source token
+ * for provenance. Color accents, backgrounds, and content typefaces remain
+ * COURSE-THEMED via the --forge- variables set in chrome.tsx; Anvil's cobalt
+ * and ember never appear here. Entrance-animation timings (1s, 0.12s, 0.15s)
+ * are Rise-measured and LOCKED (docs/PLAYER-UX-PLAN.md U1); they are not
+ * part of this token set.
  */
+
+.fp-player {
+  /* Space scale (Anvil primitives, 4px base) */
+  --fp-space-2: 0.125rem; /* an-space-2 */
+  --fp-space-4: 0.25rem; /* an-space-4 */
+  --fp-space-6: 0.375rem; /* an-space-6 */
+  --fp-space-8: 0.5rem; /* an-space-8 */
+  --fp-space-12: 0.75rem; /* an-space-12 */
+  --fp-space-16: 1rem; /* an-space-16 */
+  --fp-space-20: 1.25rem; /* an-space-20 */
+  --fp-space-24: 1.5rem; /* an-space-24 */
+  --fp-space-32: 2rem; /* an-space-32 */
+  --fp-space-40: 2.5rem; /* an-space-40 */
+  --fp-space-48: 3rem; /* an-space-48 */
+  --fp-space-64: 4rem; /* an-space-64 */
+
+  /* Radius scale */
+  --fp-radius-sm: 4px; /* an-radius-sm */
+  --fp-radius-md: 6px; /* an-radius-md */
+  --fp-radius-lg: 10px; /* an-radius-lg */
+  --fp-radius-full: 999px; /* an-radius-full */
+
+  /* Elevation: Anvil's layered shadow stacks, verbatim (neutral-950 tint) */
+  --fp-elevation-1: 0px 0px 0px 1px #14161b0d, 0px 1px 2px 0px #14161b12,
+    0px 2px 6px 0px #14161b0d; /* an-elevation-1 */
+  --fp-elevation-2: 0px 0px 0px 1px #14161b0d, 0px 2px 4px 0px #14161b14,
+    0px 4px 12px 0px #14161b0f; /* an-elevation-2 */
+  --fp-elevation-3: 0px 0px 0px 1px #14161b0a, 0px 4px 8px 0px #14161b17,
+    0px 8px 24px 0px #14161b14; /* an-elevation-3 */
+  --fp-elevation-4: 0px 0px 0px 1px #14161b0a, 0px 8px 16px 0px #14161b1a,
+    0px 16px 48px 0px #14161b1f; /* an-elevation-4 */
+
+  /* Motion (chrome transitions only; entrance timings stay locked above) */
+  --fp-duration-120: 120ms; /* an-duration-120 */
+  --fp-duration-160: 160ms; /* an-duration-160 */
+  --fp-duration-200: 200ms; /* an-duration-200 */
+  --fp-duration-280: 280ms; /* an-duration-280 */
+  --fp-ease-standard: cubic-bezier(0.2, 0, 0.2, 1); /* an-ease-standard */
+  --fp-ease-enter: cubic-bezier(0.1, 0.8, 0.2, 1); /* an-ease-enter */
+  --fp-ease-exit: cubic-bezier(0.4, 0, 1, 1); /* an-ease-exit */
+
+  /* Type scale: size + line pairs (chrome text only; lesson content sizes
+     stay course-driven) */
+  --fp-type-12-size: 0.75rem; /* an-font-size-12 */
+  --fp-type-12-line: 1.125rem; /* an-font-line-12 */
+  --fp-type-13-size: 0.8125rem; /* an-font-size-13 */
+  --fp-type-13-line: 1.125rem; /* an-font-line-13 */
+  --fp-type-14-size: 0.875rem; /* an-font-size-14 */
+  --fp-type-14-line: 1.25rem; /* an-font-line-14 */
+  --fp-type-16-size: 1rem; /* an-font-size-16 */
+  --fp-type-16-line: 1.5rem; /* an-font-line-16 */
+  --fp-type-18-size: 1.125rem; /* an-font-size-18 */
+  --fp-type-18-line: 1.75rem; /* an-font-line-18 */
+  --fp-type-22-size: 1.375rem; /* an-font-size-22 */
+  --fp-type-22-line: 1.875rem; /* an-font-line-22 */
+  --fp-type-28-size: 1.75rem; /* an-font-size-28 */
+  --fp-type-28-line: 2.25rem; /* an-font-line-28 */
+  --fp-type-32-size: 2rem; /* an-font-size-32 */
+  --fp-type-32-line: 2.5rem; /* an-font-line-32 */
+  --fp-type-40-size: 2.5rem; /* an-font-size-40 */
+  --fp-type-40-line: 3rem; /* an-font-line-40 */
+
+  /* Chrome status colors: quiz correctness is pedagogical, not brand, so it
+     adopts Anvil's fixed status values (previously arbitrary GitHub greens
+     and reds). Never course-themed, never cobalt or ember. */
+  --fp-chrome-success: #219653; /* an-color-success-500 */
+  --fp-chrome-success-fg: #177a43; /* an-color-success-600 */
+  --fp-chrome-danger: #cf3a2e; /* an-color-danger-500 */
+  --fp-chrome-danger-fg: #b02b21; /* an-color-danger-600 */
+
+  /* Two-layer focus ring: Anvil's an-focus-ring pattern (2px surface gap +
+     2px ring) recolored from the course theme primary instead of cobalt. */
+  --fp-focus-ring: 0 0 0 2px var(--forge-bg, #ffffff),
+    0 0 0 4px var(--forge-primary, #1f6feb);
+}
 
 .fp-player {
   display: flex;
@@ -42,11 +128,11 @@
 .fp-button {
   appearance: none;
   border: 1px solid var(--forge-primary, #1f6feb);
-  border-radius: 6px;
+  border-radius: var(--fp-radius-md);
   background: transparent;
   color: var(--forge-primary, #1f6feb);
   font: inherit;
-  padding: 0.5rem 1.25rem;
+  padding: var(--fp-space-8) var(--fp-space-20);
   cursor: pointer;
 }
 
@@ -59,12 +145,17 @@
   cursor: not-allowed;
 }
 
+/* Anvil two-layer ring, drawn as box-shadow so it hugs each control's
+   radius; colored from the course primary via --fp-focus-ring. */
 .fp-button:focus-visible,
 .fp-nav-link:focus-visible,
 .fp-sidebar-search:focus-visible,
+.fp-quiz-pill:focus-visible,
+.fp-quiz-input:focus-visible,
+.fp-quiz-select:focus-visible,
 .fp-untracked-dismiss:focus-visible {
-  outline: 3px solid var(--forge-primary, #1f6feb);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--fp-focus-ring);
 }
 
 .fp-button-primary {
@@ -78,7 +169,7 @@
 }
 
 .fp-button-small {
-  padding: 0.15rem 0.5rem;
+  padding: var(--fp-space-2) var(--fp-space-8);
 }
 
 /* Cover (U3 hero: full-height centered, subtle surface treatment) ------- */
@@ -96,58 +187,61 @@
 .fp-cover {
   margin: auto;
   max-width: 640px;
-  padding: 4rem 1.5rem;
+  padding: var(--fp-space-64) var(--fp-space-24);
   text-align: center;
 }
 
 .fp-cover-logo {
   display: block;
-  margin: 0 auto 2.25rem;
+  margin: 0 auto var(--fp-space-32);
   max-height: 56px;
   max-width: 220px;
   object-fit: contain;
 }
 
 .fp-cover-title {
-  font-size: 2.75rem;
-  line-height: 1.15;
-  margin: 0 0 1rem;
+  font-size: var(--fp-type-40-size);
+  line-height: var(--fp-type-40-line);
+  margin: 0 0 var(--fp-space-16);
 }
 
 .fp-cover-description {
-  font-size: 1.125rem;
-  margin: 0 0 0.75rem;
+  font-size: var(--fp-type-18-size);
+  line-height: var(--fp-type-18-line);
+  margin: 0 0 var(--fp-space-12);
 }
 
 .fp-cover-author {
-  font-size: 0.95rem;
+  font-size: var(--fp-type-14-size);
   color: color-mix(in srgb, var(--forge-text, #1f2328) 70%, transparent);
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--fp-space-12);
 }
 
 .fp-cover-count {
   color: color-mix(in srgb, var(--forge-text, #1f2328) 65%, transparent);
-  margin: 0 0 2rem;
+  margin: 0 0 var(--fp-space-32);
 }
 
 .fp-cover-start {
-  font-size: 1rem;
+  font-size: var(--fp-type-16-size);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.9rem 3rem;
-  border-radius: 999px;
+  padding: var(--fp-space-16) var(--fp-space-48);
+  border-radius: var(--fp-radius-full);
 }
 
-/* Top bar -------------------------------------------------------------- */
+/* Top bar (sticky-bar depth: an elevation-2 in the editor's language) --- */
 
 .fp-topbar {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 15%, transparent);
+  gap: var(--fp-space-12);
+  padding: var(--fp-space-8) var(--fp-space-16);
   background: var(--forge-surface, #f6f8fa);
+  box-shadow: var(--fp-elevation-2);
+  position: relative;
+  z-index: 2;
 }
 
 .fp-topbar-title {
@@ -161,8 +255,8 @@
 .fp-topbar-toggle {
   border-color: transparent;
   color: var(--forge-text, #1f2328);
-  padding: 0.35rem 0.6rem;
-  font-size: 1.15rem;
+  padding: var(--fp-space-6) var(--fp-space-8);
+  font-size: var(--fp-type-18-size);
   line-height: 1;
 }
 
@@ -177,7 +271,7 @@
 }
 
 .fp-topbar-counter {
-  font-size: 0.68rem;
+  font-size: var(--fp-type-12-size);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -199,32 +293,36 @@
   min-height: 0;
 }
 
+/* Desktop rail sits at card depth (an elevation-1); the mobile overlay
+   drawer overrides to elevation-4 in the media query below. */
 .fp-sidebar {
   width: 280px;
   flex-shrink: 0;
   overflow-y: auto;
   background: var(--forge-surface, #f6f8fa);
-  border-right: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 12%, transparent);
+  box-shadow: var(--fp-elevation-1);
+  position: relative;
+  z-index: 1;
 }
 
 /* Sidebar header: course title, % COMPLETE, search (U4/U5) -------------- */
 
 .fp-sidebar-header {
-  padding: 1.25rem 1rem 1rem;
+  padding: var(--fp-space-20) var(--fp-space-16) var(--fp-space-16);
   border-bottom: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 10%, transparent);
 }
 
 .fp-sidebar-course {
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--fp-space-12);
   font-family: var(--forge-heading-font, system-ui, sans-serif);
-  font-size: 1.05rem;
+  font-size: var(--fp-type-16-size);
   font-weight: 700;
-  line-height: 1.3;
+  line-height: var(--fp-type-16-line);
 }
 
 .fp-sidebar-progress-text {
-  margin: 0 0 0.4rem;
-  font-size: 0.7rem;
+  margin: 0 0 var(--fp-space-6);
+  font-size: var(--fp-type-12-size);
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -233,7 +331,7 @@
 
 .fp-sidebar-progress-track {
   height: 3px;
-  border-radius: 999px;
+  border-radius: var(--fp-radius-full);
   background: color-mix(in srgb, var(--forge-primary, #1f6feb) 18%, transparent);
   overflow: hidden;
 }
@@ -242,31 +340,31 @@
   height: 100%;
   border-radius: inherit;
   background: var(--forge-primary, #1f6feb);
-  transition: width 0.4s ease-out;
+  transition: width var(--fp-duration-280) var(--fp-ease-enter);
 }
 
 .fp-sidebar-search {
   width: 100%;
-  margin-top: 0.85rem;
-  padding: 0.45rem 0.6rem;
+  margin-top: var(--fp-space-12);
+  padding: var(--fp-space-8);
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--fp-type-14-size);
   color: inherit;
   background: var(--forge-bg, #ffffff);
   border: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 25%, transparent);
-  border-radius: 6px;
+  border-radius: var(--fp-radius-md);
   box-sizing: border-box;
 }
 
 .fp-nav-list {
   list-style: none;
   margin: 0;
-  padding: 0.75rem 0;
+  padding: var(--fp-space-12) 0;
 }
 
 .fp-nav-section {
-  padding: 1rem 1rem 0.35rem;
-  font-size: 0.8rem;
+  padding: var(--fp-space-16) var(--fp-space-16) var(--fp-space-6);
+  font-size: var(--fp-type-13-size);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -276,9 +374,9 @@
 .fp-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--fp-space-8);
   width: 100%;
-  padding: 0.6rem 1rem;
+  padding: var(--fp-space-8) var(--fp-space-16);
   border: 0;
   background: transparent;
   color: inherit;
@@ -302,10 +400,17 @@
   font-weight: 600;
 }
 
+/* Focused current row keeps its inset accent bar under the focus ring. */
+.fp-nav-current:focus-visible {
+  box-shadow:
+    var(--fp-focus-ring),
+    inset 3px 0 0 var(--forge-primary, #1f6feb);
+}
+
 .fp-nav-num {
   flex-shrink: 0;
   width: 1.4rem;
-  font-size: 0.78rem;
+  font-size: var(--fp-type-12-size);
   font-weight: 600;
   text-align: center;
   color: color-mix(in srgb, var(--forge-text, #1f2328) 55%, transparent);
@@ -350,7 +455,9 @@
   width: 100%;
 }
 
-/* Lesson header band (U3): counter, title, author, optional headerImage. */
+/* Lesson header band (U3): counter, title, author, optional headerImage.
+   Content-column rules: sizes and margins here belong to the reading
+   surface (course-themed), not the Anvil chrome sweep. */
 
 .fp-lesson-header {
   margin: 0 0 1.5rem;
@@ -429,7 +536,8 @@
    these classes. Reveal is a transition (not a keyframe): 1s ease-out on
    opacity and transform, per-block transition-delay 0.12s + idx * 0.15s
    set inline by PlayerBlock. Offsets mirror Rise's map: fadeInUp 25px,
-   fadeInLeft -50px, fadeInGrow scale(0.95). */
+   fadeInLeft -50px, fadeInGrow scale(0.95). Timings are Rise-measured and
+   LOCKED; deliberately not on the --fp- motion scale. */
 
 .fp-enter {
   opacity: 0;
@@ -456,13 +564,21 @@
 }
 
 /* Belt and braces: PlayerBlock already renders visible under reduced
-   motion; this covers content rendered before the media query is sampled. */
+   motion; this covers content rendered before the media query is sampled.
+   Chrome motion tokens also collapse to instant here, mirroring Anvil's
+   reduced-motion policy. */
 @media (prefers-reduced-motion: reduce) {
   .fp-enter {
     opacity: 1;
     transform: none;
     transition: none;
     transition-delay: 0s;
+  }
+  .fp-player {
+    --fp-duration-120: 0ms;
+    --fp-duration-160: 0ms;
+    --fp-duration-200: 0ms;
+    --fp-duration-280: 0ms;
   }
 }
 
@@ -472,22 +588,24 @@
 
 .fp-quiz {
   /* The lesson wrapper no longer clamps width, so the quiz card carries its
-     own centered column (same 46rem measure as block content). */
+     own centered column (same 46rem measure as block content). Card depth:
+     an elevation-1. */
   max-width: 46rem;
   margin: 0 auto;
   box-sizing: border-box;
   background: var(--forge-surface, #f6f8fa);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: var(--fp-radius-lg);
+  padding: var(--fp-space-32);
+  box-shadow: var(--fp-elevation-1);
 }
 
 .fp-quiz-progress {
-  margin: 0 0 1.5rem;
+  margin: 0 0 var(--fp-space-24);
 }
 
 .fp-quiz-progress-label {
-  margin: 0 0 0.5rem;
-  font-size: 0.75rem;
+  margin: 0 0 var(--fp-space-8);
+  font-size: var(--fp-type-12-size);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -496,46 +614,48 @@
 
 .fp-quiz-progress-track {
   height: 3px;
-  border-radius: 999px;
+  border-radius: var(--fp-radius-full);
   background: color-mix(in srgb, var(--forge-text, #1f2328) 12%, transparent);
   overflow: hidden;
 }
 
 .fp-quiz-progress-fill {
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--fp-radius-full);
   background: var(--forge-primary, #1f6feb);
-  transition: width 200ms ease;
+  transition: width var(--fp-duration-200) var(--fp-ease-standard);
 }
 
 .fp-quiz-prompt {
   font-family: var(--forge-heading-font, inherit);
-  font-size: 1.35rem;
+  font-size: var(--fp-type-22-size);
   font-weight: 700;
-  line-height: 1.35;
-  margin-bottom: 1.5rem;
+  line-height: var(--fp-type-22-line);
+  margin-bottom: var(--fp-space-24);
 }
 
 .fp-quiz-choices,
 .fp-quiz-likert {
   border: 0;
-  margin: 0 0 1.25rem;
+  margin: 0 0 var(--fp-space-20);
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: var(--fp-space-8);
 }
 
 .fp-quiz-choice {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
+  gap: var(--fp-space-12);
+  padding: var(--fp-space-12) var(--fp-space-16);
   background: var(--forge-bg, #ffffff);
   border: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 16%, transparent);
-  border-radius: 8px;
+  border-radius: var(--fp-radius-md);
   cursor: pointer;
-  transition: border-color 120ms ease, background-color 120ms ease;
+  transition:
+    border-color var(--fp-duration-120) var(--fp-ease-standard),
+    background-color var(--fp-duration-120) var(--fp-ease-standard);
 }
 
 .fp-quiz-choice:hover {
@@ -593,14 +713,14 @@
   top: 1px;
   width: 5px;
   height: 9px;
-  border: solid #ffffff;
+  /* Checkmark sits on the primary fill; contrast pair keeps it readable. */
+  border: solid var(--forge-primary-contrast, #ffffff);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
 .fp-quiz-choice-input:focus-visible ~ .fp-quiz-choice-glyph {
-  outline: 2px solid var(--forge-primary, #1f6feb);
-  outline-offset: 2px;
+  box-shadow: var(--fp-focus-ring);
 }
 
 .fp-quiz-choice-text {
@@ -610,17 +730,17 @@
 /* Uppercase accent pill: SUBMIT / NEXT / TAKE AGAIN (teardown 874-876). */
 .fp-quiz-pill {
   background: var(--forge-primary, #1f6feb);
-  color: #ffffff;
+  color: var(--forge-primary-contrast, #ffffff);
   border: none;
-  border-radius: 999px;
-  padding: 0.7rem 2.5rem;
+  border-radius: var(--fp-radius-full);
+  padding: var(--fp-space-12) var(--fp-space-40);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: var(--fp-type-13-size);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: filter 120ms ease;
+  transition: filter var(--fp-duration-120) var(--fp-ease-standard);
 }
 
 .fp-quiz-pill:hover:not(:disabled) {
@@ -635,26 +755,26 @@
 .fp-quiz-input,
 .fp-quiz-select {
   font: inherit;
-  padding: 0.45rem 0.6rem;
+  padding: var(--fp-space-8);
   border: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 30%, transparent);
-  border-radius: 6px;
+  border-radius: var(--fp-radius-md);
   background: var(--forge-bg, #ffffff);
   color: inherit;
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--fp-space-20);
 }
 
 .fp-quiz-matching {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  gap: var(--fp-space-12);
+  margin-bottom: var(--fp-space-20);
 }
 
 .fp-quiz-match-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--fp-space-16);
 }
 
 .fp-quiz-match-row .fp-quiz-select {
@@ -663,7 +783,7 @@
 
 .fp-quiz-sequence {
   list-style: decimal inside;
-  margin: 0 0 1.25rem;
+  margin: 0 0 var(--fp-space-20);
   padding: 0;
 }
 
@@ -671,41 +791,41 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.5rem 0.75rem;
-  margin-bottom: 0.4rem;
+  gap: var(--fp-space-16);
+  padding: var(--fp-space-8) var(--fp-space-12);
+  margin-bottom: var(--fp-space-6);
   background: var(--forge-bg, #ffffff);
   border: 1px solid color-mix(in srgb, var(--forge-text, #1f2328) 15%, transparent);
-  border-radius: 6px;
+  border-radius: var(--fp-radius-md);
 }
 
 .fp-quiz-sequence-controls {
   display: inline-flex;
-  gap: 0.35rem;
+  gap: var(--fp-space-6);
 }
 
 .fp-quiz-feedback {
-  margin-top: 1.25rem;
-  padding: 1rem 1.25rem;
-  border-radius: 8px;
+  margin-top: var(--fp-space-20);
+  padding: var(--fp-space-16) var(--fp-space-20);
+  border-radius: var(--fp-radius-md);
   border: 1px solid;
 }
 
 .fp-quiz-feedback-correct {
-  background: color-mix(in srgb, #2da44e 8%, transparent);
-  border-color: #2da44e;
+  background: color-mix(in srgb, var(--fp-chrome-success) 8%, transparent);
+  border-color: var(--fp-chrome-success);
 }
 
 .fp-quiz-feedback-incorrect {
-  background: color-mix(in srgb, #cf222e 8%, transparent);
-  border-color: #cf222e;
+  background: color-mix(in srgb, var(--fp-chrome-danger) 8%, transparent);
+  border-color: var(--fp-chrome-danger);
 }
 
 .fp-quiz-feedback-head {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: var(--fp-space-8);
+  margin-bottom: var(--fp-space-8);
 }
 
 .fp-quiz-feedback-icon {
@@ -720,11 +840,11 @@
 }
 
 .fp-quiz-feedback-correct .fp-quiz-feedback-icon {
-  background: #2da44e;
+  background: var(--fp-chrome-success);
 }
 
 .fp-quiz-feedback-incorrect .fp-quiz-feedback-icon {
-  background: #cf222e;
+  background: var(--fp-chrome-danger);
 }
 
 .fp-quiz-feedback-verdict {
@@ -735,30 +855,30 @@
 }
 
 .fp-quiz-feedback-correct .fp-quiz-feedback-verdict {
-  color: #1a7f37;
+  color: var(--fp-chrome-success-fg);
 }
 
 .fp-quiz-feedback-incorrect .fp-quiz-feedback-verdict {
-  color: #cf222e;
+  color: var(--fp-chrome-danger-fg);
 }
 
 .fp-quiz-rationale {
-  margin-top: 0.5rem;
+  margin-top: var(--fp-space-8);
 }
 
 .fp-quiz-feedback .fp-quiz-pill {
-  margin-top: 1rem;
+  margin-top: var(--fp-space-16);
 }
 
 .fp-quiz-result {
   text-align: center;
-  padding: 3rem 1.5rem;
+  padding: var(--fp-space-48) var(--fp-space-24);
 }
 
 .fp-quiz-result-ring {
   width: 8.5rem;
   height: 8.5rem;
-  margin: 0 auto 1.25rem;
+  margin: 0 auto var(--fp-space-20);
   border-radius: 50%;
   border: 5px solid color-mix(in srgb, var(--forge-text, #1f2328) 20%, transparent);
   display: flex;
@@ -772,19 +892,19 @@
 
 .fp-quiz-result-percent {
   font-family: var(--forge-heading-font, inherit);
-  font-size: 2.25rem;
+  font-size: var(--fp-type-32-size);
   font-weight: 700;
 }
 
 .fp-quiz-result-heading {
-  font-size: 1.75rem;
-  margin: 0 0 0.5rem;
+  font-size: var(--fp-type-28-size);
+  margin: 0 0 var(--fp-space-8);
 }
 
 .fp-quiz-result-score {
-  font-size: 0.95rem;
+  font-size: var(--fp-type-14-size);
   color: color-mix(in srgb, var(--forge-text, #1f2328) 65%, transparent);
-  margin: 0 0 1.5rem;
+  margin: 0 0 var(--fp-space-24);
 }
 
 /* Narrow viewports: sidebar becomes an overlay drawer (U4) -------------- */
@@ -802,9 +922,10 @@
     padding: 3rem 1rem 2rem;
   }
   .fp-quiz {
-    margin: 0 1rem;
-    padding: 1.5rem 1.25rem;
+    margin: 0 var(--fp-space-16);
+    padding: var(--fp-space-24) var(--fp-space-20);
   }
+  /* Overlay drawer: dialog-tier depth (an elevation-4). */
   .fp-sidebar {
     position: fixed;
     top: 0;
@@ -812,7 +933,7 @@
     left: 0;
     width: min(320px, 85vw);
     z-index: 40;
-    box-shadow: 0 0 32px color-mix(in srgb, var(--forge-text, #1f2328) 35%, transparent);
+    box-shadow: var(--fp-elevation-4);
   }
   .fp-sidebar-backdrop {
     display: block;
@@ -836,11 +957,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
+  gap: var(--fp-space-12);
+  padding: var(--fp-space-8) var(--fp-space-16);
   background: color-mix(in srgb, var(--forge-accent, #dd6b20) 14%, var(--forge-surface, #f6f8fa));
   border-bottom: 1px solid color-mix(in srgb, var(--forge-accent, #dd6b20) 40%, transparent);
-  font-size: 0.9rem;
+  font-size: var(--fp-type-14-size);
 }
 
 .fp-untracked-dismiss {
@@ -848,17 +969,18 @@
   border: none;
   background: transparent;
   color: inherit;
-  font-size: 1.1rem;
+  font-size: var(--fp-type-18-size);
   line-height: 1;
-  padding: 0.15rem 0.4rem;
+  padding: var(--fp-space-2) var(--fp-space-6);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--fp-radius-sm);
 }
 
 .fp-untracked-dismiss:hover {
   background: color-mix(in srgb, currentColor 12%, transparent);
 }
 
+/* Renders outside the themed .fp-player scope; keeps literal values. */
 .fp-standalone-error {
   max-width: 34rem;
   margin: 15vh auto 0;

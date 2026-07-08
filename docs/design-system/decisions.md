@@ -57,6 +57,43 @@ graduate to ADRs in `docs/adr/`; API changes follow semver in
   import-map technique as `make-standalone.mjs`; react comes from esm.sh at
   view time.
 
+## 2026-07-08: D4 player chrome adoption (value copy, not import)
+
+- **The player copies Anvil's structural VALUES; it never imports @forge/ui.**
+  The player ships self-contained inside published zips (make-standalone,
+  exporter), where no `@forge/ui` package, `.anvil` scope class, or `--an-*`
+  variable exists at runtime. Importing the DS would either bloat every
+  published course with unused editor chrome or break standalone rendering.
+  Instead `packages/player/src/styles.css` opens with a token block scoped
+  under `.fp-player` defining `--fp-space-*`, `--fp-radius-*`,
+  `--fp-elevation-1..4` (Anvil's layered shadow stacks verbatim),
+  `--fp-duration-*` and `--fp-ease-*`, and `--fp-type-*-size/line` pairs,
+  each annotated with its Anvil source token name (e.g. `an-radius-md`) so
+  drift is grep-auditable against `packages/ui/src/anvil.css`.
+- **The three-layer boundary holds** (plan section 2.3): structure, spacing,
+  elevation, motion, and focus geometry are Anvil values; color accents,
+  backgrounds, and typefaces stay course-themed (`--forge-*` from
+  `chrome.tsx`, `readableTextOn`, `fontStackOf`). Anvil's cobalt and ember
+  appear nowhere in the player. Chrome values were snapped to the nearest
+  Anvil step (e.g. quiz card radius 12px to 10px, prompt 1.35rem to 1.375rem).
+- **Elevation replaces hairline borders for chrome depth**: topbar
+  elevation-2 (sticky-bar tier), desktop sidebar and quiz card elevation-1
+  (card tier), mobile overlay drawer elevation-4 (dialog tier), matching the
+  editor's depth language. The `.fp-nav-current` inset accent bar stays
+  course-primary.
+- **Focus rings adopt Anvil's two-layer pattern recolored from the theme**:
+  `--fp-focus-ring` is a 2px `--forge-bg` gap plus a 2px `--forge-primary`
+  ring drawn as box-shadow (replacing the old 3px outline), applied to
+  buttons, nav rows, search, quiz pills/inputs, and the choice glyph.
+- **Quiz correctness colors adopt Anvil status values** (`--fp-chrome-*`
+  copied from an-color-success-500/600 and an-color-danger-500/600),
+  replacing the previous arbitrary GitHub-palette greens and reds. They are
+  pedagogical status, not brand, so they are fixed rather than course-themed.
+- **Locked out of scope**: Rise-measured entrance timings (1s / 0.12s /
+  0.15s, `entrance.ts`) and the lesson content column (header band, footer
+  measure, `.fp-main` padding) keep their measured values; chrome motion
+  tokens collapse to 0ms under `prefers-reduced-motion` like Anvil's.
+
 ## 2026-07-08: D1.5 typography, icons, system depth
 
 - **Geist Sans replaces Inter as the UI face.** Owner feedback called the type
