@@ -83,7 +83,11 @@ export function TokensSection(): ReactElement {
   const eases = Object.entries(anvilTokens.ease) as Array<[string, string]>;
 
   return (
-    <Section id="tokens" title="Tokens">
+    <Section
+      id="tokens"
+      title="Color, space, depth, motion"
+      lede="Tier 1 primitives and the semantic tier components actually consume. Dark mode and compact density remap semantics only."
+    >
       <Sub
         title="Color ramps"
         note="Tier 1 primitives (--an-color-*). Components never touch these directly; they consume the semantic tier (surface, text, interactive, border, status), which is what dark mode remaps."
@@ -132,8 +136,8 @@ export function TokensSection(): ReactElement {
       </Sub>
 
       <Sub
-        title="Type scale"
-        note="Inter for UI (tracking tightened at 12-13px), JetBrains Mono for IDs, code, and xAPI detail. Weights: 400 / 500 / 600."
+        title="Size ladder"
+        note="Raw --an-font-size-* / --an-font-line-* pairs behind the role scale (see Typography for the roles). 12px is the absolute floor."
       >
         {sizes.map(([px, rem]) => (
           <div

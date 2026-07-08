@@ -1,0 +1,54 @@
+/* Anvil webfonts: Geist Sans (UI face, OFL, Vercel) + JetBrains Mono (code,
+   OFL, JetBrains). Import once next to anvil.css:
+     import "@forge/ui/fonts.css";
+
+   ============================================================================
+   THE WOFF2 BINARIES ARE NOT COMMITTED. Until you fetch them, every rule here
+   soft-fails and the metric-adjusted fallback stack below renders instead
+   (system faces, size-adjusted to Geist metrics, so nothing reflows later).
+
+   Fetch them once on your machine (needs network):
+
+       node packages/ui/scripts/fetch-fonts.mjs
+
+   That downloads the variable woff2 files from the official Fontsource
+   mirrors of the Vercel and JetBrains releases into packages/ui/src/fonts/.
+   ============================================================================ */
+
+@font-face {
+  font-family: "Geist Sans";
+  src: url("./fonts/geist-sans-variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("./fonts/jetbrains-mono-variable.woff2") format("woff2-variations");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Metric-adjusted local fallbacks. size-adjust/ascent/descent tuned so Arial
+   (and Helvetica via local matching) occupies the same box as Geist, keeping
+   layout stable before the webfont arrives (or when it never does). */
+
+@font-face {
+  font-family: "Geist Sans Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 104%;
+  ascent-override: 96%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  src: local("Menlo"), local("Consolas"), local("Courier New");
+  size-adjust: 108%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}

@@ -21,7 +21,7 @@
 }
 
 .fe-dlg-section-title {
-  font-size: 11px;
+  font-size: var(--an-font-size-12);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--an-text-muted);
@@ -87,7 +87,7 @@
 }
 
 .fe-media-kind {
-  font-size: 11px;
+  font-size: var(--an-font-size-12);
   color: var(--an-text-muted);
   text-transform: capitalize;
 }
@@ -178,7 +178,7 @@
   height: 24px;
   border-radius: var(--an-radius-sm);
   border: 1px solid var(--an-border-subtle);
-  font-size: 11px;
+  font-size: var(--an-font-size-12);
   font-weight: 700;
   flex-shrink: 0;
 }

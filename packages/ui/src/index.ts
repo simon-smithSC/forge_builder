@@ -1,9 +1,35 @@
 // @forge/ui: Anvil, the T&S design system. Tokens + primitives for app
 // chrome. Anvil never touches learner course content (--forge-*/--fb-*).
-// Consumption: import "@forge/ui/anvil.css" and "@forge/ui/components.css"
-// once, wrap the app root in class="anvil", then use the components.
+// Consumption: import "@forge/ui/fonts.css", "@forge/ui/anvil.css" and
+// "@forge/ui/components.css" once, wrap the app root in class="anvil",
+// then use the components.
 export { anvilTokens, cssVar } from "./tokens.js";
 export type { AnvilTokens } from "./tokens.js";
+
+export { Icon } from "./components/Icon.js";
+export type { IconProps } from "./components/Icon.js";
+export { iconData, iconNames } from "./icons/icons.js";
+export type { IconName, IconNode } from "./icons/icons.js";
+
+export { Heading, Label, Text } from "./components/Typography.js";
+export type {
+  HeadingProps,
+  HeadingRole,
+  LabelProps,
+  TextProps,
+  TextRole,
+} from "./components/Typography.js";
+
+export { Divider, Inline, Stack } from "./components/Layout.js";
+export type {
+  DividerProps,
+  InlineProps,
+  SpaceStep,
+  StackProps,
+} from "./components/Layout.js";
+
+export { FormField } from "./components/FormField.js";
+export type { FormFieldProps } from "./components/FormField.js";
 
 export { Button } from "./components/Button.js";
 export type { ButtonProps } from "./components/Button.js";

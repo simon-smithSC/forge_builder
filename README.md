@@ -23,5 +23,10 @@ pnpm install
 pnpm build
 pnpm lint
 pnpm test
+
+# one-time, needs network: fetch the Anvil webfonts (Geist Sans + JetBrains
+# Mono variable woff2) into packages/ui/src/fonts/. Until run, the UI uses a
+# metric-adjusted system fallback stack.
+node packages/ui/scripts/fetch-fonts.mjs
 ```
 

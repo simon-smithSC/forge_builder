@@ -49,8 +49,8 @@
   border-radius: var(--an-radius-full);
   background: var(--an-interactive-selected);
   color: var(--an-interactive-idle);
-  font-size: var(--an-font-size-11);
-  line-height: var(--an-font-line-11);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
   font-weight: var(--an-font-weight-semibold);
   text-transform: capitalize;
 }

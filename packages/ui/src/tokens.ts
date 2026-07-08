@@ -114,37 +114,54 @@ export const anvilTokens = {
   },
   "font": {
     "family": {
-      "sans": "Inter, \"Segoe UI\", system-ui, sans-serif",
-      "mono": "\"JetBrains Mono\", SFMono-Regular, Menlo, Consolas, monospace"
+      "sans": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "mono": "\"JetBrains Mono\", \"JetBrains Mono Fallback\", SFMono-Regular, Menlo, Consolas, monospace"
     },
     "weight": {
       "regular": "400",
       "medium": "500",
-      "semibold": "600"
+      "semibold": "600",
+      "bold": "700"
     },
     "size": {
-      "11": "0.6875rem",
       "12": "0.75rem",
       "13": "0.8125rem",
       "14": "0.875rem",
       "16": "1rem",
       "18": "1.125rem",
+      "20": "1.25rem",
       "22": "1.375rem",
-      "28": "1.75rem"
+      "24": "1.5rem",
+      "28": "1.75rem",
+      "32": "2rem",
+      "40": "2.5rem"
     },
     "line": {
-      "11": "1rem",
-      "12": "1rem",
+      "12": "1.125rem",
       "13": "1.125rem",
       "14": "1.25rem",
       "16": "1.5rem",
-      "18": "1.625rem",
+      "18": "1.75rem",
+      "20": "1.75rem",
       "22": "1.875rem",
-      "28": "2.25rem"
+      "24": "2rem",
+      "28": "2.25rem",
+      "32": "2.5rem",
+      "40": "3rem"
     },
     "tracking": {
-      "tight": "0.01em",
+      "tight": "-0.01em",
       "normal": "0em"
+    }
+  },
+  "icon": {
+    "size": {
+      "16": "16px",
+      "20": "20px",
+      "24": "24px"
+    },
+    "stroke": {
+      "regular": "2"
     }
   },
   "radius": {
@@ -182,6 +199,92 @@ export const anvilTokens = {
     "overlay": "700",
     "modal": "800",
     "toast": "900"
+  },
+  "type": {
+    "displayLarge": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "2.5rem",
+      "lineHeight": "3rem",
+      "fontWeight": 700,
+      "letterSpacing": "-0.02em"
+    },
+    "display": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "2rem",
+      "lineHeight": "2.5rem",
+      "fontWeight": 700,
+      "letterSpacing": "-0.02em"
+    },
+    "headingLarge": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "1.5rem",
+      "lineHeight": "2rem",
+      "fontWeight": 600,
+      "letterSpacing": "-0.015em"
+    },
+    "heading": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "1.25rem",
+      "lineHeight": "1.75rem",
+      "fontWeight": 600,
+      "letterSpacing": "-0.01em"
+    },
+    "headingSmall": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "1rem",
+      "lineHeight": "1.5rem",
+      "fontWeight": 600,
+      "letterSpacing": "-0.005em"
+    },
+    "labelLarge": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "1rem",
+      "lineHeight": "1.5rem",
+      "fontWeight": 500,
+      "letterSpacing": "0em"
+    },
+    "label": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "0.875rem",
+      "lineHeight": "1.25rem",
+      "fontWeight": 500,
+      "letterSpacing": "0em"
+    },
+    "labelSmall": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "0.8125rem",
+      "lineHeight": "1.125rem",
+      "fontWeight": 500,
+      "letterSpacing": "0.01em"
+    },
+    "paragraphLarge": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "1.125rem",
+      "lineHeight": "1.75rem",
+      "fontWeight": 400,
+      "letterSpacing": "0em"
+    },
+    "paragraph": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "1rem",
+      "lineHeight": "1.5rem",
+      "fontWeight": 400,
+      "letterSpacing": "0em"
+    },
+    "paragraphSmall": {
+      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontSize": "0.875rem",
+      "lineHeight": "1.25rem",
+      "fontWeight": 400,
+      "letterSpacing": "0em"
+    },
+    "mono": {
+      "fontFamily": "\"JetBrains Mono\", \"JetBrains Mono Fallback\", SFMono-Regular, Menlo, Consolas, monospace",
+      "fontSize": "0.8125rem",
+      "lineHeight": "1.25rem",
+      "fontWeight": 400,
+      "letterSpacing": "0em"
+    }
   },
   "semantic": {
     "light": {
@@ -222,8 +325,8 @@ export const anvilTokens = {
       "status-info-border": "#a4dbec",
       "status-info-solid": "#1c87ab",
       "control-sm": "1.75rem",
-      "control-md": "2.125rem",
-      "control-lg": "2.5rem",
+      "control-md": "2.25rem",
+      "control-lg": "2.75rem",
       "inset-sm": "0.5rem",
       "inset-md": "0.75rem",
       "inset-lg": "1rem",
@@ -266,8 +369,8 @@ export const anvilTokens = {
     },
     "compact": {
       "control-sm": "1.5rem",
-      "control-md": "1.75rem",
-      "control-lg": "2.125rem",
+      "control-md": "2rem",
+      "control-lg": "2.5rem",
       "inset-sm": "0.375rem",
       "inset-md": "0.5rem",
       "inset-lg": "0.75rem",

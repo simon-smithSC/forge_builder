@@ -291,7 +291,7 @@ button:focus-visible {
 
 .fe-outline-section .fe-outline-label {
   text-transform: uppercase;
-  font-size: var(--an-font-size-11);
+  font-size: var(--an-font-size-12);
   font-weight: var(--an-font-weight-semibold);
   letter-spacing: 0.06em;
   color: var(--an-text-muted);
@@ -357,7 +357,7 @@ button:focus-visible {
   width: 100%;
   font-family: var(--forge-heading-font, inherit), sans-serif;
   font-weight: 700;
-  font-size: 30px;
+  font-size: var(--an-font-size-32);
   margin: 0 auto 12px;
   max-width: 46rem;
   padding: 0 1.5rem;
@@ -445,8 +445,8 @@ button:focus-visible {
   align-items: center;
   gap: var(--an-space-4);
   padding: var(--an-space-2) var(--an-space-8);
-  font-size: var(--an-font-size-11);
-  line-height: var(--an-font-line-11);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
 }
 
 .fe-rail-chip-label {
@@ -471,7 +471,7 @@ button:focus-visible {
 }
 
 .fe-variant-menu-title {
-  font-size: var(--an-font-size-11);
+  font-size: var(--an-font-size-12);
   font-weight: var(--an-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -805,7 +805,7 @@ button:focus-visible {
 }
 
 .fe-preview-kicker {
-  font-size: 10px;
+  font-size: var(--an-font-size-12);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;

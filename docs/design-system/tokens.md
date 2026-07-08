@@ -15,18 +15,20 @@ renders every value; this file documents naming and intent.
 | `--an-color-ember-{50..950}` | 11 steps | Warm accent; progress and emphasis only. |
 | `--an-color-{danger,success,warn,info}-{50..950}` | 11 steps each | Status ramps. |
 | `--an-space-{0,2,4,6,8,12,16,20,24,32,40,48,64}` | 13 steps | 4px base, emitted as rem. |
-| `--an-font-family-{sans,mono}` | 2 | Inter / JetBrains Mono stacks. |
-| `--an-font-weight-{regular,medium,semibold}` | 3 | 400 / 500 / 600. |
-| `--an-font-size-{11,12,13,14,16,18,22,28}` | 8 | rem sizes, px-named. |
-| `--an-font-line-{11..28}` | 8 | Paired line heights. |
-| `--an-font-tracking-{tight,normal}` | 2 | Tight at 12-13px chrome text. |
+| `--an-font-family-{sans,mono}` | 2 | Geist Sans / JetBrains Mono stacks (metric-adjusted fallbacks in fonts.css). |
+| `--an-font-weight-{regular,medium,semibold,bold}` | 4 | 400 / 500 / 600 / 700. |
+| `--an-font-size-{12,13,14,16,18,20,22,24,28,32,40}` | 11 | rem sizes, px-named. 12px is the absolute floor. |
+| `--an-font-line-{12..40}` | 11 | Paired line heights. |
+| `--an-font-tracking-{tight,normal}` | 2 | Tight (-0.01em) at display/heading sizes. |
+| `--an-type-{display-large..paragraph-small,mono}[-family/-size/-line/-weight/-tracking]` | 12 roles | Composite type roles (Base-style); also `.an-type-*` utility classes and the Heading/Text/Label components. |
+| `--an-icon-size-{16,20,24}`, `--an-icon-stroke-regular` | 4 | Icon sizing convention: 16 inline, 20 controls, 24 emphasis; stroke 2. |
 | `--an-radius-{xs,sm,md,lg,xl,full}` | 6 | 2 / 4 / 6 / 10 / 16 / 999 px. |
 | `--an-elevation-{0..4}` | 5 | Layered shadows: border-tint + key + ambient, neutral-tinted. 0 canvas, 1 cards, 2 raised controls/sticky, 3 popovers/menus, 4 dialogs/drawer/toasts. |
 | `--an-duration-{80,120,160,200,280}` | 5 | All 0ms under reduced motion. |
 | `--an-ease-{standard,enter,exit,spring}` | 4 | Exits accelerate, enters decelerate. |
 | `--an-z-{base,raised,sticky,overlay,modal,toast}` | 6 | Z-index bands. |
 
-Total: 141 primitive tokens.
+Total: 152 primitive tokens plus 12 composite type roles.
 
 ## Tier 2: semantics (what components and app CSS use)
 
@@ -56,7 +58,7 @@ Primitives stay constant; only this table remaps.
 
 | Token | Comfortable | Compact |
 | --- | --- | --- |
-| `--an-control-sm/md/lg` | 28 / 34 / 40 px | 24 / 28 / 34 px |
+| `--an-control-sm/md/lg` | 28 / 36 / 44 px | 24 / 32 / 40 px |
 | `--an-inset-sm/md/lg` | 8 / 12 / 16 px | 6 / 8 / 12 px |
 | `--an-gap-sm/md/lg` | 6 / 8 / 12 px | 4 / 6 / 8 px |
 

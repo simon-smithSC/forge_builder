@@ -17,7 +17,20 @@ interface ShadowPart {
   blur: string;
   spread: string;
 }
-type TokenValue = string | number | string[] | number[] | ShadowPart[];
+interface TypeRoleValue {
+  fontFamily: string;
+  fontSize: string;
+  lineHeight: string;
+  fontWeight: number;
+  letterSpacing: string;
+}
+type TokenValue =
+  | string
+  | number
+  | string[]
+  | number[]
+  | ShadowPart[]
+  | TypeRoleValue;
 interface TokenGroup {
   [key: string]: TokenGroup | TokenValue | string | undefined;
 }
@@ -54,6 +67,8 @@ function formatValue(value: TokenValue, type: string): string {
 
 /** path ("color.cobalt.500") -> resolved CSS value */
 const flat = new Map<string, string>();
+/** role name ("headingLarge") -> composite typography value */
+const typeRoles = new Map<string, TypeRoleValue>();
 
 function walk(node: TokenGroup, path: string[], inheritedType: string): void {
   const type = typeof node.$type === "string" ? node.$type : inheritedType;
@@ -64,7 +79,11 @@ function walk(node: TokenGroup, path: string[], inheritedType: string): void {
       const value = (childNode as { $value: TokenValue }).$value;
       const childType =
         typeof childNode.$type === "string" ? (childNode.$type as string) : type;
-      flat.set([...path, key].join("."), formatValue(value, childType));
+      if (childType === "typography") {
+        typeRoles.set(key, value as TypeRoleValue);
+      } else {
+        flat.set([...path, key].join("."), formatValue(value, childType));
+      }
     } else if (typeof childNode === "object" && !Array.isArray(childNode)) {
       walk(childNode, [...path, key], type);
     }
@@ -74,6 +93,26 @@ walk(source, [], "");
 
 function cssVarName(path: string): string {
   return `--an-${path.replaceAll(".", "-")}`;
+}
+
+function kebab(name: string): string {
+  return name.replaceAll(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+}
+
+/** "{font.family.sans}" -> the referenced path, else null. */
+function refPath(value: string): string | null {
+  const m = /^\{([a-z0-9.]+)\}$/i.exec(value);
+  return m ? (m[1] ?? null) : null;
+}
+
+function familyCss(fontFamily: string): string {
+  const ref = refPath(fontFamily);
+  return ref !== null ? `var(${cssVarName(ref)})` : fontFamily;
+}
+
+function familyResolved(fontFamily: string): string {
+  const ref = refPath(fontFamily);
+  return ref !== null ? (flat.get(ref) ?? fontFamily) : fontFamily;
 }
 
 // ---- semantic tier ----------------------------------------------------------
@@ -123,9 +162,10 @@ const semanticLight: Record<string, string> = {
   "status-info-border": "color.info.200",
   "status-info-solid": "color.info.500",
   // density-aware sizing (remapped under [data-density="compact"])
+  // Comfortable heights: 28 / 36 / 44px, shared by Button/Input/Select.
   "control-sm": "1.75rem",
-  "control-md": "2.125rem",
-  "control-lg": "2.5rem",
+  "control-md": "2.25rem",
+  "control-lg": "2.75rem",
   "inset-sm": "space.8",
   "inset-md": "space.12",
   "inset-lg": "space.16",
@@ -170,8 +210,8 @@ const semanticDark: Record<string, string> = {
 
 const semanticCompact: Record<string, string> = {
   "control-sm": "1.5rem",
-  "control-md": "1.75rem",
-  "control-lg": "2.125rem",
+  "control-md": "2rem",
+  "control-lg": "2.5rem",
   "inset-sm": "space.6",
   "inset-md": "space.8",
   "inset-lg": "space.12",
@@ -206,6 +246,19 @@ for (const [path, value] of flat.entries()) {
   lines.push(`  ${cssVarName(path)}: ${value};`);
 }
 lines.push("");
+lines.push("  /* type roles (--an-type-*): composite font shorthand + parts */");
+for (const [role, v] of typeRoles.entries()) {
+  const k = kebab(role);
+  lines.push(
+    `  --an-type-${k}: ${v.fontWeight} ${v.fontSize}/${v.lineHeight} ${familyCss(v.fontFamily)};`,
+  );
+  lines.push(`  --an-type-${k}-family: ${familyCss(v.fontFamily)};`);
+  lines.push(`  --an-type-${k}-size: ${v.fontSize};`);
+  lines.push(`  --an-type-${k}-line: ${v.lineHeight};`);
+  lines.push(`  --an-type-${k}-weight: ${String(v.fontWeight)};`);
+  lines.push(`  --an-type-${k}-tracking: ${v.letterSpacing};`);
+}
+lines.push("");
 lines.push("  /* tier 2: semantics (light) */");
 for (const [name, value] of Object.entries(semanticLight)) {
   lines.push(`  --an-${name}: ${css(value)};`);
@@ -228,6 +281,16 @@ lines.push("  color: var(--an-text-primary);");
 lines.push("  background: var(--an-surface-base);");
 lines.push("  -webkit-font-smoothing: antialiased;");
 lines.push("}");
+lines.push("");
+lines.push("/* Type role utilities (.an-type-*): one class = one complete setting.");
+lines.push("   font shorthand carries family/size/line/weight; tracking rides along. */");
+for (const role of typeRoles.keys()) {
+  const k = kebab(role);
+  lines.push(`.an-type-${k} {`);
+  lines.push(`  font: var(--an-type-${k});`);
+  lines.push(`  letter-spacing: var(--an-type-${k}-tracking);`);
+  lines.push("}");
+}
 lines.push("");
 lines.push('/* Dark mode: semantic remap only; primitives stay constant. Tool chrome');
 lines.push("   only; a dark editor around a light course is correct and expected. */");
@@ -277,6 +340,12 @@ function nest(): Record<string, unknown> {
 
 const tsTokens = {
   ...nest(),
+  type: Object.fromEntries(
+    [...typeRoles.entries()].map(([role, v]) => [
+      role,
+      { ...v, fontFamily: familyResolved(v.fontFamily) },
+    ]),
+  ),
   semantic: {
     light: Object.fromEntries(
       Object.entries(semanticLight).map(([k, v]) => [k, resolved(v)]),
@@ -310,7 +379,7 @@ writeFileSync(join(srcDir, "tokens.ts"), ts);
 const primitiveCount = flat.size;
 const semanticCount = Object.keys(semanticLight).length;
 console.log(
-  `anvil tokens built: ${primitiveCount} primitives, ${semanticCount} semantics (light), ` +
+  `anvil tokens built: ${primitiveCount} primitives, ${typeRoles.size} type roles, ${semanticCount} semantics (light), ` +
     `${Object.keys(semanticDark).length} dark remaps, ${Object.keys(semanticCompact).length} compact remaps, ` +
     `${Object.keys(componentTokens).length} component knobs -> src/anvil.css, src/tokens.ts`,
 );

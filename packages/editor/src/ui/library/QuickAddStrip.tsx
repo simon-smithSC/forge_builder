@@ -5,8 +5,7 @@
 // selecting inserts a specific family+variant at the recorded index.
 import type { ReactElement } from "react";
 import { useEffect, useRef } from "react";
-import { LayoutGrid } from "lucide-react";
-import { Chip } from "@forge/ui";
+import { Chip, Icon } from "@forge/ui";
 import { insertBlockVariant } from "../../state/libraryActions.js";
 import { blockIcon } from "../blockIcons.js";
 import { quickAddItems, recordRecentPick } from "./libraryData.js";
@@ -71,7 +70,7 @@ export function QuickAddStrip({
         className="fe-lib-chip-library"
         onClick={onOpenLibrary}
       >
-        <LayoutGrid size={14} aria-hidden />
+        <Icon name="layout-grid" size={14} />
         <span>All blocks</span>
       </Chip>
       <span className="fe-lib-strip-rule" aria-hidden />

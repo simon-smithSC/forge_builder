@@ -97,29 +97,41 @@
   --an-space-48: 3rem;
   --an-space-64: 4rem;
 
-  --an-font-family-sans: Inter, "Segoe UI", system-ui, sans-serif;
-  --an-font-family-mono: "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --an-font-family-sans: "Geist Sans", "Geist Sans Fallback", Inter, "Segoe UI", system-ui, sans-serif;
+  --an-font-family-mono: "JetBrains Mono", "JetBrains Mono Fallback", SFMono-Regular, Menlo, Consolas, monospace;
   --an-font-weight-regular: 400;
   --an-font-weight-medium: 500;
   --an-font-weight-semibold: 600;
-  --an-font-size-11: 0.6875rem;
+  --an-font-weight-bold: 700;
   --an-font-size-12: 0.75rem;
   --an-font-size-13: 0.8125rem;
   --an-font-size-14: 0.875rem;
   --an-font-size-16: 1rem;
   --an-font-size-18: 1.125rem;
+  --an-font-size-20: 1.25rem;
   --an-font-size-22: 1.375rem;
+  --an-font-size-24: 1.5rem;
   --an-font-size-28: 1.75rem;
-  --an-font-line-11: 1rem;
-  --an-font-line-12: 1rem;
+  --an-font-size-32: 2rem;
+  --an-font-size-40: 2.5rem;
+  --an-font-line-12: 1.125rem;
   --an-font-line-13: 1.125rem;
   --an-font-line-14: 1.25rem;
   --an-font-line-16: 1.5rem;
-  --an-font-line-18: 1.625rem;
+  --an-font-line-18: 1.75rem;
+  --an-font-line-20: 1.75rem;
   --an-font-line-22: 1.875rem;
+  --an-font-line-24: 2rem;
   --an-font-line-28: 2.25rem;
-  --an-font-tracking-tight: 0.01em;
+  --an-font-line-32: 2.5rem;
+  --an-font-line-40: 3rem;
+  --an-font-tracking-tight: -0.01em;
   --an-font-tracking-normal: 0em;
+
+  --an-icon-size-16: 16px;
+  --an-icon-size-20: 20px;
+  --an-icon-size-24: 24px;
+  --an-icon-stroke-regular: 2;
 
   --an-radius-xs: 2px;
   --an-radius-sm: 4px;
@@ -151,6 +163,80 @@
   --an-z-overlay: 700;
   --an-z-modal: 800;
   --an-z-toast: 900;
+
+  /* type roles (--an-type-*): composite font shorthand + parts */
+  --an-type-display-large: 700 2.5rem/3rem var(--an-font-family-sans);
+  --an-type-display-large-family: var(--an-font-family-sans);
+  --an-type-display-large-size: 2.5rem;
+  --an-type-display-large-line: 3rem;
+  --an-type-display-large-weight: 700;
+  --an-type-display-large-tracking: -0.02em;
+  --an-type-display: 700 2rem/2.5rem var(--an-font-family-sans);
+  --an-type-display-family: var(--an-font-family-sans);
+  --an-type-display-size: 2rem;
+  --an-type-display-line: 2.5rem;
+  --an-type-display-weight: 700;
+  --an-type-display-tracking: -0.02em;
+  --an-type-heading-large: 600 1.5rem/2rem var(--an-font-family-sans);
+  --an-type-heading-large-family: var(--an-font-family-sans);
+  --an-type-heading-large-size: 1.5rem;
+  --an-type-heading-large-line: 2rem;
+  --an-type-heading-large-weight: 600;
+  --an-type-heading-large-tracking: -0.015em;
+  --an-type-heading: 600 1.25rem/1.75rem var(--an-font-family-sans);
+  --an-type-heading-family: var(--an-font-family-sans);
+  --an-type-heading-size: 1.25rem;
+  --an-type-heading-line: 1.75rem;
+  --an-type-heading-weight: 600;
+  --an-type-heading-tracking: -0.01em;
+  --an-type-heading-small: 600 1rem/1.5rem var(--an-font-family-sans);
+  --an-type-heading-small-family: var(--an-font-family-sans);
+  --an-type-heading-small-size: 1rem;
+  --an-type-heading-small-line: 1.5rem;
+  --an-type-heading-small-weight: 600;
+  --an-type-heading-small-tracking: -0.005em;
+  --an-type-label-large: 500 1rem/1.5rem var(--an-font-family-sans);
+  --an-type-label-large-family: var(--an-font-family-sans);
+  --an-type-label-large-size: 1rem;
+  --an-type-label-large-line: 1.5rem;
+  --an-type-label-large-weight: 500;
+  --an-type-label-large-tracking: 0em;
+  --an-type-label: 500 0.875rem/1.25rem var(--an-font-family-sans);
+  --an-type-label-family: var(--an-font-family-sans);
+  --an-type-label-size: 0.875rem;
+  --an-type-label-line: 1.25rem;
+  --an-type-label-weight: 500;
+  --an-type-label-tracking: 0em;
+  --an-type-label-small: 500 0.8125rem/1.125rem var(--an-font-family-sans);
+  --an-type-label-small-family: var(--an-font-family-sans);
+  --an-type-label-small-size: 0.8125rem;
+  --an-type-label-small-line: 1.125rem;
+  --an-type-label-small-weight: 500;
+  --an-type-label-small-tracking: 0.01em;
+  --an-type-paragraph-large: 400 1.125rem/1.75rem var(--an-font-family-sans);
+  --an-type-paragraph-large-family: var(--an-font-family-sans);
+  --an-type-paragraph-large-size: 1.125rem;
+  --an-type-paragraph-large-line: 1.75rem;
+  --an-type-paragraph-large-weight: 400;
+  --an-type-paragraph-large-tracking: 0em;
+  --an-type-paragraph: 400 1rem/1.5rem var(--an-font-family-sans);
+  --an-type-paragraph-family: var(--an-font-family-sans);
+  --an-type-paragraph-size: 1rem;
+  --an-type-paragraph-line: 1.5rem;
+  --an-type-paragraph-weight: 400;
+  --an-type-paragraph-tracking: 0em;
+  --an-type-paragraph-small: 400 0.875rem/1.25rem var(--an-font-family-sans);
+  --an-type-paragraph-small-family: var(--an-font-family-sans);
+  --an-type-paragraph-small-size: 0.875rem;
+  --an-type-paragraph-small-line: 1.25rem;
+  --an-type-paragraph-small-weight: 400;
+  --an-type-paragraph-small-tracking: 0em;
+  --an-type-mono: 400 0.8125rem/1.25rem var(--an-font-family-mono);
+  --an-type-mono-family: var(--an-font-family-mono);
+  --an-type-mono-size: 0.8125rem;
+  --an-type-mono-line: 1.25rem;
+  --an-type-mono-weight: 400;
+  --an-type-mono-tracking: 0em;
 
   /* tier 2: semantics (light) */
   --an-surface-sunken: var(--an-color-neutral-100);
@@ -190,8 +276,8 @@
   --an-status-info-border: var(--an-color-info-200);
   --an-status-info-solid: var(--an-color-info-500);
   --an-control-sm: 1.75rem;
-  --an-control-md: 2.125rem;
-  --an-control-lg: 2.5rem;
+  --an-control-md: 2.25rem;
+  --an-control-lg: 2.75rem;
   --an-inset-sm: var(--an-space-8);
   --an-inset-md: var(--an-space-12);
   --an-inset-lg: var(--an-space-16);
@@ -216,6 +302,57 @@
   color: var(--an-text-primary);
   background: var(--an-surface-base);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Type role utilities (.an-type-*): one class = one complete setting.
+   font shorthand carries family/size/line/weight; tracking rides along. */
+.an-type-display-large {
+  font: var(--an-type-display-large);
+  letter-spacing: var(--an-type-display-large-tracking);
+}
+.an-type-display {
+  font: var(--an-type-display);
+  letter-spacing: var(--an-type-display-tracking);
+}
+.an-type-heading-large {
+  font: var(--an-type-heading-large);
+  letter-spacing: var(--an-type-heading-large-tracking);
+}
+.an-type-heading {
+  font: var(--an-type-heading);
+  letter-spacing: var(--an-type-heading-tracking);
+}
+.an-type-heading-small {
+  font: var(--an-type-heading-small);
+  letter-spacing: var(--an-type-heading-small-tracking);
+}
+.an-type-label-large {
+  font: var(--an-type-label-large);
+  letter-spacing: var(--an-type-label-large-tracking);
+}
+.an-type-label {
+  font: var(--an-type-label);
+  letter-spacing: var(--an-type-label-tracking);
+}
+.an-type-label-small {
+  font: var(--an-type-label-small);
+  letter-spacing: var(--an-type-label-small-tracking);
+}
+.an-type-paragraph-large {
+  font: var(--an-type-paragraph-large);
+  letter-spacing: var(--an-type-paragraph-large-tracking);
+}
+.an-type-paragraph {
+  font: var(--an-type-paragraph);
+  letter-spacing: var(--an-type-paragraph-tracking);
+}
+.an-type-paragraph-small {
+  font: var(--an-type-paragraph-small);
+  letter-spacing: var(--an-type-paragraph-small-tracking);
+}
+.an-type-mono {
+  font: var(--an-type-mono);
+  letter-spacing: var(--an-type-mono-tracking);
 }
 
 /* Dark mode: semantic remap only; primitives stay constant. Tool chrome
@@ -257,8 +394,8 @@
 /* Density: compact remaps control heights and spacing semantics. */
 .anvil[data-density="compact"] {
   --an-control-sm: 1.5rem;
-  --an-control-md: 1.75rem;
-  --an-control-lg: 2.125rem;
+  --an-control-md: 2rem;
+  --an-control-lg: 2.5rem;
   --an-inset-sm: var(--an-space-6);
   --an-inset-md: var(--an-space-8);
   --an-inset-lg: var(--an-space-12);

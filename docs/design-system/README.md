@@ -7,9 +7,17 @@ shaped on: industrial precision without noise. See
 
 ## Identity
 
-- **Type**: Inter for UI (letter-spacing tightened at 12-13px via
-  `--an-font-tracking-tight`), JetBrains Mono for IDs, code, and xAPI/publish
-  detail.
+- **Type**: Geist Sans for UI (variable, OFL; tracking tightened at
+  display/heading sizes via the role tokens), JetBrains Mono for IDs, code,
+  and xAPI/publish detail. Twelve Base-style roles (`--an-type-*`:
+  display/heading/label/paragraph/mono) with hard floors: 16px default
+  reading, 14px UI paragraph/label, 13px small label, 12px absolute.
+  Webfont binaries are not committed; fetch once with
+  `node packages/ui/scripts/fetch-fonts.mjs` (fallback stack is
+  metric-adjusted until then).
+- **Icons**: 104 stroke icons on the 24px Lucide grid, vendored as data
+  (`<Icon name size={16|20|24} />`, ISC attribution); sizes 16 inline, 20
+  controls, 24 emphasis, stroke width 2.
 - **Color**: deep cobalt primary ramp (interactive voice), cool steel neutrals,
   and a restrained ember amber accent used sparingly (progress, warm emphasis).
 - **Depth**: a 5-level elevation scale of layered shadows (border-tint + key +
@@ -42,9 +50,10 @@ shaped on: industrial precision without noise. See
 ## How an app consumes Anvil
 
 ```tsx
+import "@forge/ui/fonts.css";        // Geist Sans + JetBrains Mono @font-face
 import "@forge/ui/anvil.css";        // tokens (scope class .anvil)
 import "@forge/ui/components.css";   // component styles
-import { Button, Dialog, ToastHost, toast } from "@forge/ui";
+import { Button, Dialog, Icon, ToastHost, toast } from "@forge/ui";
 
 export function App() {
   return (
@@ -68,6 +77,10 @@ export function App() {
 - `packages/ui/src/tokens/build.ts`: emits `src/anvil.css` + `src/tokens.ts`
   (both generated and committed; `pnpm build` = tsc, then token build).
 - `packages/ui/src/components.css`: hand-written component styles.
+- `packages/ui/src/fonts.css` + `packages/ui/scripts/fetch-fonts.mjs`:
+  webfont faces and the one-time binary fetch (network required).
+- `packages/ui/scripts/generate-icons.mjs`: regenerates `src/icons/icons.ts`
+  from the workspace lucide-react (edit NAMES, rerun, rebuild).
 - `scripts/make-styleguide.mjs`: builds `anvil-styleguide.html`, the living
   styleguide and review artifact (run after building `packages/ui`).
 - `docs/design-system/tokens.md`: token reference. `decisions.md`: decision log.

@@ -119,44 +119,105 @@
   "font": {
     "family": {
       "$type": "fontFamily",
-      "sans": { "$value": ["Inter", "Segoe UI", "system-ui", "sans-serif"] },
-      "mono": { "$value": ["JetBrains Mono", "SFMono-Regular", "Menlo", "Consolas", "monospace"] }
+      "$description": "Geist Sans is the Anvil UI face (variable woff2, vendored via scripts/fetch-fonts.mjs). The Fallback faces are metric-adjusted local stacks declared in src/fonts.css so text does not reflow when the webfont lands.",
+      "sans": { "$value": ["Geist Sans", "Geist Sans Fallback", "Inter", "Segoe UI", "system-ui", "sans-serif"] },
+      "mono": { "$value": ["JetBrains Mono", "JetBrains Mono Fallback", "SFMono-Regular", "Menlo", "Consolas", "monospace"] }
     },
     "weight": {
       "$type": "fontWeight",
       "regular": { "$value": 400 },
       "medium": { "$value": 500 },
-      "semibold": { "$value": 600 }
+      "semibold": { "$value": 600 },
+      "bold": { "$value": 700 }
     },
     "size": {
       "$type": "dimension",
-      "$description": "Keys are px reference sizes; values are rem.",
-      "11": { "$value": "0.6875rem" },
+      "$description": "Keys are px reference sizes; values are rem. 12px is the system floor: nothing in Anvil or consuming chrome may render smaller.",
       "12": { "$value": "0.75rem" },
       "13": { "$value": "0.8125rem" },
       "14": { "$value": "0.875rem" },
       "16": { "$value": "1rem" },
       "18": { "$value": "1.125rem" },
+      "20": { "$value": "1.25rem" },
       "22": { "$value": "1.375rem" },
-      "28": { "$value": "1.75rem" }
+      "24": { "$value": "1.5rem" },
+      "28": { "$value": "1.75rem" },
+      "32": { "$value": "2rem" },
+      "40": { "$value": "2.5rem" }
     },
     "line": {
       "$type": "dimension",
       "$description": "Paired line heights for font.size keys.",
-      "11": { "$value": "1rem" },
-      "12": { "$value": "1rem" },
+      "12": { "$value": "1.125rem" },
       "13": { "$value": "1.125rem" },
       "14": { "$value": "1.25rem" },
       "16": { "$value": "1.5rem" },
-      "18": { "$value": "1.625rem" },
+      "18": { "$value": "1.75rem" },
+      "20": { "$value": "1.75rem" },
       "22": { "$value": "1.875rem" },
-      "28": { "$value": "2.25rem" }
+      "24": { "$value": "2rem" },
+      "28": { "$value": "2.25rem" },
+      "32": { "$value": "2.5rem" },
+      "40": { "$value": "3rem" }
     },
     "tracking": {
       "$type": "dimension",
-      "$description": "Inter reads better slightly tightened at chrome sizes (12-13px).",
-      "tight": { "$value": "0.01em" },
+      "$description": "Geist reads best slightly tightened at display/heading sizes; body and small labels stay neutral.",
+      "tight": { "$value": "-0.01em" },
       "normal": { "$value": "0em" }
+    }
+  },
+  "type": {
+    "$type": "typography",
+    "$description": "Role scale (Base-style: display / heading / label / paragraph / mono). Each role is a complete setting: px-referenced size, line-height, weight, tracking. Emitted as --an-type-<role>-* custom properties plus .an-type-<role> utility classes. UI paragraph floor is 14px, label floor 13px, absolute floor 12px.",
+    "displayLarge": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "2.5rem", "lineHeight": "3rem", "fontWeight": 700, "letterSpacing": "-0.02em" }
+    },
+    "display": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "2rem", "lineHeight": "2.5rem", "fontWeight": 700, "letterSpacing": "-0.02em" }
+    },
+    "headingLarge": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "1.5rem", "lineHeight": "2rem", "fontWeight": 600, "letterSpacing": "-0.015em" }
+    },
+    "heading": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "1.25rem", "lineHeight": "1.75rem", "fontWeight": 600, "letterSpacing": "-0.01em" }
+    },
+    "headingSmall": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "1rem", "lineHeight": "1.5rem", "fontWeight": 600, "letterSpacing": "-0.005em" }
+    },
+    "labelLarge": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "1rem", "lineHeight": "1.5rem", "fontWeight": 500, "letterSpacing": "0em" }
+    },
+    "label": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "0.875rem", "lineHeight": "1.25rem", "fontWeight": 500, "letterSpacing": "0em" }
+    },
+    "labelSmall": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "0.8125rem", "lineHeight": "1.125rem", "fontWeight": 500, "letterSpacing": "0.01em" }
+    },
+    "paragraphLarge": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "1.125rem", "lineHeight": "1.75rem", "fontWeight": 400, "letterSpacing": "0em" }
+    },
+    "paragraph": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "1rem", "lineHeight": "1.5rem", "fontWeight": 400, "letterSpacing": "0em" }
+    },
+    "paragraphSmall": {
+      "$value": { "fontFamily": "{font.family.sans}", "fontSize": "0.875rem", "lineHeight": "1.25rem", "fontWeight": 400, "letterSpacing": "0em" }
+    },
+    "mono": {
+      "$value": { "fontFamily": "{font.family.mono}", "fontSize": "0.8125rem", "lineHeight": "1.25rem", "fontWeight": 400, "letterSpacing": "0em" }
+    }
+  },
+  "icon": {
+    "$description": "Icon sizing convention (Base-style): 16 inline with text, 20 default controls, 24 emphasis/empty states. Stroke width 2 at all sizes (Lucide grid).",
+    "size": {
+      "$type": "dimension",
+      "16": { "$value": "16px" },
+      "20": { "$value": "20px" },
+      "24": { "$value": "24px" }
+    },
+    "stroke": {
+      "$type": "number",
+      "regular": { "$value": 2 }
     }
   },
   "radius": {

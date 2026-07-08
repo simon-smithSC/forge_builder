@@ -58,6 +58,12 @@ for (const [key, src] of modules.entries()) {
 }
 
 const css = [
+  // fonts.css: @font-face urls resolve relative to this html; if the woff2
+  // files were not fetched (scripts/fetch-fonts.mjs) the fallback stack shows.
+  readFileSync(join(root, "packages/ui/src/fonts.css"), "utf8").replaceAll(
+    'url("./fonts/',
+    'url("packages/ui/src/fonts/',
+  ),
   readFileSync(join(root, "packages/ui/src/anvil.css"), "utf8"),
   readFileSync(join(root, "packages/ui/src/components.css"), "utf8"),
 ].join("\n");

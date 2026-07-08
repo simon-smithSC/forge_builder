@@ -168,7 +168,15 @@ importers:
         specifier: ^3.24.6
         version: 3.25.2(zod@3.25.76)
 
-  packages/ui: {}
+  packages/ui:
+    dependencies:
+      react:
+        specifier: ^19.2.3
+        version: 19.2.7
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.7
+        version: 19.2.17
 
   packages/xapi:
     dependencies:

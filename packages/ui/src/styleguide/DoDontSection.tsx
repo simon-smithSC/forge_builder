@@ -81,8 +81,8 @@ export function DoDontSection(): ReactElement {
                 borderLeft: "3px solid var(--an-status-success-solid)",
                 paddingLeft: "var(--an-space-8)",
                 marginBottom: "var(--an-space-8)",
-                fontSize: "var(--an-font-size-13)",
-                lineHeight: "var(--an-font-line-13)",
+                fontSize: "var(--an-font-size-14)",
+                lineHeight: "var(--an-font-line-14)",
               }}
             >
               <strong style={{ color: "var(--an-status-success-fg)" }}>Do.</strong>{" "}
@@ -92,8 +92,8 @@ export function DoDontSection(): ReactElement {
               style={{
                 borderLeft: "3px solid var(--an-status-danger-solid)",
                 paddingLeft: "var(--an-space-8)",
-                fontSize: "var(--an-font-size-13)",
-                lineHeight: "var(--an-font-line-13)",
+                fontSize: "var(--an-font-size-14)",
+                lineHeight: "var(--an-font-line-14)",
               }}
             >
               <strong style={{ color: "var(--an-status-danger-fg)" }}>Don't.</strong>{" "}

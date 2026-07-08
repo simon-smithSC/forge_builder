@@ -56,3 +56,35 @@ graduate to ADRs in `docs/adr/`; API changes follow semver in
   API) bundled by `scripts/make-styleguide.mjs` with the same data-URL
   import-map technique as `make-standalone.mjs`; react comes from esm.sh at
   view time.
+
+## 2026-07-08: D1.5 typography, icons, system depth
+
+- **Geist Sans replaces Inter as the UI face.** Owner feedback called the type
+  lousy and small. Geist (Vercel, OFL 1.1) has a taller x-height and wider
+  apertures than Inter at 13-16px, reads crisper on low-DPI, ships as a single
+  variable woff2, and its license permits vendoring. Runner-up was staying on
+  Inter with `ss01`; rejected because the complaint was legibility, not
+  styling. JetBrains Mono stays for code/IDs. Binaries are NOT committed:
+  `node packages/ui/scripts/fetch-fonts.mjs` downloads them from the
+  Fontsource mirrors of the official releases; until then `fonts.css` serves a
+  metric-adjusted (size-adjust) local fallback so layout never reflows.
+- **Type roles over raw sizes** (Base-style, cf. base.uber.com typography:
+  display/heading/label/paragraph categories, each an explicit
+  size + line-height + weight + tracking setting). Twelve roles
+  (displayLarge 40/48/700 down to labelSmall 13/18/500 and mono 13/20) live in
+  the DTCG source as `typography` composites and emit `--an-type-*` vars plus
+  `.an-type-*` classes; `Heading`/`Text`/`Label` are the React mapping.
+  Floors are policy: 16px default reading, 14px UI paragraph and label,
+  13px small label, 12px absolute (`--an-font-size-11` deleted so violations
+  fail the build). Control heights standardized at 28/36/44px.
+- **Icons are vendored data, not a dependency.** `scripts/generate-icons.mjs`
+  extracts a curated 104-icon set (editor chrome usage + system basics) from
+  the workspace's lucide-react into `src/icons/icons.ts` (ISC attribution in
+  the generated header); `<Icon name size={16|20|24} strokeWidth={2}>` renders
+  it. Keeps @forge/ui at zero runtime deps beyond react, pins geometry against
+  upstream renames, and gives the styleguide a searchable gallery. lucide-react
+  stays installed in the editor for deep, not-yet-migrated usages.
+- **FormField wires accessibility structurally**: it generates the control id,
+  points `aria-describedby` at the hint or the error (error wins and is
+  `role=alert`), and paints the invalid border from the wrapper
+  (`.an-field[data-invalid]`), so any control composes without new props.

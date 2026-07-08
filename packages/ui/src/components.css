@@ -35,7 +35,8 @@
 .an-segment:focus-visible,
 .an-switch:focus-visible,
 .an-toast-dismiss:focus-visible,
-.an-tabpanel:focus-visible {
+.an-tabpanel:focus-visible,
+.an-card[data-interactive]:focus-visible {
   outline: none;
   box-shadow: var(--an-focus-ring);
 }
@@ -70,8 +71,8 @@
   gap: var(--an-gap-sm);
   border: 1px solid transparent;
   border-radius: var(--an-radius-md);
-  font-size: var(--an-font-size-13);
-  line-height: var(--an-font-line-13);
+  font-size: var(--an-font-size-14);
+  line-height: var(--an-font-line-14);
   font-weight: var(--an-font-weight-medium);
   letter-spacing: var(--an-font-tracking-tight);
   height: var(--an-control-md);
@@ -88,14 +89,14 @@
 .an-btn[data-size="sm"] {
   height: var(--an-control-sm);
   padding: 0 var(--an-space-8);
-  font-size: var(--an-font-size-12);
-  line-height: var(--an-font-line-12);
+  font-size: var(--an-font-size-13);
+  line-height: var(--an-font-line-13);
 }
 .an-btn[data-size="lg"] {
   height: var(--an-control-lg);
   padding: 0 var(--an-space-16);
-  font-size: var(--an-font-size-14);
-  line-height: var(--an-font-line-14);
+  font-size: var(--an-font-size-16);
+  line-height: var(--an-font-line-16);
 }
 
 .an-btn[data-variant="primary"] {
@@ -239,8 +240,8 @@
   border: 1px solid var(--an-border-subtle);
   border-radius: var(--an-radius-md);
   color: var(--an-text-primary);
-  font-size: var(--an-font-size-13);
-  line-height: var(--an-font-line-13);
+  font-size: var(--an-font-size-14);
+  line-height: var(--an-font-line-14);
   padding: 0 var(--an-space-8);
   transition:
     border-color var(--an-duration-120) var(--an-ease-standard),
@@ -251,11 +252,11 @@
 }
 .an-input[data-size="sm"] {
   height: var(--an-control-sm);
-  font-size: var(--an-font-size-12);
+  font-size: var(--an-font-size-13);
 }
 .an-input[data-size="lg"] {
   height: var(--an-control-lg);
-  font-size: var(--an-font-size-14);
+  font-size: var(--an-font-size-16);
 }
 .an-textarea {
   min-height: calc(var(--an-control-md) * 2);
@@ -300,11 +301,11 @@
 }
 .an-select[data-size="sm"] select {
   height: var(--an-control-sm);
-  font-size: var(--an-font-size-12);
+  font-size: var(--an-font-size-13);
 }
 .an-select[data-size="lg"] select {
   height: var(--an-control-lg);
-  font-size: var(--an-font-size-14);
+  font-size: var(--an-font-size-16);
 }
 .an-select-chevron {
   position: absolute;
@@ -323,8 +324,8 @@
   align-items: center;
   gap: var(--an-gap-sm);
   cursor: pointer;
-  font-size: var(--an-font-size-13);
-  line-height: var(--an-font-line-13);
+  font-size: var(--an-font-size-14);
+  line-height: var(--an-font-line-14);
   color: var(--an-text-primary);
 }
 .an-checkbox-input,
@@ -442,8 +443,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--an-space-4);
-  font-size: var(--an-font-size-11);
-  line-height: var(--an-font-line-11);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
   font-weight: var(--an-font-weight-medium);
   letter-spacing: var(--an-font-tracking-tight);
   padding: var(--an-space-2) var(--an-space-8);
@@ -506,8 +507,8 @@
   border: none;
   background: transparent;
   color: var(--an-text-primary);
-  font-size: var(--an-font-size-12);
-  line-height: var(--an-font-line-12);
+  font-size: var(--an-font-size-13);
+  line-height: var(--an-font-line-13);
   font-weight: var(--an-font-weight-medium);
   padding: var(--an-space-4) var(--an-space-12);
   border-radius: var(--an-radius-full);
@@ -638,8 +639,8 @@
   background: transparent;
   text-align: left;
   color: var(--an-text-primary);
-  font-size: var(--an-font-size-13);
-  line-height: var(--an-font-line-13);
+  font-size: var(--an-font-size-14);
+  line-height: var(--an-font-line-14);
   padding: var(--an-space-6) var(--an-space-8);
   border-radius: var(--an-radius-md);
   cursor: pointer;
@@ -677,8 +678,8 @@
   border: none;
   background: transparent;
   color: var(--an-text-secondary);
-  font-size: var(--an-font-size-13);
-  line-height: var(--an-font-line-13);
+  font-size: var(--an-font-size-14);
+  line-height: var(--an-font-line-14);
   font-weight: var(--an-font-weight-medium);
   padding: var(--an-space-8) var(--an-space-4);
   margin-bottom: -1px;
@@ -715,8 +716,8 @@
   border: none;
   background: transparent;
   color: var(--an-text-secondary);
-  font-size: var(--an-font-size-12);
-  line-height: var(--an-font-line-12);
+  font-size: var(--an-font-size-13);
+  line-height: var(--an-font-line-13);
   font-weight: var(--an-font-weight-medium);
   padding: var(--an-space-4) var(--an-space-12);
   border-radius: var(--an-radius-md);
@@ -727,11 +728,11 @@
     box-shadow var(--an-duration-120) var(--an-ease-standard);
 }
 .an-segmented[data-size="sm"] .an-segment {
-  font-size: var(--an-font-size-11);
+  font-size: var(--an-font-size-12);
   padding: var(--an-space-2) var(--an-space-8);
 }
 .an-segmented[data-size="lg"] .an-segment {
-  font-size: var(--an-font-size-13);
+  font-size: var(--an-font-size-14);
   padding: var(--an-space-6) var(--an-space-16);
 }
 .an-segment:hover:not(:disabled) {
@@ -760,8 +761,8 @@
   z-index: var(--an-z-overlay);
   background: var(--an-text-primary);
   color: var(--an-surface-base);
-  font-size: var(--an-font-size-11);
-  line-height: var(--an-font-line-11);
+  font-size: var(--an-font-size-12);
+  line-height: var(--an-font-line-12);
   font-weight: var(--an-font-weight-medium);
   padding: var(--an-space-4) var(--an-space-8);
   border-radius: var(--an-radius-sm);
@@ -861,8 +862,8 @@
 }
 .an-drawer-title {
   margin: 0;
-  font-size: var(--an-font-size-14);
-  line-height: var(--an-font-line-14);
+  font-size: var(--an-font-size-16);
+  line-height: var(--an-font-line-16);
   font-weight: var(--an-font-weight-semibold);
 }
 .an-drawer-body {
@@ -885,14 +886,14 @@
   color: var(--an-text-muted);
 }
 .an-empty-title {
-  font-size: var(--an-font-size-14);
-  line-height: var(--an-font-line-14);
+  font-size: var(--an-font-size-16);
+  line-height: var(--an-font-line-16);
   font-weight: var(--an-font-weight-semibold);
   color: var(--an-text-primary);
 }
 .an-empty-description {
-  font-size: var(--an-font-size-13);
-  line-height: var(--an-font-line-13);
+  font-size: var(--an-font-size-14);
+  line-height: var(--an-font-line-14);
   max-width: 28rem;
 }
 .an-empty-action {
@@ -957,8 +958,8 @@
 .an-toast[data-tone="info"] { border-left-color: var(--an-status-info-solid); }
 .an-toast-message {
   flex: 1;
-  font-size: var(--an-font-size-13);
-  line-height: var(--an-font-line-13);
+  font-size: var(--an-font-size-14);
+  line-height: var(--an-font-line-14);
   color: var(--an-text-primary);
 }
 .an-toast-dismiss {
@@ -984,4 +985,87 @@
     animation-duration: 1ms;
     animation-iteration-count: 1;
   }
+}
+
+/* ---- Icon ----------------------------------------------------------------- */
+
+.an-icon {
+  flex: none;
+  vertical-align: middle;
+}
+
+/* ---- Typography primitives (Heading / Text / Label) ------------------------ */
+
+.an-heading,
+.an-text {
+  margin: 0;
+}
+.an-text[data-tone="primary"] { color: var(--an-text-primary); }
+.an-text[data-tone="secondary"] { color: var(--an-text-secondary); }
+.an-text[data-tone="muted"] { color: var(--an-text-muted); }
+
+/* ---- Stack / Inline / Divider ---------------------------------------------- */
+
+.an-stack {
+  display: flex;
+  flex-direction: column;
+}
+.an-inline {
+  display: flex;
+  flex-direction: row;
+}
+.an-divider {
+  border: none;
+  margin: 0;
+  background: var(--an-border-subtle);
+}
+.an-divider[data-orientation="horizontal"] {
+  height: 1px;
+  width: 100%;
+}
+.an-divider[data-orientation="vertical"] {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+}
+
+/* ---- FormField ---------------------------------------------------------------- */
+
+.an-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--an-space-6);
+}
+.an-field > .an-input,
+.an-field > .an-textarea,
+.an-field > .an-select {
+  align-self: stretch;
+}
+.an-field > .an-select select {
+  width: 100%;
+}
+.an-field-label {
+  color: var(--an-text-primary);
+}
+.an-field-required {
+  color: var(--an-status-danger-fg);
+  margin-left: var(--an-space-2);
+}
+.an-field-hint {
+  font-size: var(--an-font-size-13);
+  line-height: var(--an-font-line-13);
+  color: var(--an-text-muted);
+}
+.an-field-error {
+  font-size: var(--an-font-size-13);
+  line-height: var(--an-font-line-13);
+  font-weight: var(--an-font-weight-medium);
+  color: var(--an-status-danger-fg);
+}
+/* Presence of an error paints the child control; no extra prop needed. */
+.an-field[data-invalid] .an-input,
+.an-field[data-invalid] .an-textarea,
+.an-field[data-invalid] .an-select select {
+  border-color: var(--an-status-danger-solid);
 }

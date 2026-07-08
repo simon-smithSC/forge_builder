@@ -6,8 +6,7 @@
 // a SPECIFIC family+variant at the pending index and closes.
 import type { KeyboardEvent, ReactElement } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, X } from "lucide-react";
-import { IconButton } from "@forge/ui";
+import { Icon, IconButton } from "@forge/ui";
 import { insertBlockVariant } from "../../state/libraryActions.js";
 import { blockIcon } from "../blockIcons.js";
 import type { LibraryCard } from "./libraryData.js";
@@ -134,7 +133,7 @@ export function BlockLibrary({
       >
         <div className="fe-lib-header">
           <span className="fe-lib-search">
-            <Search size={14} aria-hidden />
+            <Icon name="search" size={14} />
             <input
               ref={searchRef}
               value={query}
@@ -145,7 +144,7 @@ export function BlockLibrary({
           </span>
           <IconButton
             label="Close block library"
-            icon={<X size={16} aria-hidden />}
+            icon={<Icon name="x" size={16} />}
             onClick={onClose}
           />
         </div>

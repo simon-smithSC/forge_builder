@@ -17,7 +17,7 @@
   border-radius: var(--an-radius-sm);
   background: var(--an-status-danger-bg);
   color: var(--an-status-danger-fg);
-  font-size: 10px;
+  font-size: var(--an-font-size-12);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -25,7 +25,7 @@
 
 .fe-pl-hint {
   color: var(--an-text-muted);
-  font-size: 11px;
+  font-size: var(--an-font-size-12);
   line-height: 1.4;
   overflow-wrap: anywhere;
 }

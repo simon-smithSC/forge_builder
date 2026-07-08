@@ -1,20 +1,7 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
-import {
-  ArrowLeft,
-  Languages,
-  Monitor,
-  Palette,
-  PanelLeft,
-  Play,
-  Redo2,
-  Smartphone,
-  Tablet,
-  Undo2,
-  UploadCloud,
-} from "lucide-react";
 import type { PreviewDevice } from "@forge/player";
-import { Badge, Button, IconButton, SegmentedControl } from "@forge/ui";
+import { Badge, Button, Icon, IconButton, SegmentedControl } from "@forge/ui";
 import {
   redo,
   setCourseMeta,
@@ -42,9 +29,9 @@ const STATUS_TONE: Record<SaveStatus, "success" | "neutral" | "warn" | "danger">
 };
 
 function deviceIcon(device: PreviewDevice): ReactElement {
-  if (device === "phone") return <Smartphone size={14} aria-hidden />;
-  if (device === "tablet") return <Tablet size={14} aria-hidden />;
-  return <Monitor size={14} aria-hidden />;
+  if (device === "phone") return <Icon name="smartphone" size={14} />;
+  if (device === "tablet") return <Icon name="tablet" size={14} />;
+  return <Icon name="monitor" size={14} />;
 }
 
 const DEVICES: { id: PreviewDevice; label: string }[] = [
@@ -81,12 +68,12 @@ export function TopBar({
       <IconButton
         className="fe-outline-toggle"
         label="Toggle lesson outline"
-        icon={<PanelLeft size={18} aria-hidden />}
+        icon={<Icon name="panel-left" size={18} />}
         onClick={onToggleOutline}
       />
       <IconButton
         label="Back to course overview"
-        icon={<ArrowLeft size={18} aria-hidden />}
+        icon={<Icon name="arrow-left" size={18} />}
         onClick={() => showCourseOverview()}
       />
 
@@ -106,26 +93,26 @@ export function TopBar({
 
       <IconButton
         label="Undo"
-        icon={<Undo2 size={18} aria-hidden />}
+        icon={<Icon name="undo-2" size={18} />}
         onClick={() => undo()}
         disabled={!canUndo}
       />
       <IconButton
         label="Redo"
-        icon={<Redo2 size={18} aria-hidden />}
+        icon={<Icon name="redo-2" size={18} />}
         onClick={() => redo()}
         disabled={!canRedo}
       />
 
       <Button
-        iconStart={<Palette size={14} aria-hidden />}
+        iconStart={<Icon name="palette" size={14} />}
         onClick={() => setThemeOpen(true)}
         title="Edit course theme"
       >
         Theme
       </Button>
       <Button
-        iconStart={<Languages size={14} aria-hidden />}
+        iconStart={<Icon name="languages" size={14} />}
         onClick={() => setLabelsOpen(true)}
         title="Edit course labels"
       >
@@ -148,7 +135,7 @@ export function TopBar({
 
       <Button
         variant="primary"
-        iconStart={<Play size={14} aria-hidden />}
+        iconStart={<Icon name="play" size={14} />}
         onClick={onPreview}
       >
         Preview
@@ -156,7 +143,7 @@ export function TopBar({
 
       <Button
         variant="primary"
-        iconStart={<UploadCloud size={14} aria-hidden />}
+        iconStart={<Icon name="upload-cloud" size={14} />}
         onClick={() => setPublishOpen(true)}
         title="Publish as xAPI package"
       >

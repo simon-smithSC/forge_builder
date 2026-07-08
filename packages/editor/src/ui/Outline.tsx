@@ -4,15 +4,6 @@
 import type { CSSProperties, ReactElement } from "react";
 import { useCallback, useMemo, useState } from "react";
 import {
-  ChevronDown,
-  ChevronUp,
-  FileText,
-  GripVertical,
-  HelpCircle,
-  Pencil,
-  Trash2,
-} from "lucide-react";
-import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
@@ -29,7 +20,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import type { Lesson } from "@forge/schema";
-import { Button, IconButton, Input } from "@forge/ui";
+import { Button, Icon, IconButton, Input } from "@forge/ui";
 import {
   addLesson,
   moveLesson,
@@ -100,7 +91,7 @@ function LessonRow({
         size="sm"
         label={`Drag to reorder ${lesson.title}`}
         title="Drag to reorder"
-        icon={<GripVertical size={13} aria-hidden />}
+        icon={<Icon name="grip-vertical" size={13} />}
         {...attributes}
         {...listeners}
       />
@@ -127,8 +118,8 @@ function LessonRow({
           className="fe-outline-label"
           onClick={() => selectLesson(lesson.id)}
         >
-          {lesson.type === "blocks" ? <FileText size={14} aria-hidden /> : null}
-          {lesson.type === "quiz" ? <HelpCircle size={14} aria-hidden /> : null}
+          {lesson.type === "blocks" ? <Icon name="file-text" size={14} /> : null}
+          {lesson.type === "quiz" ? <Icon name="help-circle" size={14} /> : null}
           <span>{lesson.title}</span>
         </button>
       )}
@@ -138,14 +129,14 @@ function LessonRow({
           size="sm"
           label={`Rename ${lesson.title}`}
           title="Rename"
-          icon={<Pencil size={13} aria-hidden />}
+          icon={<Icon name="pencil" size={13} />}
           onClick={() => setEditing(true)}
         />
         <IconButton
           size="sm"
           label={`Move ${lesson.title} up`}
           title="Move up"
-          icon={<ChevronUp size={13} aria-hidden />}
+          icon={<Icon name="chevron-up" size={13} />}
           onClick={() => moveLesson(lesson.id, "up")}
           disabled={index === 0}
         />
@@ -153,7 +144,7 @@ function LessonRow({
           size="sm"
           label={`Move ${lesson.title} down`}
           title="Move down"
-          icon={<ChevronDown size={13} aria-hidden />}
+          icon={<Icon name="chevron-down" size={13} />}
           onClick={() => moveLesson(lesson.id, "down")}
           disabled={index === count - 1}
         />
@@ -162,7 +153,7 @@ function LessonRow({
           variant="danger"
           label={`Delete ${lesson.title}`}
           title="Delete"
-          icon={<Trash2 size={13} aria-hidden />}
+          icon={<Icon name="trash-2" size={13} />}
           onClick={confirmDelete}
         />
       </span>
