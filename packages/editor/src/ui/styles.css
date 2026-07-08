@@ -735,19 +735,31 @@ button:focus-visible {
 }
 
 /* Terminal instance (end of lesson): permanently the strong state, rendered
-   as a small labelled "Add block" pill. Declared after the hover block so it
-   wins the equal-specificity tie. */
+   as a small labelled "Add block" pill. The selector list must OUTRANK every
+   intensify trigger above, not merely follow it: .fe-insert:hover
+   .fe-insert-btn is 3 classes and .fe-block-slot:hover + .fe-lib-anchor
+   .fe-insert-btn is 4, so hovering the pill (or the last block) used to win
+   the cascade and squash the pill into the 26px disc geometry. Each trigger
+   gets an explicit terminal counterpart at higher specificity. */
 .fe-insert-end {
   height: 34px;
 }
 
-.fe-insert-end .fe-insert-btn {
+.fe-insert-end .fe-insert-btn,
+.fe-insert-end:hover .fe-insert-btn,
+.fe-insert-end .fe-insert-btn:focus-visible,
+.fe-block-slot:hover + .fe-lib-anchor .fe-insert-end .fe-insert-btn {
   width: auto;
   height: 26px;
   padding: 0 var(--an-space-12);
   background: var(--forge-primary, var(--an-interactive-idle));
   color: #ffffff;
   box-shadow: var(--an-elevation-2);
+}
+
+/* The pill's own hover: lift, never reshape. */
+.fe-insert-end .fe-insert-btn:hover {
+  box-shadow: var(--an-elevation-3);
 }
 
 .fe-insert-btn-label {
