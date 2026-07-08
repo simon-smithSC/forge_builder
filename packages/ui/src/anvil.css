@@ -305,53 +305,93 @@
 }
 
 /* Type role utilities (.an-type-*): one class = one complete setting.
-   font shorthand carries family/size/line/weight; tracking rides along. */
+   LONGHANDS ONLY. The font: shorthand with a composite var() is expanded
+   by a deferred reparse; any engine hiccup there silently resets every
+   font longhand (observed in the field as browser-default Times). The
+   composite --an-type-<role> vars remain emitted for reference but no
+   Anvil rule may consume them via the font shorthand. */
 .an-type-display-large {
-  font: var(--an-type-display-large);
+  font-family: var(--an-type-display-large-family);
+  font-size: var(--an-type-display-large-size);
+  line-height: var(--an-type-display-large-line);
+  font-weight: var(--an-type-display-large-weight);
   letter-spacing: var(--an-type-display-large-tracking);
 }
 .an-type-display {
-  font: var(--an-type-display);
+  font-family: var(--an-type-display-family);
+  font-size: var(--an-type-display-size);
+  line-height: var(--an-type-display-line);
+  font-weight: var(--an-type-display-weight);
   letter-spacing: var(--an-type-display-tracking);
 }
 .an-type-heading-large {
-  font: var(--an-type-heading-large);
+  font-family: var(--an-type-heading-large-family);
+  font-size: var(--an-type-heading-large-size);
+  line-height: var(--an-type-heading-large-line);
+  font-weight: var(--an-type-heading-large-weight);
   letter-spacing: var(--an-type-heading-large-tracking);
 }
 .an-type-heading {
-  font: var(--an-type-heading);
+  font-family: var(--an-type-heading-family);
+  font-size: var(--an-type-heading-size);
+  line-height: var(--an-type-heading-line);
+  font-weight: var(--an-type-heading-weight);
   letter-spacing: var(--an-type-heading-tracking);
 }
 .an-type-heading-small {
-  font: var(--an-type-heading-small);
+  font-family: var(--an-type-heading-small-family);
+  font-size: var(--an-type-heading-small-size);
+  line-height: var(--an-type-heading-small-line);
+  font-weight: var(--an-type-heading-small-weight);
   letter-spacing: var(--an-type-heading-small-tracking);
 }
 .an-type-label-large {
-  font: var(--an-type-label-large);
+  font-family: var(--an-type-label-large-family);
+  font-size: var(--an-type-label-large-size);
+  line-height: var(--an-type-label-large-line);
+  font-weight: var(--an-type-label-large-weight);
   letter-spacing: var(--an-type-label-large-tracking);
 }
 .an-type-label {
-  font: var(--an-type-label);
+  font-family: var(--an-type-label-family);
+  font-size: var(--an-type-label-size);
+  line-height: var(--an-type-label-line);
+  font-weight: var(--an-type-label-weight);
   letter-spacing: var(--an-type-label-tracking);
 }
 .an-type-label-small {
-  font: var(--an-type-label-small);
+  font-family: var(--an-type-label-small-family);
+  font-size: var(--an-type-label-small-size);
+  line-height: var(--an-type-label-small-line);
+  font-weight: var(--an-type-label-small-weight);
   letter-spacing: var(--an-type-label-small-tracking);
 }
 .an-type-paragraph-large {
-  font: var(--an-type-paragraph-large);
+  font-family: var(--an-type-paragraph-large-family);
+  font-size: var(--an-type-paragraph-large-size);
+  line-height: var(--an-type-paragraph-large-line);
+  font-weight: var(--an-type-paragraph-large-weight);
   letter-spacing: var(--an-type-paragraph-large-tracking);
 }
 .an-type-paragraph {
-  font: var(--an-type-paragraph);
+  font-family: var(--an-type-paragraph-family);
+  font-size: var(--an-type-paragraph-size);
+  line-height: var(--an-type-paragraph-line);
+  font-weight: var(--an-type-paragraph-weight);
   letter-spacing: var(--an-type-paragraph-tracking);
 }
 .an-type-paragraph-small {
-  font: var(--an-type-paragraph-small);
+  font-family: var(--an-type-paragraph-small-family);
+  font-size: var(--an-type-paragraph-small-size);
+  line-height: var(--an-type-paragraph-small-line);
+  font-weight: var(--an-type-paragraph-small-weight);
   letter-spacing: var(--an-type-paragraph-small-tracking);
 }
 .an-type-mono {
-  font: var(--an-type-mono);
+  font-family: var(--an-type-mono-family);
+  font-size: var(--an-type-mono-size);
+  line-height: var(--an-type-mono-line);
+  font-weight: var(--an-type-mono-weight);
   letter-spacing: var(--an-type-mono-tracking);
 }
 

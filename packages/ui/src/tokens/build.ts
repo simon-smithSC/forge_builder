@@ -283,11 +283,18 @@ lines.push("  -webkit-font-smoothing: antialiased;");
 lines.push("}");
 lines.push("");
 lines.push("/* Type role utilities (.an-type-*): one class = one complete setting.");
-lines.push("   font shorthand carries family/size/line/weight; tracking rides along. */");
+lines.push("   LONGHANDS ONLY. The font: shorthand with a composite var() is expanded");
+lines.push("   by a deferred reparse; any engine hiccup there silently resets every");
+lines.push("   font longhand (observed in the field as browser-default Times). The");
+lines.push("   composite --an-type-<role> vars remain emitted for reference but no");
+lines.push("   Anvil rule may consume them via the font shorthand. */");
 for (const role of typeRoles.keys()) {
   const k = kebab(role);
   lines.push(`.an-type-${k} {`);
-  lines.push(`  font: var(--an-type-${k});`);
+  lines.push(`  font-family: var(--an-type-${k}-family);`);
+  lines.push(`  font-size: var(--an-type-${k}-size);`);
+  lines.push(`  line-height: var(--an-type-${k}-line);`);
+  lines.push(`  font-weight: var(--an-type-${k}-weight);`);
   lines.push(`  letter-spacing: var(--an-type-${k}-tracking);`);
   lines.push("}");
 }
