@@ -81,10 +81,16 @@ const TAB_LABEL: Record<Tab, string> = {
 };
 
 export function MediaPicker(props: MediaPickerProps): ReactElement | null {
-  if (!props.open) return null;
+  // Motion M3: stay mounted through the Dialog's exit transition, then drop
+  // to null on onExited so each open still starts from fresh state.
+  const [exited, setExited] = useState(!props.open);
+  if (props.open && exited) setExited(false);
+  if (!props.open && exited) return null;
   return (
     <MediaPickerDialog
+      open={props.open}
       kind={props.kind}
+      onExited={() => setExited(true)}
       onClose={props.onClose}
       onSelect={props.onSelect}
     />
@@ -92,11 +98,15 @@ export function MediaPicker(props: MediaPickerProps): ReactElement | null {
 }
 
 function MediaPickerDialog({
+  open,
   kind,
+  onExited,
   onClose,
   onSelect,
 }: {
+  open: boolean;
   kind: MediaKind | undefined;
+  onExited: () => void;
   onClose: () => void;
   onSelect: (mediaId: string) => void;
 }): ReactElement {
@@ -242,7 +252,12 @@ function MediaPickerDialog({
   );
 
   return (
-    <Dialog title={kind ? `Select ${kind}` : "Select media"} onClose={onClose}>
+    <Dialog
+      title={kind ? `Select ${kind}` : "Select media"}
+      open={open}
+      onExited={onExited}
+      onClose={onClose}
+    >
       <Tabs
         tabs={TABS.map((item) => ({ id: item, label: TAB_LABEL[item] }))}
         value={tab}

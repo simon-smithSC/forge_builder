@@ -62,6 +62,16 @@
   to { background-position: -200% 0; }
 }
 
+/* ---- Motion primitives (Presence / Collapse) ------------------------------ */
+/* Presence puts data-state="open|closed" on the node it holds mounted; each
+   component styles its own [data-state="closed"] exit. Collapse animates
+   measured px heights (JS sets height inline; auto cannot transition). */
+
+.an-collapse {
+  overflow: hidden;
+  transition: height var(--an-duration-200) var(--an-ease-standard);
+}
+
 /* ---- Button ---------------------------------------------------------------- */
 
 .an-btn {
@@ -596,6 +606,13 @@
   place-items: center;
   padding: var(--an-space-24);
   animation: an-fade-in var(--an-duration-120) var(--an-ease-enter);
+  /* Exit (motion M3): the enter keyframe has long finished by close time, so
+     the transition below takes over when data-state flips to "closed". */
+  transition: opacity var(--an-duration-160) var(--an-ease-exit);
+}
+.an-dialog-backdrop[data-state="closed"] {
+  opacity: 0;
+  pointer-events: none;
 }
 /* Overlay polish (5B.4): frost the page behind modal scrims. Guarded so
    engines without backdrop-filter keep the plain tinted backdrop. */
@@ -613,6 +630,13 @@
   border-radius: var(--an-radius-xl);
   box-shadow: var(--an-elevation-4);
   animation: an-rise-in var(--an-duration-200) var(--an-ease-enter);
+  transition:
+    opacity var(--an-duration-160) var(--an-ease-exit),
+    transform var(--an-duration-160) var(--an-ease-exit);
+}
+.an-dialog[data-state="closed"] {
+  opacity: 0;
+  transform: translateY(0.5rem) scale(0.98);
 }
 .an-dialog[data-width="sm"] { max-width: var(--an-dialog-width-sm); }
 .an-dialog[data-width="md"] { max-width: var(--an-dialog-width-md); }
@@ -663,6 +687,17 @@
      data-placement so the scale-in grows out of the trigger. */
   transform-origin: top center;
   animation: an-rise-in var(--an-duration-160) var(--an-ease-spring);
+  /* Exit (motion M2): reverse rise back toward the anchor. The enter keyframe
+     has finished by the time data-state flips, so no animation/transition
+     fight; a closing panel takes no pointer events. */
+  transition:
+    opacity var(--an-duration-120) var(--an-ease-exit),
+    transform var(--an-duration-120) var(--an-ease-exit);
+}
+.an-popover[data-state="closed"] {
+  opacity: 0;
+  transform: translateY(0.25rem) scale(0.97);
+  pointer-events: none;
 }
 .an-popover[data-placement="bottom-start"] { top: calc(100% + var(--an-space-4)); left: 0; transform-origin: top left; }
 .an-popover[data-placement="bottom-end"] { top: calc(100% + var(--an-space-4)); right: 0; transform-origin: top right; }
@@ -998,9 +1033,11 @@
   z-index: var(--an-z-toast);
   display: flex;
   flex-direction: column;
-  gap: var(--an-gap-sm);
+  /* Stacking rhythm lives on each toast's margin-top, not gap, so an exiting
+     toast can collapse its own spacing and siblings glide instead of jump. */
 }
 .an-toast {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: var(--an-gap-md);
@@ -1011,7 +1048,27 @@
   box-shadow: var(--an-elevation-4);
   border-left: 3px solid var(--an-border-strong);
   padding: var(--an-space-8) var(--an-space-12);
+  margin-top: var(--an-gap-sm);
   animation: an-slide-in var(--an-duration-200) var(--an-ease-enter);
+  /* Exit (motion M4): ToastHost pins an inline px height before flipping
+     data-state, so height/padding/margin can transition to 0. */
+  transition:
+    opacity var(--an-duration-160) var(--an-ease-exit),
+    transform var(--an-duration-160) var(--an-ease-exit),
+    height var(--an-duration-160) var(--an-ease-standard),
+    padding var(--an-duration-160) var(--an-ease-standard),
+    margin var(--an-duration-160) var(--an-ease-standard);
+}
+/* Height itself is collapsed inline by ToastHost (measured px -> 0; inline
+   style must own it since a stylesheet value cannot beat the inline pin). */
+.an-toast[data-state="closed"] {
+  opacity: 0;
+  transform: translateX(0.75rem);
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 .an-toast[data-tone="success"] { border-left-color: var(--an-status-success-solid); }
 .an-toast[data-tone="warn"] { border-left-color: var(--an-status-warn-solid); }

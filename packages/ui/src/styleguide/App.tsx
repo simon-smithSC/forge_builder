@@ -9,6 +9,7 @@ import { Switch } from "../components/Switch.js";
 import { ComponentsSection } from "./ComponentsSection.js";
 import { DoDontSection } from "./DoDontSection.js";
 import { IconsSection } from "./IconsSection.js";
+import { MotionSection } from "./MotionSection.js";
 import { OverlaysSection } from "./OverlaysSection.js";
 import { PatternsSection } from "./PatternsSection.js";
 import { TokensSection } from "./TokensSection.js";
@@ -20,6 +21,7 @@ const NAV: Array<[string, string]> = [
   ["#tokens", "Tokens"],
   ["#components", "Controls"],
   ["#overlays", "Surfaces"],
+  ["#motion", "Motion"],
   ["#patterns", "Patterns"],
   ["#do-dont", "Principles"],
 ];
@@ -133,6 +135,7 @@ export default function App(): ReactElement {
         <TokensSection />
         <ComponentsSection />
         <OverlaysSection />
+        <MotionSection />
         <PatternsSection />
         <DoDontSection />
 

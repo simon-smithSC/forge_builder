@@ -13,6 +13,10 @@ export interface DialogProps {
   children: ReactNode;
   /** Optional extra class on the panel, e.g. for wider dialogs. */
   panelClassName?: string;
+  /** Exit-animation control (motion M3); omit for mount/unmount callers. */
+  open?: boolean;
+  /** Fires after the exit transition when the overlay leaves the DOM. */
+  onExited?: (() => void) | undefined;
 }
 
 export function Dialog({
@@ -20,6 +24,8 @@ export function Dialog({
   onClose,
   children,
   panelClassName,
+  open,
+  onExited,
 }: DialogProps): ReactElement {
   const width = panelClassName?.includes("fe-dlg-wide") ? "lg" : "md";
   return (
@@ -27,6 +33,8 @@ export function Dialog({
       title={title}
       onClose={onClose}
       width={width}
+      {...(open !== undefined ? { open } : {})}
+      onExited={onExited}
       {...(panelClassName !== undefined ? { className: panelClassName } : {})}
     >
       {children}

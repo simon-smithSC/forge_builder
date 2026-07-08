@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { cx } from "./util.js";
+import { Presence } from "./Presence.js";
 
 export type PopoverPlacement =
   | "bottom-start"
@@ -54,16 +55,24 @@ export function Popover({
   return (
     <span className="an-popover-anchor" ref={rootRef}>
       {anchor}
-      {open ? (
-        <div
-          className={cx("an-popover", className)}
-          data-placement={placement}
-          role="dialog"
-          aria-label={label}
-        >
-          {children}
-        </div>
-      ) : null}
+      {/* Presence holds the panel mounted through the [data-state="closed"]
+          exit transition; the enter keyframe still fires on mount as before.
+          Dismiss listeners are gated on `open`, so a closing panel cannot
+          swallow outside clicks (CSS also sets pointer-events: none). */}
+      <Presence open={open}>
+        {(presence) => (
+          <div
+            ref={presence.ref}
+            data-state={presence["data-state"]}
+            className={cx("an-popover", className)}
+            data-placement={placement}
+            role="dialog"
+            aria-label={label}
+          >
+            {children}
+          </div>
+        )}
+      </Presence>
     </span>
   );
 }
