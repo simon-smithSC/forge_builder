@@ -73,6 +73,27 @@
   font-size: 0.9em;
 }
 
+/* Toolbar-authored highlight (V2): the background color arrives inline from
+   the author; the tag only shapes the chip and inherits the text color. */
+.fb-html mark {
+  color: inherit;
+  padding: 0 0.08em;
+  border-radius: 2px;
+}
+
+/* Deterministic list rhythm inside rich fragments: toolbar-authored lists
+   previously leaned on UA defaults. */
+.fb-html ul,
+.fb-html ol {
+  margin: 0 0 0.9em;
+  padding-left: 1.5em;
+}
+.fb-html ul:last-child,
+.fb-html ol:last-child { margin-bottom: 0; }
+.fb-html li > ul,
+.fb-html li > ol { margin-bottom: 0; }
+.fb-html li + li { margin-top: 0.25em; }
+
 /* ---------- text ---------- */
 .fb-text-heading h2 { font-size: 2rem; }
 .fb-text-subheading h3 { font-size: 1.35rem; }

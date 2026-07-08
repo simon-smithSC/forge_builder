@@ -2,29 +2,19 @@
 // the editor-wide draft-state contract: the ProseMirror document is the
 // draft, and we only commit (on blur and 800ms after the last change) after
 // the serialized HTML passes the @forge/schema sanitizer. Invalid output
-// shows an inline message and is never committed.
+// shows an inline message and is never committed. Formatting lives in the
+// shared selection toolbar (POLISH-PLAN V2); the static button row is gone.
 import type { ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { Editor } from "@tiptap/core";
 import { EditorContent, useEditor } from "@tiptap/react";
-import type { LucideIcon } from "lucide-react";
-import {
-  Bold,
-  Code,
-  Heading2,
-  Heading3,
-  Italic,
-  List,
-  ListOrdered,
-  Strikethrough,
-  TextQuote,
-} from "lucide-react";
 import {
   normalizeRichTextHtml,
   richTextExtensions,
   sanitizeRichTextHtml,
   stripStyleAttributes,
 } from "./richTextConfig.js";
+import { SelectionToolbar } from "./SelectionToolbar.js";
 import "./rich.css";
 
 const COMMIT_DEBOUNCE_MS = 800;
@@ -38,80 +28,6 @@ export interface RichTextFieldProps {
   error?: string | undefined;
   hint?: string | undefined;
 }
-
-interface ToolbarAction {
-  key: string;
-  title: string;
-  icon: LucideIcon;
-  isActive: (editor: Editor) => boolean;
-  run: (editor: Editor) => void;
-}
-
-const TOOLBAR_ACTIONS: readonly ToolbarAction[] = [
-  {
-    key: "bold",
-    title: "Bold",
-    icon: Bold,
-    isActive: (editor) => editor.isActive("bold"),
-    run: (editor) => editor.chain().focus().toggleBold().run(),
-  },
-  {
-    key: "italic",
-    title: "Italic",
-    icon: Italic,
-    isActive: (editor) => editor.isActive("italic"),
-    run: (editor) => editor.chain().focus().toggleItalic().run(),
-  },
-  {
-    key: "strike",
-    title: "Strikethrough",
-    icon: Strikethrough,
-    isActive: (editor) => editor.isActive("strike"),
-    run: (editor) => editor.chain().focus().toggleStrike().run(),
-  },
-  {
-    key: "code",
-    title: "Inline code",
-    icon: Code,
-    isActive: (editor) => editor.isActive("code"),
-    run: (editor) => editor.chain().focus().toggleCode().run(),
-  },
-  {
-    key: "h2",
-    title: "Heading 2",
-    icon: Heading2,
-    isActive: (editor) => editor.isActive("heading", { level: 2 }),
-    run: (editor) => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-  },
-  {
-    key: "h3",
-    title: "Heading 3",
-    icon: Heading3,
-    isActive: (editor) => editor.isActive("heading", { level: 3 }),
-    run: (editor) => editor.chain().focus().toggleHeading({ level: 3 }).run(),
-  },
-  {
-    key: "bulletList",
-    title: "Bullet list",
-    icon: List,
-    isActive: (editor) => editor.isActive("bulletList"),
-    run: (editor) => editor.chain().focus().toggleBulletList().run(),
-  },
-  {
-    key: "orderedList",
-    title: "Ordered list",
-    icon: ListOrdered,
-    isActive: (editor) => editor.isActive("orderedList"),
-    run: (editor) => editor.chain().focus().toggleOrderedList().run(),
-  },
-  {
-    key: "blockquote",
-    title: "Blockquote",
-    icon: TextQuote,
-    isActive: (editor) => editor.isActive("blockquote"),
-    run: (editor) => editor.chain().focus().toggleBlockquote().run(),
-  },
-];
 
 export function RichTextField({
   label,
@@ -172,18 +88,26 @@ export function RichTextField({
   });
 
   // External value changes (undo/redo, variant switch): resync the document
-  // unless the author is mid-edit in this exact field.
+  // unless the author is mid-edit in this exact field. The committed baseline
+  // is then re-read from the editor's own serialization: getHTML attribute
+  // ordering can differ from the stored string, and a raw string-equality
+  // debounce would otherwise re-commit an identical document.
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     const incoming = normalizeRichTextHtml(value);
-    lastCommittedRef.current = incoming;
-    if (editor.isFocused) return;
+    if (editor.isFocused) {
+      lastCommittedRef.current = incoming;
+      return;
+    }
     const current = editor.isEmpty ? "" : normalizeRichTextHtml(editor.getHTML());
     if (current !== incoming) {
       editor.commands.setContent(incoming, false);
       setIsEmpty(editor.isEmpty);
       setInvalidMessage(null);
     }
+    lastCommittedRef.current = editor.isEmpty
+      ? ""
+      : normalizeRichTextHtml(editor.getHTML());
   }, [editor, value]);
 
   // Flush a pending debounced commit if the field unmounts mid-edit
@@ -208,28 +132,7 @@ export function RichTextField({
         {required ? <span className="fe-pl-required">Required</span> : null}
       </span>
       <div className="fe-rich-editor">
-        {editor ? (
-          <div className="fe-rich-toolbar" role="toolbar" aria-label={`${label} formatting`}>
-            {TOOLBAR_ACTIONS.map((action) => {
-              const Icon = action.icon;
-              const active = action.isActive(editor);
-              return (
-                <button
-                  key={action.key}
-                  type="button"
-                  className={active ? "fe-rich-btn fe-rich-btn-active" : "fe-rich-btn"}
-                  aria-pressed={active}
-                  title={action.title}
-                  aria-label={action.title}
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => action.run(editor)}
-                >
-                  <Icon size={14} aria-hidden />
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
+        {editor ? <SelectionToolbar editor={editor} /> : null}
         <EditorContent editor={editor} className="fe-rich-surface" />
       </div>
       {hint ? <span className="fe-pl-hint">{hint}</span> : null}

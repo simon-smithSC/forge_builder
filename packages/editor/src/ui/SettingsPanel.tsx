@@ -5,7 +5,7 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
 import { X } from "lucide-react";
-import { Button, IconButton, Input, Radio } from "@forge/ui";
+import { Button, IconButton, Input } from "@forge/ui";
 import { getRegistryEntry } from "@forge/blocks";
 import type { Block } from "@forge/schema";
 import { closeBlockSettings, setBlockSettings } from "../state/actions.js";
@@ -24,11 +24,6 @@ function EnvelopeSettings({
 }): ReactElement {
   const [anchorDraft, setAnchorDraft] = useState(block.settings.anchorId ?? "");
   const [anchorError, setAnchorError] = useState<string | null>(null);
-
-  const explicitColor =
-    typeof block.settings.textColorMode === "object"
-      ? block.settings.textColorMode.color
-      : "#1f2328";
 
   const commitAnchor = (raw: string): void => {
     setAnchorDraft(raw);
@@ -108,44 +103,9 @@ function EnvelopeSettings({
         </span>
       </div>
 
-      <div className="fe-field">
-        <span className="fe-field-label">Text color</span>
-        <span className="fe-field-row">
-          <Radio
-            className="fe-radio"
-            label="Auto"
-            name={`fe-tcm-${block.id}`}
-            checked={block.settings.textColorMode === "auto"}
-            onChange={() =>
-              setBlockSettings(lessonId, block.id, { textColorMode: "auto" })
-            }
-          />
-          <Radio
-            className="fe-radio"
-            label="Explicit"
-            name={`fe-tcm-${block.id}`}
-            checked={block.settings.textColorMode !== "auto"}
-            onChange={() =>
-              setBlockSettings(lessonId, block.id, {
-                textColorMode: { mode: "explicit", color: explicitColor },
-              })
-            }
-          />
-          {block.settings.textColorMode !== "auto" ? (
-            <input
-              type="color"
-              value={explicitColor}
-              onChange={(event) =>
-                setBlockSettings(lessonId, block.id, {
-                  textColorMode: { mode: "explicit", color: event.target.value },
-                })
-              }
-              aria-label="Text color"
-            />
-          ) : null}
-        </span>
-      </div>
-
+      {/* textColorMode UI removed (V2): per-selection color now lives in the
+          rich text toolbar. The schema field and renderer support stay so
+          existing courses remain valid. */}
       <label className="fe-field">
         <span className="fe-field-label">Anchor id</span>
         <Input

@@ -14,37 +14,8 @@
   outline-offset: 1px;
 }
 
-.fe-rich-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  padding: 4px 6px;
-  border-bottom: 1px solid var(--an-border-subtle);
-  background: var(--an-surface-sunken);
-}
-
-.fe-rich-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  border-radius: var(--an-radius-sm);
-  padding: 4px;
-  color: var(--an-text-muted);
-}
-
-.fe-rich-btn:hover:not(:disabled) {
-  background: var(--an-interactive-selected);
-  color: var(--an-interactive-idle);
-}
-
-.fe-rich-btn-active {
-  background: var(--an-interactive-selected);
-  color: var(--an-interactive-idle);
-}
-
-/* ProseMirror content area: roughly match block text rendering. */
+/* ProseMirror content area: roughly match block text rendering. Formatting
+   controls live in the shared selection toolbar (selectionToolbar.css). */
 
 .fe-rich-content {
   min-height: 72px;

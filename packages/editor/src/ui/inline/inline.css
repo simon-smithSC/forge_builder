@@ -1,7 +1,8 @@
 /* In-place canvas editing chrome (fe-inline- prefix). The ProseMirror root
    carries the same fb-html classes the shared Html component emits, so the
    text renders exactly like the player output; this file only adds the
-   hover/focus ring, the floating toolbar, and the transient error chip. */
+   hover/focus ring and the transient error chip. Formatting controls live in
+   the shared selection toolbar (rich/selectionToolbar.css). */
 
 .fe-inline-editor {
   position: relative;
@@ -21,43 +22,6 @@
 .fe-inline-editor-focused .fe-inline-content,
 .fe-inline-content:focus {
   box-shadow: 0 0 0 2px var(--fe-primary-soft), 0 0 0 1px var(--fe-primary);
-}
-
-/* Floating minimal toolbar above the active field. */
-.fe-inline-toolbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translateY(calc(-100% - 6px));
-  z-index: 30;
-  display: inline-flex;
-  gap: 2px;
-  padding: 3px 4px;
-  background: var(--fe-surface);
-  border: 1px solid var(--fe-border);
-  border-radius: 6px;
-  box-shadow: var(--fe-shadow);
-}
-
-.fe-inline-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  border-radius: 4px;
-  padding: 4px;
-  color: var(--fe-muted);
-}
-
-.fe-inline-btn:hover {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
-}
-
-.fe-inline-btn-active {
-  background: var(--fe-primary-soft);
-  color: var(--fe-primary);
 }
 
 /* Transient validation error under the field. Semantic status tokens so the

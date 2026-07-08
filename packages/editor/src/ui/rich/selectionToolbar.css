@@ -1,0 +1,166 @@
+/* Selection bubble toolbar (fe-seltoolbar, POLISH-PLAN V2). Editor chrome:
+   Anvil tokens only. Tippy appends the menu to document.body, outside the
+   app's .anvil scope, so SelectionToolbar puts .anvil plus data-theme on this
+   root itself - tokens (and the dark remap) resolve locally. */
+
+.fe-seltoolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  background: var(--an-surface-raised);
+  border-radius: var(--an-radius-lg);
+  box-shadow: var(--an-elevation-3);
+  font-family: var(--an-font-family-sans);
+  color: var(--an-text-primary);
+}
+
+.fe-seltoolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.fe-seltoolbar-sep {
+  width: 1px;
+  align-self: stretch;
+  margin: 3px 4px;
+  background: var(--an-border-subtle);
+}
+
+/* Compact selects; widths keep the two rows near-equal. */
+.fe-seltoolbar-font select {
+  width: 128px;
+}
+
+.fe-seltoolbar-parastyle select {
+  width: 108px;
+}
+
+/* Pressed state for the B / I / U / S style toggles. */
+.fe-seltoolbar .an-iconbtn[aria-pressed="true"] {
+  background: var(--an-interactive-selected);
+  color: var(--an-interactive-idle);
+}
+
+.fe-seltoolbar-size {
+  min-width: 26px;
+  text-align: center;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--an-text-secondary);
+}
+
+/* Shared popover panel padding (swatches, link, align, spacing). */
+.fe-seltoolbar-panel {
+  padding: 8px;
+}
+
+.fe-seltoolbar-rowpanel {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+}
+
+.fe-seltoolbar-swatches {
+  display: grid;
+  grid-template-columns: repeat(7, 22px);
+  gap: 4px;
+}
+
+.fe-seltoolbar-swatch {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--an-border-strong);
+  border-radius: var(--an-radius-sm);
+  cursor: pointer;
+}
+
+.fe-seltoolbar-swatch:hover {
+  outline: 2px solid var(--an-focus-ring-color);
+  outline-offset: 1px;
+}
+
+.fe-seltoolbar-swatch[aria-pressed="true"] {
+  outline: 2px solid var(--an-focus-ring-color);
+  outline-offset: 1px;
+}
+
+/* "None" swatch: neutral tile with a diagonal strike. */
+.fe-seltoolbar-swatch-none {
+  background:
+    linear-gradient(
+      to top right,
+      transparent 44%,
+      var(--an-status-danger-fg) 46%,
+      var(--an-status-danger-fg) 54%,
+      transparent 56%
+    ),
+    var(--an-surface-raised);
+}
+
+.fe-seltoolbar-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--an-text-secondary);
+}
+
+.fe-seltoolbar-custom input[type="color"] {
+  width: 28px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--an-border-subtle);
+  border-radius: var(--an-radius-sm);
+  background: transparent;
+}
+
+.fe-seltoolbar-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 300px;
+}
+
+.fe-seltoolbar-link .an-input {
+  flex: 1;
+  min-width: 150px;
+}
+
+.fe-seltoolbar-link-error {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--an-status-danger-fg);
+}
+
+.fe-seltoolbar-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  min-width: 96px;
+}
+
+.fe-seltoolbar-menuitem {
+  border: none;
+  background: transparent;
+  text-align: start;
+  padding: 5px 8px;
+  border-radius: var(--an-radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--an-text-primary);
+  cursor: pointer;
+}
+
+.fe-seltoolbar-menuitem:hover {
+  background: var(--an-interactive-selected);
+}
+
+.fe-seltoolbar-menuitem[aria-pressed="true"] {
+  background: var(--an-interactive-selected);
+  color: var(--an-interactive-idle);
+}
