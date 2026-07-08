@@ -14,7 +14,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import type { PreviewDevice } from "@forge/player";
-import { Badge, Button, IconButton } from "@forge/ui";
+import { Badge, Button, Divider, IconButton, Wordmark } from "@forge/ui";
 import { closeCourse, redo, undo } from "../../state/actions.js";
 import { useStore } from "../../state/store.js";
 import type { SaveStatus } from "../../state/store.js";
@@ -50,6 +50,7 @@ export function OverviewHeader(): ReactElement {
 
   return (
     <header className="fe-topbar">
+      <Wordmark />
       <IconButton
         label="Back to courses"
         icon={<ArrowLeft size={18} aria-hidden />}
@@ -75,6 +76,8 @@ export function OverviewHeader(): ReactElement {
         disabled={!canRedo}
       />
 
+      <Divider orientation="vertical" className="fe-topbar-divider" />
+
       <ThemeToggle />
 
       <Button
@@ -92,8 +95,10 @@ export function OverviewHeader(): ReactElement {
         Labels
       </Button>
 
+      <Divider orientation="vertical" className="fe-topbar-divider" />
+
       <Button
-        variant="primary"
+        variant="secondary"
         iconStart={<Play size={14} aria-hidden />}
         onClick={() => setPreviewOpen(true)}
       >

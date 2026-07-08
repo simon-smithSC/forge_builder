@@ -266,6 +266,20 @@
       ]
     }
   },
+  "bevel": {
+    "$type": "shadow",
+    "$description": "Machined-edge insets for solid-fill controls (5A.3): a 1px top highlight plus a 1px bottom edge, composed UNDER an elevation level (bevel-highlight, bevel-edge, elevation-N). Full gradient fills were rejected (banding); near-flat + bevel is the Base/Linear treatment.",
+    "highlight": {
+      "$value": [
+        { "color": "#ffffff24", "offsetX": "0px", "offsetY": "1px", "blur": "0px", "spread": "0px", "inset": true }
+      ]
+    },
+    "edge": {
+      "$value": [
+        { "color": "#14161b2e", "offsetX": "0px", "offsetY": "-1px", "blur": "0px", "spread": "0px", "inset": true }
+      ]
+    }
+  },
   "duration": {
     "$type": "duration",
     "$description": "Decisive motion. Exits run faster than enters.",

@@ -17,6 +17,7 @@ import { Switch } from "../components/Switch.js";
 import { TabPanel, Tabs } from "../components/Tabs.js";
 import { Textarea } from "../components/Textarea.js";
 import { Toolbar, ToolbarSeparator } from "../components/Toolbar.js";
+import { Wordmark } from "../components/Wordmark.js";
 import { DemoRow, FocusGhost, Section, Spec } from "./shared.js";
 
 export function ComponentsSection(): ReactElement {
@@ -55,6 +56,18 @@ export function ComponentsSection(): ReactElement {
           </FocusGhost>
           <Button variant="secondary" disabled>Disabled</Button>
           <Button variant="primary" loading>Publishing</Button>
+        </DemoRow>
+      </Spec>
+
+      <Spec
+        title="Wordmark"
+        anatomy="24px rounded-square glyph (anvil silhouette on --an-brand-gradient) + ember spark facet (--an-accent-gradient) + optional 'Forge' name in the heading-small role."
+        doText="Glyph-only in dense app bars; withText where the brand is the page identity (course list header)."
+        dontText="Never recolor, stretch, or restate the gradients elsewhere in chrome; the mark is their only surface."
+      >
+        <DemoRow label="Variants">
+          <Wordmark />
+          <Wordmark withText />
         </DemoRow>
       </Spec>
 

@@ -179,6 +179,10 @@ export const anvilTokens = {
     "3": "0px 0px 0px 1px #14161b0a, 0px 4px 8px 0px #14161b17, 0px 8px 24px 0px #14161b14",
     "4": "0px 0px 0px 1px #14161b0a, 0px 8px 16px 0px #14161b1a, 0px 16px 48px 0px #14161b1f"
   },
+  "bevel": {
+    "highlight": "inset 0px 1px 0px 0px #ffffff24",
+    "edge": "inset 0px -1px 0px 0px #14161b2e"
+  },
   "duration": {
     "80": "80ms",
     "120": "120ms",
@@ -307,6 +311,10 @@ export const anvilTokens = {
       "border-strong": "#c9cdd6",
       "focus-ring-color": "#3366e6",
       "focus-ring": "0 0 0 2px var(--an-surface-base), 0 0 0 4px var(--an-focus-ring-color)",
+      "focus-glow": "0 0 0 3px color-mix(in srgb, var(--an-focus-ring-color) 18%, transparent)",
+      "focus-glow-danger": "0 0 0 3px color-mix(in srgb, var(--an-status-danger-solid) 18%, transparent)",
+      "brand-gradient": "linear-gradient(135deg, var(--an-color-cobalt-500), var(--an-color-cobalt-700))",
+      "accent-gradient": "linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600))",
       "backdrop": "rgba(11, 12, 15, 0.4)",
       "status-success-fg": "#177a43",
       "status-success-bg": "#ecf8f0",
@@ -353,6 +361,10 @@ export const anvilTokens = {
       "border-subtle": "#2b2f38",
       "border-strong": "#3e434e",
       "focus-ring-color": "#5c88f0",
+      "focus-glow": "0 0 0 3px color-mix(in srgb, var(--an-focus-ring-color) 28%, transparent)",
+      "focus-glow-danger": "0 0 0 3px color-mix(in srgb, var(--an-status-danger-solid) 28%, transparent)",
+      "brand-gradient": "linear-gradient(135deg, var(--an-color-cobalt-500), var(--an-color-cobalt-700))",
+      "accent-gradient": "linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600))",
       "backdrop": "rgba(11, 12, 15, 0.6)",
       "status-success-fg": "#41b273",
       "status-success-bg": "#082517",

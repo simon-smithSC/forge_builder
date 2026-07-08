@@ -4,6 +4,7 @@
 // lesson editor; the editor's back button returns to the overview.
 import type { ReactElement } from "react";
 import { useEffect } from "react";
+import { ToastHost } from "@forge/ui";
 import { loadCourseList, setUiTheme } from "../state/actions.js";
 import { useStore } from "../state/store.js";
 import { CourseList } from "./CourseList.js";
@@ -51,6 +52,9 @@ export function App(): ReactElement {
       ) : (
         <EditorScreen />
       )}
+      {/* Transient feedback (5A.6): publish success, create/open failures,
+          conflict-recovery outcomes. Persistent states stay banners. */}
+      <ToastHost />
     </div>
   );
 }

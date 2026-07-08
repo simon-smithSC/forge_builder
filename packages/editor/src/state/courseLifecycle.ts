@@ -10,6 +10,7 @@ import {
   validateCourseDoc,
 } from "@forge/schema";
 import { getRegistryEntry } from "@forge/blocks";
+import { toast } from "@forge/ui";
 import * as api from "../api/client.js";
 import * as journal from "../journal/journal.js";
 import * as history from "./history.js";
@@ -92,11 +93,12 @@ export async function createNewCourse(): Promise<void> {
     const result = await api.createCourse(draft);
     await enterCourse(result);
   } catch (error) {
-    setState((prev) => ({
-      ...prev,
-      busy: false,
-      loadError: error instanceof Error ? error.message : "Failed to create course.",
-    }));
+    const message =
+      error instanceof Error ? error.message : "Failed to create course.";
+    setState((prev) => ({ ...prev, busy: false, loadError: message }));
+    // Action failure is transient feedback (5A.6); the list itself keeps its
+    // inline role="alert" for load errors.
+    toast(message, { tone: "danger", duration: 8000 });
   }
 }
 
@@ -106,11 +108,10 @@ export async function openCourse(courseId: string): Promise<void> {
     const result = await api.getCourse(courseId);
     await enterCourse(result);
   } catch (error) {
-    setState((prev) => ({
-      ...prev,
-      busy: false,
-      loadError: error instanceof Error ? error.message : "Failed to open course.",
-    }));
+    const message =
+      error instanceof Error ? error.message : "Failed to open course.";
+    setState((prev) => ({ ...prev, busy: false, loadError: message }));
+    toast(message, { tone: "danger", duration: 8000 });
   }
 }
 

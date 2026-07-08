@@ -125,3 +125,44 @@ graduate to ADRs in `docs/adr/`; API changes follow semver in
   points `aria-describedby` at the hint or the error (error wins and is
   `role=alert`), and paints the invalid border from the wrapper
   (`.an-field[data-invalid]`), so any control composes without new props.
+
+## 2026-07-08: V5A beautification quick wins
+
+- **Brand gradients + Wordmark.** Two semantic tokens,
+  `--an-brand-gradient` (cobalt 500 to 700, 135deg) and
+  `--an-accent-gradient` (ember 400 to 600), live as literal entries in the
+  build.ts semantic maps (same mechanism as `--an-focus-ring`); the DTCG JSON
+  stays a pure primitive palette. They are the ONLY sanctioned gradients in
+  Anvil chrome, and their only surfaces are the new `Wordmark` component (24px
+  rounded-square anvil glyph + ember spark facet, optional "Forge" text in the
+  heading-small role) and the course-card cover strip. Adopted in the editor
+  topbar, overview header, and course list; the ember ramp finally has a brand
+  job beyond the progressbar.
+- **Bevel tokens for solid-fill controls.** `ShadowPart` in build.ts gains an
+  `inset?: boolean` (DTCG shadow inset extension); new primitive shadow group
+  `bevel` emits `--an-bevel-highlight` (inset 0 1px, white 14%) and
+  `--an-bevel-edge` (inset 0 -1px, neutral-950 18%). Primary and danger
+  buttons compose `bevel-highlight, bevel-edge, elevation-N` at rest, hover,
+  and active. Full gradient button fills were REJECTED (banding; Base/Linear
+  ship near-flat fills plus machined bevels).
+- **Input focus glow.** Semantic `--an-focus-glow` (3px halo,
+  `color-mix` of the focus-ring color at 18% light / 28% dark) plus
+  `--an-focus-glow-danger` (danger solid, same mixes) applied to
+  Input/Textarea/Select `:focus-visible` alongside the border shift; invalid
+  fields (`data-invalid`, `aria-invalid`, or an invalid FormField wrapper) get
+  the danger glow. The two-layer keyboard `--an-focus-ring` on buttons is an
+  a11y contract and is untouched. Editor raw-input rules mirror the glow.
+- **Empty-state halo.** `.an-empty-icon` becomes a 64px disc: radial
+  `--an-interactive-selected` tint (circle at 50% 35%), one faint concentric
+  ring (8px `color-mix` spread), icon in `--an-interactive-idle`. Bespoke
+  illustrations were REJECTED (asset weight, style drift risk) - the halo
+  gives empty states a face using only existing tokens. Component API
+  unchanged. On the author-themed canvas the editor scopes the empty state
+  onto its own Anvil surface so dark-chrome text never lands on light paper.
+- **Feedback components activated.** Toast and Skeleton, shipped in D2 and
+  consumed by nothing, are now live: `ToastHost` mounts at the editor App
+  root; publish success, course create/open failures, and conflict-recovery
+  outcomes route through `toast()`. Persistent states (conflict banner,
+  journal restore banner) STAY banners; form-level validation stays inline
+  `role="alert"`. The course-list loading text is replaced by a Skeleton card
+  grid matching the real card geometry.

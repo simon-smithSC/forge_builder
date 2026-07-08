@@ -16,6 +16,8 @@ interface ShadowPart {
   offsetY: string;
   blur: string;
   spread: string;
+  /** Inner shadow (bevel highlights/edges). DTCG shadow "inset" extension. */
+  inset?: boolean;
 }
 interface TypeRoleValue {
   fontFamily: string;
@@ -59,7 +61,10 @@ function formatValue(value: TokenValue, type: string): string {
   }
   if (type === "shadow" && Array.isArray(value)) {
     return (value as ShadowPart[])
-      .map((p) => `${p.offsetX} ${p.offsetY} ${p.blur} ${p.spread} ${p.color}`)
+      .map(
+        (p) =>
+          `${p.inset === true ? "inset " : ""}${p.offsetX} ${p.offsetY} ${p.blur} ${p.spread} ${p.color}`,
+      )
       .join(", ");
   }
   return String(value);
@@ -144,6 +149,18 @@ const semanticLight: Record<string, string> = {
   "focus-ring-color": "color.cobalt.500",
   "focus-ring":
     "0 0 0 2px var(--an-surface-base), 0 0 0 4px var(--an-focus-ring-color)",
+  // Soft tinted halo for text-entry focus (5A.4). Distinct from the keyboard
+  // focus-ring above, which is an a11y contract and never changes.
+  "focus-glow":
+    "0 0 0 3px color-mix(in srgb, var(--an-focus-ring-color) 18%, transparent)",
+  "focus-glow-danger":
+    "0 0 0 3px color-mix(in srgb, var(--an-status-danger-solid) 18%, transparent)",
+  // Brand gradients (5A.1): the only sanctioned gradients in Anvil chrome.
+  // Cobalt carries the brand mark; ember is the spark accent.
+  "brand-gradient":
+    "linear-gradient(135deg, var(--an-color-cobalt-500), var(--an-color-cobalt-700))",
+  "accent-gradient":
+    "linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600))",
   "backdrop": "rgba(11, 12, 15, 0.4)",
   "status-success-fg": "color.success.600",
   "status-success-bg": "color.success.50",
@@ -193,6 +210,17 @@ const semanticDark: Record<string, string> = {
   "border-subtle": "color.neutral.800",
   "border-strong": "color.neutral.700",
   "focus-ring-color": "color.cobalt.400",
+  // Dark surfaces swallow soft halos; boost the mix to keep the glow legible.
+  "focus-glow":
+    "0 0 0 3px color-mix(in srgb, var(--an-focus-ring-color) 28%, transparent)",
+  "focus-glow-danger":
+    "0 0 0 3px color-mix(in srgb, var(--an-status-danger-solid) 28%, transparent)",
+  // Gradients reference primitives (theme-invariant); restated so the dark
+  // map is explicit about the brand story staying constant.
+  "brand-gradient":
+    "linear-gradient(135deg, var(--an-color-cobalt-500), var(--an-color-cobalt-700))",
+  "accent-gradient":
+    "linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600))",
   "backdrop": "rgba(11, 12, 15, 0.6)",
   "status-success-fg": "color.success.400",
   "status-success-bg": "color.success.950",

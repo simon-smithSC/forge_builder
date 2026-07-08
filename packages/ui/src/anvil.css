@@ -146,6 +146,9 @@
   --an-elevation-3: 0px 0px 0px 1px #14161b0a, 0px 4px 8px 0px #14161b17, 0px 8px 24px 0px #14161b14;
   --an-elevation-4: 0px 0px 0px 1px #14161b0a, 0px 8px 16px 0px #14161b1a, 0px 16px 48px 0px #14161b1f;
 
+  --an-bevel-highlight: inset 0px 1px 0px 0px #ffffff24;
+  --an-bevel-edge: inset 0px -1px 0px 0px #14161b2e;
+
   --an-duration-80: 80ms;
   --an-duration-120: 120ms;
   --an-duration-160: 160ms;
@@ -258,6 +261,10 @@
   --an-border-strong: var(--an-color-neutral-300);
   --an-focus-ring-color: var(--an-color-cobalt-500);
   --an-focus-ring: 0 0 0 2px var(--an-surface-base), 0 0 0 4px var(--an-focus-ring-color);
+  --an-focus-glow: 0 0 0 3px color-mix(in srgb, var(--an-focus-ring-color) 18%, transparent);
+  --an-focus-glow-danger: 0 0 0 3px color-mix(in srgb, var(--an-status-danger-solid) 18%, transparent);
+  --an-brand-gradient: linear-gradient(135deg, var(--an-color-cobalt-500), var(--an-color-cobalt-700));
+  --an-accent-gradient: linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600));
   --an-backdrop: rgba(11, 12, 15, 0.4);
   --an-status-success-fg: var(--an-color-success-600);
   --an-status-success-bg: var(--an-color-success-50);
@@ -416,6 +423,10 @@
   --an-border-subtle: var(--an-color-neutral-800);
   --an-border-strong: var(--an-color-neutral-700);
   --an-focus-ring-color: var(--an-color-cobalt-400);
+  --an-focus-glow: 0 0 0 3px color-mix(in srgb, var(--an-focus-ring-color) 28%, transparent);
+  --an-focus-glow-danger: 0 0 0 3px color-mix(in srgb, var(--an-status-danger-solid) 28%, transparent);
+  --an-brand-gradient: linear-gradient(135deg, var(--an-color-cobalt-500), var(--an-color-cobalt-700));
+  --an-accent-gradient: linear-gradient(135deg, var(--an-color-ember-400), var(--an-color-ember-600));
   --an-backdrop: rgba(11, 12, 15, 0.6);
   --an-status-success-fg: var(--an-color-success-400);
   --an-status-success-bg: var(--an-color-success-950);

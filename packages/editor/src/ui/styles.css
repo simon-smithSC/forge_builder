@@ -72,9 +72,23 @@ select {
   background: var(--an-surface-raised);
 }
 
+/* Text entry mirrors Anvil's 5A.4 focus glow; buttons keep the plain
+   keyboard ring (the glow is a text-focus affordance, not a button one). */
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--an-focus-ring-color);
+  outline-offset: 1px;
+  box-shadow: var(--an-focus-glow);
+}
+
+input[aria-invalid="true"]:focus-visible,
+textarea[aria-invalid="true"]:focus-visible,
+select[aria-invalid="true"]:focus-visible {
+  outline-color: var(--an-status-danger-solid);
+  box-shadow: var(--an-focus-glow-danger);
+}
+
 button:focus-visible {
   outline: 2px solid var(--an-focus-ring-color);
   outline-offset: 1px;
@@ -88,6 +102,19 @@ button:focus-visible {
 
 .fe-error {
   color: var(--an-status-danger-fg);
+}
+
+/* Visually hidden, still announced (loading status next to skeletons). */
+.fe-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ---- course list ---- */
@@ -124,6 +151,8 @@ button:focus-visible {
 }
 
 .fe-course-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--an-space-6);
@@ -131,11 +160,24 @@ button:focus-visible {
   background: var(--an-surface-raised);
   border: none;
   border-radius: var(--an-radius-lg);
-  padding: var(--an-space-20);
+  padding: calc(var(--an-space-20) + var(--an-space-4)) var(--an-space-20) var(--an-space-20);
   box-shadow: var(--an-elevation-1);
   transition:
     box-shadow var(--an-duration-120) var(--an-ease-standard),
     transform var(--an-duration-120) var(--an-ease-standard);
+}
+
+/* Brand cover strip (5A.7): a slim gradient band along the card top. The
+   card's overflow:hidden clips it to the top radius. */
+.fe-course-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--an-brand-gradient);
+  opacity: 0.85;
 }
 
 .fe-course-card:hover {
@@ -157,6 +199,25 @@ button:focus-visible {
   color: var(--an-text-muted);
   font-size: var(--an-font-size-12);
   line-height: var(--an-font-line-12);
+}
+
+.fe-course-card-lessons {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--an-space-6);
+}
+
+/* Loading placeholders (5A.6): same geometry as a real card so the grid
+   does not jump when data lands. */
+.fe-course-card-skeleton {
+  pointer-events: none;
+  min-height: 108px;
+  justify-content: center;
+}
+
+.fe-course-card-skeleton:hover {
+  box-shadow: var(--an-elevation-1);
+  transform: none;
 }
 
 /* ---- editor frame ---- */
@@ -209,6 +270,13 @@ button:focus-visible {
 
 .fe-topbar-spacer {
   flex: 1;
+}
+
+/* Vertical group separators (5A.2): [undo redo] | [theme labels device] |
+   [preview publish]. Inset from the bar edges so they read as grouping,
+   not full-height frame lines. */
+.fe-topbar-divider {
+  margin: var(--an-space-6) var(--an-space-2);
 }
 
 /* Save status Badge needs room; never wrap mid-word. */
@@ -442,6 +510,18 @@ button:focus-visible {
 .fe-canvas-empty {
   text-align: center;
   padding: var(--an-space-24) 0;
+}
+
+/* Empty state ON the author-themed paper (5A.5): the EmptyState is editor
+   chrome, so it sits on its own Anvil surface. Without this the dark-chrome
+   text tokens would paint near-white type onto the light course paper. */
+.fe-canvas-lesson .fe-canvas-empty {
+  background: var(--an-surface-raised);
+  border-radius: var(--an-radius-xl);
+  box-shadow: var(--an-elevation-1);
+  max-width: 32rem;
+  margin: var(--an-space-16) auto 0;
+  padding: var(--an-space-32) var(--an-space-24);
 }
 
 /* ---- block frame ---- */

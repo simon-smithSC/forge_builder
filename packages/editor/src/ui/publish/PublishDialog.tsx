@@ -5,7 +5,15 @@
 import type { ReactElement } from "react";
 import { useMemo, useState } from "react";
 import { Download, TriangleAlert, UploadCloud } from "lucide-react";
-import { Button, Checkbox, Input, ProgressBar, Radio, Select } from "@forge/ui";
+import {
+  Button,
+  Checkbox,
+  Input,
+  ProgressBar,
+  Radio,
+  Select,
+  toast,
+} from "@forge/ui";
 import type { PublishWarning } from "@forge/exporter";
 import type { PublishSettings } from "@forge/schema";
 import { publishSettingsSchema } from "@forge/schema";
@@ -115,6 +123,8 @@ export function PublishDialog({ open, onClose }: PublishDialogProps): ReactEleme
       const outcome = await runPublish(course, parsed.data, mediaUrls);
       setResult(outcome);
       downloadZip(outcome);
+      // Transient success (5A.6); the result panel below keeps the details.
+      toast("Package downloaded", { tone: "success" });
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {

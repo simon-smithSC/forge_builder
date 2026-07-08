@@ -99,19 +99,21 @@
   line-height: var(--an-font-line-16);
 }
 
+/* Solid-fill variants get machined bevels (5A.3): 1px inner highlight on the
+   top edge, 1px inner shade on the bottom, composed under the elevation. */
 .an-btn[data-variant="primary"] {
   background: var(--an-interactive-idle);
   color: var(--an-text-inverse);
-  box-shadow: var(--an-elevation-1);
+  box-shadow: var(--an-bevel-highlight), var(--an-bevel-edge), var(--an-elevation-1);
 }
 .an-btn[data-variant="primary"]:hover:not(:disabled) {
   background: var(--an-interactive-hover);
-  box-shadow: var(--an-elevation-2);
+  box-shadow: var(--an-bevel-highlight), var(--an-bevel-edge), var(--an-elevation-2);
   transform: translateY(-1px);
 }
 .an-btn[data-variant="primary"]:active:not(:disabled) {
   background: var(--an-interactive-active);
-  box-shadow: var(--an-elevation-1);
+  box-shadow: var(--an-bevel-highlight), var(--an-bevel-edge), var(--an-elevation-1);
   transform: translateY(0);
 }
 
@@ -147,15 +149,15 @@
 .an-btn[data-variant="danger"] {
   background: var(--an-status-danger-solid);
   color: var(--an-text-inverse);
-  box-shadow: var(--an-elevation-1);
+  box-shadow: var(--an-bevel-highlight), var(--an-bevel-edge), var(--an-elevation-1);
 }
 .an-btn[data-variant="danger"]:hover:not(:disabled) {
   background: var(--an-status-danger-fg);
-  box-shadow: var(--an-elevation-2);
+  box-shadow: var(--an-bevel-highlight), var(--an-bevel-edge), var(--an-elevation-2);
   transform: translateY(-1px);
 }
 .an-btn[data-variant="danger"]:active:not(:disabled) {
-  box-shadow: var(--an-elevation-1);
+  box-shadow: var(--an-bevel-highlight), var(--an-bevel-edge), var(--an-elevation-1);
   transform: translateY(0);
 }
 
@@ -272,15 +274,33 @@
 .an-select select:hover:not(:disabled) {
   border-color: var(--an-border-strong);
 }
+/* Text-entry focus (5A.4): soft tinted halo alongside the border shift.
+   Buttons keep the two-layer keyboard --an-focus-ring untouched. */
 .an-input:focus-visible,
 .an-textarea:focus-visible,
 .an-select select:focus-visible {
   border-color: var(--an-focus-ring-color);
+  box-shadow: var(--an-focus-glow);
 }
 .an-input[data-invalid],
+.an-input[aria-invalid="true"],
 .an-textarea[data-invalid],
-.an-select select[data-invalid] {
+.an-textarea[aria-invalid="true"],
+.an-select select[data-invalid],
+.an-select select[aria-invalid="true"] {
   border-color: var(--an-status-danger-solid);
+}
+.an-input[data-invalid]:focus-visible,
+.an-input[aria-invalid="true"]:focus-visible,
+.an-textarea[data-invalid]:focus-visible,
+.an-textarea[aria-invalid="true"]:focus-visible,
+.an-select select[data-invalid]:focus-visible,
+.an-select select[aria-invalid="true"]:focus-visible,
+.an-field[data-invalid] .an-input:focus-visible,
+.an-field[data-invalid] .an-textarea:focus-visible,
+.an-field[data-invalid] .an-select select:focus-visible {
+  border-color: var(--an-status-danger-solid);
+  box-shadow: var(--an-focus-glow-danger);
 }
 .an-input:disabled,
 .an-textarea:disabled,
@@ -882,8 +902,22 @@
   padding: var(--an-space-40) var(--an-space-24);
   color: var(--an-text-secondary);
 }
+/* Icon halo (5A.5): a soft radial tint disc with one faint concentric ring.
+   Enough presence to give the state a face; bespoke illustrations rejected. */
 .an-empty-icon {
-  color: var(--an-text-muted);
+  display: grid;
+  place-items: center;
+  width: var(--an-space-64);
+  height: var(--an-space-64);
+  border-radius: var(--an-radius-full);
+  color: var(--an-interactive-idle);
+  background: radial-gradient(
+    circle at 50% 35%,
+    var(--an-interactive-selected),
+    transparent 70%
+  );
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--an-interactive-selected) 40%, transparent);
+  margin-bottom: var(--an-space-8);
 }
 .an-empty-title {
   font-size: var(--an-font-size-16);
@@ -992,6 +1026,51 @@
 .an-icon {
   flex: none;
   vertical-align: middle;
+}
+
+/* ---- Wordmark --------------------------------------------------------------- */
+
+/* Brand moment (5A.1): 24px rounded-square anvil glyph on the brand gradient
+   with an ember spark facet; the only chrome surfaces the gradients touch. */
+.an-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--an-gap-sm);
+  flex: none;
+}
+.an-wordmark-glyph {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--an-space-24);
+  height: var(--an-space-24);
+  border-radius: var(--an-radius-md);
+  background: var(--an-brand-gradient);
+  color: var(--an-color-neutral-0);
+  box-shadow: var(--an-bevel-highlight), var(--an-elevation-1);
+  flex: none;
+}
+.an-wordmark-glyph svg {
+  display: block;
+}
+.an-wordmark-spark {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--an-radius-xs);
+  background: var(--an-accent-gradient);
+  transform: rotate(45deg);
+}
+.an-wordmark-text {
+  font-family: var(--an-type-heading-small-family);
+  font-size: var(--an-type-heading-small-size);
+  line-height: var(--an-type-heading-small-line);
+  font-weight: var(--an-type-heading-small-weight);
+  letter-spacing: var(--an-font-tracking-tight);
+  color: var(--an-text-primary);
 }
 
 /* ---- Typography primitives (Heading / Text / Label) ------------------------ */

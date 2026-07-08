@@ -1,7 +1,15 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
 import type { PreviewDevice } from "@forge/player";
-import { Badge, Button, Icon, IconButton, SegmentedControl } from "@forge/ui";
+import {
+  Badge,
+  Button,
+  Divider,
+  Icon,
+  IconButton,
+  SegmentedControl,
+  Wordmark,
+} from "@forge/ui";
 import {
   redo,
   setCourseMeta,
@@ -69,6 +77,7 @@ export function TopBar({
 
   return (
     <header className="fe-topbar">
+      <Wordmark />
       <IconButton
         className="fe-outline-toggle"
         label={outlineCollapsed ? "Show outline" : "Hide outline"}
@@ -112,6 +121,8 @@ export function TopBar({
         disabled={!canRedo}
       />
 
+      <Divider orientation="vertical" className="fe-topbar-divider" />
+
       <ThemeToggle />
 
       <Button
@@ -143,8 +154,10 @@ export function TopBar({
         }))}
       />
 
+      <Divider orientation="vertical" className="fe-topbar-divider" />
+
       <Button
-        variant="primary"
+        variant="secondary"
         iconStart={<Icon name="play" size={14} />}
         onClick={onPreview}
       >

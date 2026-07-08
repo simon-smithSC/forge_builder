@@ -20,6 +20,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { Button, EmptyState, Icon } from "@forge/ui";
 import { BlockRenderContext, getRegistryEntry } from "@forge/blocks";
 import type { InlineEditingPort, RenderContext } from "@forge/blocks";
 import { fontStackOf } from "@forge/player";
@@ -274,9 +275,21 @@ function BlocksCanvas({
         ) : null}
       </div>
       {lesson.blocks.length === 0 ? (
-        <p className="fe-muted fe-canvas-empty">
-          This lesson is empty. Use the plus button to add your first block.
-        </p>
+        <EmptyState
+          className="fe-canvas-empty"
+          icon={<Icon name="layout-grid" size={24} />}
+          title="This lesson is empty"
+          description="Pick a block to start building: text, media, interactions, quizzes."
+          action={
+            <Button
+              variant="primary"
+              iconStart={<Icon name="plus" size={16} />}
+              onClick={() => setInsertAt({ index: 0, tier: "library" })}
+            >
+              Add a block
+            </Button>
+          }
+        />
       ) : null}
       {insertAt !== null && insertAt.tier === "library" ? (
         <BlockLibrary
@@ -298,9 +311,12 @@ export function Canvas(): ReactElement {
   if (!course || !lesson) {
     return (
       <main className="fe-canvas">
-        <p className="fe-muted fe-canvas-empty">
-          Select a lesson in the outline to start editing.
-        </p>
+        <EmptyState
+          className="fe-canvas-empty"
+          icon={<Icon name="list" size={24} />}
+          title="No lesson selected"
+          description="Select a lesson in the outline to start editing."
+        />
       </main>
     );
   }

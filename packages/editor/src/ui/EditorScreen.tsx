@@ -3,7 +3,7 @@
 import type { ReactElement } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { PreviewDevice } from "@forge/player";
-import { Button } from "@forge/ui";
+import { Button, toast } from "@forge/ui";
 import {
   dismissRestore,
   restoreFromJournal,
@@ -12,7 +12,7 @@ import {
   overwriteServerCopy,
   reloadServerCopy,
 } from "../state/persistence.js";
-import { useStore } from "../state/store.js";
+import { editorStore, useStore } from "../state/store.js";
 import { Canvas } from "./Canvas.js";
 import { Outline } from "./Outline.js";
 import { PreviewOverlay } from "./PreviewOverlay.js";
@@ -100,13 +100,30 @@ export function EditorScreen(): ReactElement {
             saved.
           </span>
           <span className="fe-banner-actions">
-            <Button size="sm" onClick={() => void reloadServerCopy()}>
+            <Button
+              size="sm"
+              onClick={() =>
+                void reloadServerCopy().then(() => {
+                  // Recovery OUTCOME is transient (5A.6); the conflict state
+                  // itself stays this persistent banner.
+                  toast("Server copy reloaded. Local edits were discarded.", {
+                    tone: "info",
+                  });
+                })
+              }
+            >
               Reload server copy
             </Button>
             <Button
               size="sm"
               variant="primary"
-              onClick={() => void overwriteServerCopy()}
+              onClick={() =>
+                void overwriteServerCopy().then(() => {
+                  if (editorStore.getState().saveStatus === "saved") {
+                    toast("Server updated with your copy.", { tone: "success" });
+                  }
+                })
+              }
             >
               Overwrite
             </Button>

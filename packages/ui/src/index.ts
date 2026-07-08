@@ -80,6 +80,8 @@ export { EmptyState } from "./components/EmptyState.js";
 export type { EmptyStateProps } from "./components/EmptyState.js";
 export { Skeleton } from "./components/Skeleton.js";
 export type { SkeletonProps } from "./components/Skeleton.js";
+export { Wordmark } from "./components/Wordmark.js";
+export type { WordmarkProps } from "./components/Wordmark.js";
 export { toast, dismissToast, ToastHost } from "./components/Toast.js";
 export type { ToastOptions, ToastItem } from "./components/Toast.js";
 export type { ControlSize, Tone } from "./components/util.js";
