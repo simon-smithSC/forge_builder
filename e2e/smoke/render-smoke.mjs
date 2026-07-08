@@ -79,6 +79,60 @@ if (typeof player.Player !== "function" || typeof player.computeLessonPercent !=
   failures.push("player public API missing Player/computeLessonPercent");
 }
 
+// 4. Player chrome (V3): the kitchen-sink course carries cover (layout
+// "hero") + descriptionHtml + lesson.header (image + backgroundColor), so a
+// static render of the Player exercises the cover screen and the lesson
+// header band end to end.
+if (typeof player.Player === "function") {
+  const resolveMediaUrl = (mediaId) => `media/${mediaId}.png`;
+
+  // 4a. Cover screen, hero layout (the fixture's authored layout).
+  const heroHtml = renderToStaticMarkup(
+    React.createElement(player.Player, { course, resolveMediaUrl }),
+  );
+  if (!heroHtml.includes("fp-cover-hero")) {
+    failures.push('cover: hero layout did not render an fp-cover-hero image');
+  }
+  if (!heroHtml.includes("fp-cover-description")) {
+    failures.push("cover: fp-cover-description missing");
+  }
+  if (!heroHtml.includes("<strong>description</strong>")) {
+    failures.push("cover: rich descriptionHtml not rendered through Html");
+  }
+
+  // 4b. Cover screen, full-bleed "cover" layout (flipped in memory).
+  const coverCourse = {
+    ...course,
+    cover: { ...course.cover, layout: "cover" },
+  };
+  const coverHtml = renderToStaticMarkup(
+    React.createElement(player.Player, { course: coverCourse, resolveMediaUrl }),
+  );
+  if (!coverHtml.includes("fp-cover-screen-image")) {
+    failures.push('cover: "cover" layout missing fp-cover-screen-image modifier');
+  }
+  if (!coverHtml.includes("linear-gradient")) {
+    failures.push('cover: "cover" layout missing the scrim gradient');
+  }
+
+  // 4c. Lesson header band: the fixture lesson has image + backgroundColor,
+  // so both modifiers must be present.
+  const lessonHtml = renderToStaticMarkup(
+    React.createElement(player.Player, {
+      course,
+      resolveMediaUrl,
+      hideCover: true,
+      initialLessonId: "lesson_blocks",
+    }),
+  );
+  if (!lessonHtml.includes("fp-lesson-header-tinted")) {
+    failures.push("lesson header: fp-lesson-header-tinted modifier missing");
+  }
+  if (!lessonHtml.includes("fp-lesson-header-image")) {
+    failures.push("lesson header: fp-lesson-header-image modifier missing");
+  }
+}
+
 if (failures.length > 0) {
   console.error(`Render smoke FAILED (${failures.length}):`);
   for (const f of failures) console.error("  - " + f);

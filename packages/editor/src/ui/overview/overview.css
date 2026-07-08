@@ -72,6 +72,117 @@
   margin-top: 6px;
 }
 
+/* Rich description editor (V3.2): the InlineRichText content root gets the
+   same quiet field treatment as the plain inputs above; the inline editor's
+   own hover/focus ring (inline.css) is neutralized in favor of it. */
+.fe-ov-desc {
+  margin-top: 6px;
+}
+
+.fe-ov-desc .fe-inline-content {
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 56px;
+  border: 1px solid transparent;
+  border-radius: var(--an-radius-lg);
+  padding: 6px 10px;
+  margin-left: -10px;
+  transition:
+    border-color var(--an-duration-120) var(--an-ease-standard),
+    background var(--an-duration-120) var(--an-ease-standard);
+}
+
+.fe-ov-desc .fe-inline-editor:hover .fe-inline-content {
+  box-shadow: none;
+  border-color: var(--an-border-subtle);
+}
+
+.fe-ov-desc .fe-inline-editor-focused .fe-inline-content,
+.fe-ov-desc .fe-inline-content:focus {
+  box-shadow: none;
+  border-color: var(--an-border-subtle);
+  background: var(--an-surface-raised);
+}
+
+/* ---- cover controls (V3.1) ---- */
+
+.fe-ov-cover {
+  margin-top: var(--an-space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--an-space-8);
+}
+
+.fe-ov-section-title {
+  margin: 0;
+  font-size: var(--an-font-size-12);
+  font-weight: var(--an-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--an-text-muted);
+}
+
+.fe-ov-cover-row {
+  display: flex;
+  align-items: center;
+  gap: var(--an-space-8);
+}
+
+.fe-ov-cover-thumb {
+  flex: none;
+  width: 56px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--an-radius-md);
+  background: var(--an-surface-sunken, var(--an-surface-raised));
+  border: 1px solid var(--an-border-subtle);
+  color: var(--an-text-muted);
+  overflow: hidden;
+}
+
+.fe-ov-cover-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fe-ov-cover-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--an-font-size-14);
+  color: var(--an-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fe-ov-cover-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--an-space-16);
+  flex-wrap: wrap;
+}
+
+.fe-ov-cover-opacity {
+  display: flex;
+  align-items: center;
+  gap: var(--an-space-8);
+  font-size: var(--an-font-size-13);
+  color: var(--an-text-muted);
+}
+
+.fe-ov-cover-opacity input[type="range"] {
+  width: 140px;
+}
+
+.fe-ov-cover-opacity-value {
+  min-width: 2.5em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---- outline ---- */
 
 .fe-ov-outline {

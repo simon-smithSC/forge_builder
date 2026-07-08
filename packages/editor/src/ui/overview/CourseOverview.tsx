@@ -8,12 +8,13 @@ import {
   ChevronDown,
   ChevronUp,
   HelpCircle,
+  Image as ImageIcon,
   Pencil,
   Plus,
   Trash2,
 } from "lucide-react";
-import type { Lesson } from "@forge/schema";
-import { Badge, Button, IconButton } from "@forge/ui";
+import type { CourseCover, Lesson } from "@forge/schema";
+import { Badge, Button, IconButton, SegmentedControl } from "@forge/ui";
 import {
   moveLesson,
   openLessonEditor,
@@ -21,8 +22,12 @@ import {
   renameLesson,
   setCourseMeta,
 } from "../../state/actions.js";
+import { setCourseCover } from "../../state/courseToolsActions.js";
 import { createLessonAt } from "../../state/overviewActions.js";
 import { useStore } from "../../state/store.js";
+import { MediaPicker } from "../dialogs/MediaPicker.js";
+import { InlineRichText } from "../rich/InlineRichText.js";
+import { plainTextOfHtml } from "../rich/plainText.js";
 import { OverviewHeader } from "./OverviewHeader.js";
 import "./overview.css";
 
@@ -49,17 +54,31 @@ function blurOnEnter(event: KeyboardEvent<HTMLInputElement>): void {
   }
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 function CourseMeta(): ReactElement {
   const title = useStore((state) => state.course?.title ?? "");
   const author = useStore((state) => state.course?.author ?? "");
   const description = useStore((state) => state.course?.description ?? "");
+  const descriptionHtml = useStore((state) => state.course?.descriptionHtml);
 
   const titleField = useDraftField(title, (next) => setCourseMeta({ title: next }));
   // Schema 1.1.0: author is optional; the mutation drops the key when emptied.
   const authorField = useDraftField(author, (next) => setCourseMeta({ author: next }));
-  const descField = useDraftField(description, (next) =>
-    setCourseMeta({ description: next }),
-  );
+
+  // Rich description (V3.2): descriptionHtml is the authored source; legacy
+  // plain descriptions are lifted into a <p> for editing. InlineRichText
+  // sanitizes before onCommit, so `html` here is always schema-safe; the
+  // plain `description` projection is derived on the same commit (it stays
+  // canonical for tincan.xml).
+  const richHtml =
+    descriptionHtml ??
+    (description.trim().length > 0 ? `<p>${escapeHtml(description)}</p>` : "");
 
   return (
     <div>
@@ -83,17 +102,124 @@ function CourseMeta(): ReactElement {
         onBlur={authorField.onBlur}
         onKeyDown={blurOnEnter}
       />
-      <textarea
-        className="fe-ov-desc-input"
-        aria-label="Course description"
-        placeholder="Add a course description..."
-        rows={2}
-        value={descField.value}
-        onFocus={descField.onFocus}
-        onChange={(event) => descField.onChange(event.target.value)}
-        onBlur={descField.onBlur}
-      />
+      <div className="fe-ov-desc">
+        <InlineRichText
+          html={richHtml}
+          onCommit={(html) => {
+            setCourseMeta({
+              descriptionHtml: html,
+              description: plainTextOfHtml(html),
+            });
+            return true;
+          }}
+          className="fe-ov-desc-rich"
+          ariaLabel="Course description"
+        />
+      </div>
+      <CoverSection />
     </div>
+  );
+}
+
+const COVER_LAYOUTS = [
+  { value: "cover", label: "Cover" },
+  { value: "hero", label: "Hero" },
+];
+
+/** Course cover background controls (V3.1): image via MediaPicker, layout
+ * segmented control, and scrim opacity (cover layout only). Thumbnails
+ * resolve through the store mediaUrls map, same as the media library. */
+function CoverSection(): ReactElement {
+  const cover = useStore((state) => state.course?.cover);
+  const mediaRef = useStore((state) =>
+    state.course?.cover !== undefined
+      ? state.course.media[state.course.cover.mediaId]
+      : undefined,
+  );
+  const coverUrl = useStore((state) =>
+    state.course?.cover !== undefined
+      ? state.mediaUrls[state.course.cover.mediaId]
+      : undefined,
+  );
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const update = (patch: Partial<CourseCover>): void => {
+    if (cover === undefined) return;
+    setCourseCover({ ...cover, ...patch });
+  };
+
+  return (
+    <section className="fe-ov-cover" aria-label="Cover image">
+      <h2 className="fe-ov-section-title">Cover</h2>
+      <div className="fe-ov-cover-row">
+        <span className="fe-ov-cover-thumb" aria-hidden="true">
+          {coverUrl !== undefined ? (
+            <img src={coverUrl} alt="" />
+          ) : (
+            <ImageIcon size={20} aria-hidden />
+          )}
+        </span>
+        <span className="fe-ov-cover-name">
+          {cover !== undefined
+            ? (mediaRef?.filename ?? "Cover image")
+            : "No cover image."}
+        </span>
+        <Button size="sm" onClick={() => setPickerOpen(true)}>
+          {cover !== undefined ? "Replace" : "Choose image"}
+        </Button>
+        {cover !== undefined ? (
+          <Button size="sm" onClick={() => setCourseCover(undefined)}>
+            Remove
+          </Button>
+        ) : null}
+      </div>
+      <div className="fe-ov-cover-controls">
+        <SegmentedControl
+          label="Cover layout"
+          size="sm"
+          options={COVER_LAYOUTS.map((option) => ({
+            ...option,
+            disabled: cover === undefined,
+          }))}
+          value={cover?.layout ?? "cover"}
+          onValueChange={(value) =>
+            update({ layout: value === "hero" ? "hero" : "cover" })
+          }
+        />
+        {cover !== undefined && cover.layout === "cover" ? (
+          <label className="fe-ov-cover-opacity">
+            <span>Overlay</span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={cover.overlayOpacity ?? 55}
+              onChange={(event) =>
+                update({ overlayOpacity: Number(event.target.value) })
+              }
+              aria-label="Cover overlay opacity"
+            />
+            <span className="fe-ov-cover-opacity-value">
+              {cover.overlayOpacity ?? 55}%
+            </span>
+          </label>
+        ) : null}
+      </div>
+      <MediaPicker
+        open={pickerOpen}
+        kind="image"
+        onClose={() => setPickerOpen(false)}
+        onSelect={(mediaId) =>
+          setCourseCover({
+            mediaId,
+            layout: cover?.layout ?? "cover",
+            ...(cover?.overlayOpacity !== undefined
+              ? { overlayOpacity: cover.overlayOpacity }
+              : {}),
+          })
+        }
+      />
+    </section>
   );
 }
 

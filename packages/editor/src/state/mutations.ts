@@ -6,6 +6,7 @@ import type {
   BlockSettings,
   CourseDoc,
   Lesson,
+  LessonHeader,
   MediaRef,
 } from "@forge/schema";
 import { createUlid } from "@forge/schema";
@@ -320,13 +321,24 @@ export function moveLesson(
 
 export function updateCourseMeta(
   course: CourseDoc,
-  meta: { title?: string; description?: string; author?: string },
+  meta: {
+    title?: string;
+    description?: string;
+    descriptionHtml?: string;
+    author?: string;
+  },
 ): CourseDoc {
   const next = { ...course };
   if (meta.title !== undefined && meta.title.trim().length > 0) {
     next.title = meta.title;
   }
   if (meta.description !== undefined) next.description = meta.description;
+  if (meta.descriptionHtml !== undefined) {
+    // Optional rich projection of `description` (schema 1.2.0): omit the key
+    // when emptied, same contract as author.
+    if (meta.descriptionHtml.length === 0) delete next.descriptionHtml;
+    else next.descriptionHtml = meta.descriptionHtml;
+  }
   if (meta.author !== undefined) {
     // author is optional with min length 1 (schema 1.1.0): omit when emptied.
     const author = meta.author.trim();
@@ -334,6 +346,44 @@ export function updateCourseMeta(
     else next.author = author;
   }
   return touch(next);
+}
+
+/**
+ * Replace or clear a blocks lesson's header styling (V3.3). The header key
+ * is dropped entirely when neither an image nor a color remains (a dangling
+ * overlayOpacity alone means nothing); defined fields are copied one by one
+ * so no `undefined` values land in the doc (exactOptionalPropertyTypes +
+ * strict schema).
+ */
+export function updateLessonHeader(
+  course: CourseDoc,
+  lessonId: string,
+  header: LessonHeader | undefined,
+): CourseDoc {
+  return mapLesson(course, lessonId, (lesson) => {
+    if (lesson.type !== "blocks") return lesson;
+    const empty =
+      header === undefined ||
+      (header.imageMediaId === undefined &&
+        header.backgroundColor === undefined);
+    if (empty) {
+      if (lesson.header === undefined) return lesson;
+      const { header: _dropped, ...rest } = lesson;
+      return rest;
+    }
+    const next: LessonHeader = {
+      ...(header.imageMediaId !== undefined
+        ? { imageMediaId: header.imageMediaId }
+        : {}),
+      ...(header.backgroundColor !== undefined
+        ? { backgroundColor: header.backgroundColor }
+        : {}),
+      ...(header.overlayOpacity !== undefined
+        ? { overlayOpacity: header.overlayOpacity }
+        : {}),
+    };
+    return { ...lesson, header: next };
+  });
 }
 
 export function addMediaRef(course: CourseDoc, ref: MediaRef): CourseDoc {

@@ -4,7 +4,7 @@
 // renderer.
 import type { CSSProperties, ReactElement } from "react";
 import { useCallback, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { Image as ImageIcon, Plus } from "lucide-react";
 import {
   DndContext,
   DragOverlay,
@@ -20,7 +20,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Button, EmptyState, Icon } from "@forge/ui";
+import { Button, EmptyState, Icon, Input } from "@forge/ui";
 import { BlockRenderContext, getRegistryEntry } from "@forge/blocks";
 import type { InlineEditingPort, RenderContext } from "@forge/blocks";
 import { fontStackOf } from "@forge/player";
@@ -28,11 +28,14 @@ import type { BlocksLesson, CourseDoc, Lesson } from "@forge/schema";
 import {
   renameLesson,
   selectBlock,
+  setLessonHeader,
   setSectionDescription,
 } from "../state/actions.js";
 import { reorderBlock } from "../state/dndActions.js";
 import { useStore } from "../state/store.js";
 import { BlockEditFrame } from "./BlockEditFrame.js";
+import { Dialog } from "./dialogs/Dialog.js";
+import { MediaPicker } from "./dialogs/MediaPicker.js";
 import { InlineHtmlEditor } from "./inline/InlineHtmlEditor.js";
 import { BlockLibrary } from "./library/BlockLibrary.js";
 import { QuickAddStrip } from "./library/QuickAddStrip.js";
@@ -80,6 +83,185 @@ function InsertAffordance({
       </button>
       <span className="fe-insert-line" aria-hidden="true" />
     </div>
+  );
+}
+
+/** Matches ThemeEditor's accepted hex forms (#rgb/#rgba/#rrggbb/#rrggbbaa). */
+const HEX_PATTERN =
+  /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+
+/** Native color inputs only accept #rrggbb; expand short/alpha hex forms. */
+function hexForColorInput(hex: string): string {
+  if (!HEX_PATTERN.test(hex)) return "#000000";
+  let body = hex.slice(1);
+  if (body.length === 3 || body.length === 4) {
+    body = body
+      .split("")
+      .map((ch) => ch + ch)
+      .join("");
+  }
+  return `#${body.slice(0, 6)}`;
+}
+
+/** Compact "Header" button next to the lesson title; opens a small dialog
+ * with the lesson header background controls (V3.3): image via MediaPicker,
+ * hex color row (ThemeEditor pattern), scrim opacity, remove all. */
+function LessonHeaderControl({ lesson }: { lesson: BlocksLesson }): ReactElement {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button
+        size="sm"
+        className="fe-lesson-header-btn"
+        iconStart={<ImageIcon size={14} aria-hidden />}
+        onClick={() => setOpen(true)}
+        title="Lesson header background"
+      >
+        Header
+      </Button>
+      {open ? (
+        <LessonHeaderDialog lesson={lesson} onClose={() => setOpen(false)} />
+      ) : null}
+    </>
+  );
+}
+
+function LessonHeaderDialog({
+  lesson,
+  onClose,
+}: {
+  lesson: BlocksLesson;
+  onClose: () => void;
+}): ReactElement {
+  const media = useStore((state) => state.course?.media);
+  const mediaUrls = useStore((state) => state.mediaUrls);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  // Draft-on-type hex field: valid values commit immediately, the draft
+  // clears on blur so the field resyncs with the store (undo, remove all).
+  const [hexDraft, setHexDraft] = useState<string | null>(null);
+
+  const header = lesson.header;
+  const imageRef =
+    header?.imageMediaId !== undefined ? media?.[header.imageMediaId] : undefined;
+  const imageUrl =
+    header?.imageMediaId !== undefined ? mediaUrls[header.imageMediaId] : undefined;
+  const storeHex = header?.backgroundColor ?? "";
+  const hexValue = hexDraft ?? storeHex;
+  const hexInvalid =
+    hexValue.trim().length > 0 && !HEX_PATTERN.test(hexValue.trim());
+
+  const commitColor = (value: string): void => {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      setLessonHeader(lesson.id, { ...header, backgroundColor: undefined });
+    } else if (HEX_PATTERN.test(trimmed)) {
+      setLessonHeader(lesson.id, { ...header, backgroundColor: trimmed });
+    }
+  };
+
+  return (
+    <Dialog title="Lesson header" onClose={onClose}>
+      <h3 className="fe-dlg-section-title">Background image</h3>
+      <div className="fe-field-row">
+        <span className="fe-media-current">
+          {header?.imageMediaId !== undefined
+            ? (imageRef?.filename ?? "Header image")
+            : "No image selected."}
+        </span>
+        <Button size="sm" onClick={() => setPickerOpen(true)}>
+          {header?.imageMediaId !== undefined ? "Replace" : "Choose image"}
+        </Button>
+        {header?.imageMediaId !== undefined ? (
+          <Button
+            size="sm"
+            onClick={() =>
+              setLessonHeader(lesson.id, { ...header, imageMediaId: undefined })
+            }
+          >
+            Remove
+          </Button>
+        ) : null}
+      </div>
+      {imageUrl !== undefined ? (
+        <img className="fe-lesson-header-preview" src={imageUrl} alt="" />
+      ) : null}
+      {header?.imageMediaId !== undefined ? (
+        <label className="fe-field">
+          <span className="fe-field-label">
+            Overlay opacity ({header.overlayOpacity ?? 55}%)
+          </span>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={header.overlayOpacity ?? 55}
+            onChange={(event) =>
+              setLessonHeader(lesson.id, {
+                ...header,
+                overlayOpacity: Number(event.target.value),
+              })
+            }
+            aria-label="Header overlay opacity"
+          />
+        </label>
+      ) : null}
+
+      <h3 className="fe-dlg-section-title">Background color</h3>
+      <div className="fe-field">
+        <span className="fe-color-row">
+          <input
+            type="color"
+            value={hexForColorInput(storeHex)}
+            onChange={(event) => {
+              setHexDraft(event.target.value);
+              commitColor(event.target.value);
+            }}
+            aria-label="Header background color swatch"
+          />
+          <Input
+            type="text"
+            value={hexValue}
+            placeholder="#1f2328"
+            spellCheck={false}
+            aria-label="Header background color hex value"
+            onChange={(event) => {
+              setHexDraft(event.target.value);
+              commitColor(event.target.value);
+            }}
+            onBlur={() => setHexDraft(null)}
+          />
+        </span>
+        {hexInvalid ? (
+          <span className="fe-field-error">Enter a hex color like #1f2328.</span>
+        ) : null}
+      </div>
+
+      <div className="fe-dlg-footer">
+        <span className="fe-dlg-footer-start">
+          <Button
+            onClick={() => {
+              setHexDraft(null);
+              setLessonHeader(lesson.id, undefined);
+            }}
+            disabled={header === undefined}
+          >
+            Remove all
+          </Button>
+        </span>
+        <Button variant="primary" onClick={onClose}>
+          Done
+        </Button>
+      </div>
+
+      <MediaPicker
+        open={pickerOpen}
+        kind="image"
+        onClose={() => setPickerOpen(false)}
+        onSelect={(mediaId) =>
+          setLessonHeader(lesson.id, { ...header, imageMediaId: mediaId })
+        }
+      />
+    </Dialog>
   );
 }
 
@@ -208,13 +390,16 @@ function BlocksCanvas({
         if (event.target === event.currentTarget) selectBlock(null);
       }}
     >
-      <input
-        className="fe-canvas-lesson-title"
-        value={lesson.title}
-        onChange={(event) => renameLesson(lesson.id, event.target.value)}
-        placeholder="Lesson title"
-        aria-label="Lesson title"
-      />
+      <div className="fe-canvas-lesson-titlerow">
+        <input
+          className="fe-canvas-lesson-title"
+          value={lesson.title}
+          onChange={(event) => renameLesson(lesson.id, event.target.value)}
+          placeholder="Lesson title"
+          aria-label="Lesson title"
+        />
+        <LessonHeaderControl lesson={lesson} />
+      </div>
       <BlockRenderContext.Provider value={context}>
         <DndContext
           sensors={sensors}

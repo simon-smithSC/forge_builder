@@ -133,6 +133,17 @@
   min-width: 0;
 }
 
+/* ---- lesson header dialog (V3.3) ---- */
+
+.fe-lesson-header-preview {
+  display: block;
+  width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: var(--an-radius-md);
+  margin: var(--an-space-8) 0 var(--an-space-12);
+}
+
 /* ---- theme editor ---- */
 
 .fe-color-row {

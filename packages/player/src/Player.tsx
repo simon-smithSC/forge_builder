@@ -389,12 +389,14 @@ export function Player({
         ? `Lesson ${navIndex + 1} of ${navigable.length}`
         : `Lesson ${navIndex + 1}`
       : undefined;
-  const headerImageId =
+  const lessonHeader =
     currentLesson && currentLesson.type === "blocks"
-      ? currentLesson.header?.imageMediaId
+      ? currentLesson.header
       : undefined;
   const headerImageUrl =
-    headerImageId !== undefined ? resolveMedia(headerImageId) : undefined;
+    lessonHeader?.imageMediaId !== undefined
+      ? resolveMedia(lessonHeader.imageMediaId)
+      : undefined;
 
   return (
     <div className="fp-player" style={themeStyle}>
@@ -445,6 +447,8 @@ export function Player({
                 counter={lessonCounter}
                 author={course.author}
                 imageUrl={headerImageUrl}
+                backgroundColor={lessonHeader?.backgroundColor}
+                overlayOpacity={lessonHeader?.overlayOpacity}
                 headingRef={headingRef}
               />
               <div className="fp-lesson">

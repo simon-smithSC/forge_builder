@@ -2,7 +2,13 @@
 // used by the dialogs in ui/dialogs/. Kept separate from actions.ts per the
 // R2 file-ownership contract; mirrors its course-meta update path (snapshot,
 // setState, markCourseDirty, scheduleSave).
-import type { CourseDoc, LabelSet, MediaRef, Theme } from "@forge/schema";
+import type {
+  CourseCover,
+  CourseDoc,
+  LabelSet,
+  MediaRef,
+  Theme,
+} from "@forge/schema";
 import * as history from "./history.js";
 import { addMediaRef } from "./mutations.js";
 import { markCourseDirty, scheduleSave } from "./persistence.js";
@@ -33,6 +39,27 @@ function touch(course: CourseDoc): CourseDoc {
 /** Replace course.theme. Canvas re-derives --forge-* CSS vars from it. */
 export function setTheme(theme: Theme): void {
   applyCourseMutation((course) => touch({ ...course, theme }));
+}
+
+/** Replace or clear course.cover (V3.1). Undefined drops the key entirely
+ *  so the doc keeps validating under exactOptionalPropertyTypes + strict
+ *  schema; overlayOpacity is carried only when the caller sets it. */
+export function setCourseCover(cover: CourseCover | undefined): void {
+  applyCourseMutation((course) => {
+    if (cover === undefined) {
+      if (course.cover === undefined) return course;
+      const { cover: _dropped, ...rest } = course;
+      return touch(rest);
+    }
+    const next: CourseCover = {
+      mediaId: cover.mediaId,
+      layout: cover.layout,
+      ...(cover.overlayOpacity !== undefined
+        ? { overlayOpacity: cover.overlayOpacity }
+        : {}),
+    };
+    return touch({ ...course, cover: next });
+  });
 }
 
 /** Replace course.labelSet. Callers must carry the translations key over. */

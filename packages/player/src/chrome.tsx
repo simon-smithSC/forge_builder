@@ -115,31 +115,45 @@ export interface LessonHeaderProps {
   /** Resolved lesson.header.imageMediaId URL; presence switches to the
    *  image band. */
   imageUrl: string | undefined;
+  /** lesson.header.backgroundColor: tinted band (color-only) or the layer
+   *  behind the image when both are set. */
+  backgroundColor: string | undefined;
+  /** lesson.header.overlayOpacity (0-100); scrim strength over the image. */
+  overlayOpacity: number | undefined;
   headingRef: RefObject<HTMLHeadingElement | null>;
 }
 
-/** Lesson header band: counter, focusable title, author attribution, and an
- *  optional full-bleed lesson.header image background with a readability
- *  scrim. */
+/** Lesson header band (POLISH-PLAN V3.3 matrix): counter, focusable title,
+ *  author attribution, and an optional full-bleed background. Image only:
+ *  dark scrim (authorable opacity, default 55) under fixed white text.
+ *  Color only: tinted band with luminance-derived text. Both: the color
+ *  paints behind the scrim + image. Neither: plain themed band. */
 export function LessonHeader({
   title,
   counter,
   author,
   imageUrl,
+  backgroundColor,
+  overlayOpacity,
   headingRef,
 }: LessonHeaderProps): ReactElement {
-  // Fixed pair by design: a dark scrim under white text stays readable over
-  // any authored image, independent of the theme palette.
-  const style: CSSProperties | undefined = imageUrl
-    ? {
-        backgroundImage: `linear-gradient(rgba(16, 20, 24, 0.55), rgba(16, 20, 24, 0.55)), url("${imageUrl}")`,
-      }
-    : undefined;
+  // Fixed scrim hue by design: a dark layer under white text stays readable
+  // over any authored image, independent of the theme palette.
+  const scrimAlpha = ((overlayOpacity ?? 55) / 100).toFixed(2);
+  let style: CSSProperties | undefined;
+  if (imageUrl) {
+    style = {
+      ...(backgroundColor !== undefined ? { backgroundColor } : {}),
+      backgroundImage: `linear-gradient(rgba(16, 20, 24, ${scrimAlpha}), rgba(16, 20, 24, ${scrimAlpha})), url("${imageUrl}")`,
+    };
+  } else if (backgroundColor !== undefined) {
+    style = { backgroundColor, color: readableTextOn(backgroundColor) };
+  }
+  const modifiers = `${
+    backgroundColor !== undefined ? " fp-lesson-header-tinted" : ""
+  }${imageUrl ? " fp-lesson-header-image" : ""}`;
   return (
-    <header
-      className={`fp-lesson-header${imageUrl ? " fp-lesson-header-image" : ""}`}
-      style={style}
-    >
+    <header className={`fp-lesson-header${modifiers}`} style={style}>
       <div className="fp-lesson-header-inner">
         {counter !== undefined ? (
           <p className="fp-lesson-counter">{counter}</p>

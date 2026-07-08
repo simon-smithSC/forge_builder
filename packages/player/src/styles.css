@@ -205,10 +205,45 @@
   margin: 0 0 var(--fp-space-16);
 }
 
+/* "hero" cover layout (V3.1): the authored image sits above the logo/title
+   inside the centered column, clamped so the start button stays in view. */
+.fp-cover-hero {
+  display: block;
+  width: 100%;
+  max-height: 40vh;
+  object-fit: cover;
+  border-radius: var(--fp-radius-lg);
+  margin: 0 0 var(--fp-space-32);
+}
+
+/* "cover" layout: the inline style paints the image + dark scrim across the
+   whole screen; this modifier switches the display text to white (same fixed
+   pair as .fp-lesson-header-image) so it reads over any artwork. The start
+   button keeps its primary fill + luminance-derived contrast color. */
+.fp-cover-screen-image {
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+}
+
+.fp-cover-screen-image .fp-cover-author {
+  color: rgb(255 255 255 / 0.85);
+}
+
+.fp-cover-screen-image .fp-cover-count {
+  color: rgb(255 255 255 / 0.82);
+}
+
+/* Display elements stay centered; the description reads as a paragraph:
+   start-aligned in a measured column, centered as a block (V3.2). Authors
+   can re-center it with the selection toolbar since it is rich text. */
 .fp-cover-description {
   font-size: var(--fp-type-18-size);
   line-height: var(--fp-type-18-line);
   margin: 0 0 var(--fp-space-12);
+  text-align: start;
+  max-width: 34rem;
+  margin-inline: auto;
 }
 
 .fp-cover-author {
@@ -494,13 +529,28 @@
   color: color-mix(in srgb, var(--forge-text, #1f2328) 70%, transparent);
 }
 
-/* headerImage variant: full-bleed band (the negative top margin cancels
-   .fp-main's top padding; .fp-main has no horizontal padding to cancel);
-   the inline style layers a dark scrim under the image so the fixed white
-   text below stays readable regardless of theme or artwork. */
-.fp-lesson-header-image {
+/* Background band variants (V3.3): both modifiers share the full-bleed band
+   geometry (the negative top margin cancels .fp-main's top padding; .fp-main
+   has no horizontal padding to cancel). */
+.fp-lesson-header-image,
+.fp-lesson-header-tinted {
   margin: -2rem 0 2rem;
   padding: 4.5rem 1.5rem 3rem;
+}
+
+/* Color-only band: the inline style sets backgroundColor plus a luminance-
+   derived text color (readableTextOn), so the muted lines derive from
+   currentColor instead of fixed white. When an image is also present the
+   -image rules below win (white over the dark scrim). */
+.fp-lesson-header-tinted .fp-lesson-counter,
+.fp-lesson-header-tinted .fp-lesson-author {
+  color: color-mix(in srgb, currentColor 82%, transparent);
+}
+
+/* Image variant: the inline style layers a dark scrim (authorable opacity)
+   under the image so the fixed white text below stays readable regardless
+   of theme or artwork. */
+.fp-lesson-header-image {
   background-size: cover;
   background-position: center;
   color: #ffffff;
@@ -917,7 +967,8 @@
   .fp-main {
     padding: 1.25rem 0 3rem;
   }
-  .fp-lesson-header-image {
+  .fp-lesson-header-image,
+  .fp-lesson-header-tinted {
     margin: -1.25rem 0 1.5rem;
     padding: 3rem 1rem 2rem;
   }

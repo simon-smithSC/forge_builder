@@ -465,17 +465,47 @@ button:focus-visible {
   color-scheme: light;
 }
 
+/* Lesson title row: the in-place title input plus the compact header-
+   background button (V3.3). The row owns the 46rem column inset the input
+   used to carry. */
+.fe-canvas-lesson-titlerow {
+  display: flex;
+  align-items: center;
+  gap: var(--an-space-8);
+  max-width: 46rem;
+  margin: 0 auto 12px;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+/* The button is editor chrome on the themed paper. Quiet but always visible
+   at rest (the V1.2 lesson: invisible affordances do not get discovered),
+   full strength on row hover / focus. */
+.fe-lesson-header-btn {
+  flex: none;
+  opacity: 0.65;
+  transition: opacity var(--an-duration-120) var(--an-ease-standard);
+}
+
+.fe-canvas-lesson-titlerow:hover .fe-lesson-header-btn,
+.fe-canvas-lesson-titlerow:focus-within .fe-lesson-header-btn,
+.fe-lesson-header-btn:hover,
+.fe-lesson-header-btn:focus-visible {
+  opacity: 1;
+}
+
 /* Lesson title edited in place (P1): an input styled as the h1. The hover /
    focus affordance is editor chrome, so it uses Anvil tokens. */
 .fe-canvas-lesson-title {
   display: block;
+  flex: 1;
+  min-width: 0;
   width: 100%;
   font-family: var(--forge-heading-font, var(--an-font-family-sans, system-ui)), sans-serif;
   font-weight: 700;
   font-size: var(--an-font-size-32);
-  margin: 0 auto 12px;
-  max-width: 46rem;
-  padding: 0 1.5rem;
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
   border: none;
   border-radius: var(--an-radius-sm);

@@ -6,6 +6,7 @@ import type {
   BlockSettings,
   CourseDoc,
   Lesson,
+  LessonHeader,
   MediaRef,
 } from "@forge/schema";
 import { createUlid } from "@forge/schema";
@@ -305,9 +306,21 @@ export function moveLesson(lessonId: string, direction: "up" | "down"): void {
 export function setCourseMeta(meta: {
   title?: string;
   description?: string;
+  descriptionHtml?: string;
   author?: string;
 }): void {
   applyCourseMutation((course) => mutations.updateCourseMeta(course, meta));
+}
+
+/** Replace or clear a blocks lesson's header styling (V3.3). Passing
+ * undefined (or a header with no image and no color) drops the key. */
+export function setLessonHeader(
+  lessonId: string,
+  header: LessonHeader | undefined,
+): void {
+  applyCourseMutation((course) =>
+    mutations.updateLessonHeader(course, lessonId, header),
+  );
 }
 
 // ---- media (R1 bridge: object URLs + local storage keys) ----
