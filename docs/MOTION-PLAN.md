@@ -82,11 +82,19 @@ interface PresenceProps {
 State machine unmounted | open | closing. open→ render data-state="open"
 (no JS enter — CSS owns enters, so initial-mount suppression is free).
 close→ data-state="closed", unmount on the earliest of transitionend /
-animationend / transitioncancel WITH event.target === node (child transitions
-bubble — must filter), or timeout. Zero-duration probe via getComputedStyle:
-all durations 0 → unmount synchronously. Interruptible: reopening during
-"closing" clears timers/listeners and reverses the CSS transition from
-current computed values.
+animationend WITH event.target === node (child transitions bubble — must
+filter), or timeout. transitioncancel is deliberately NOT an exit signal: a
+reopen retargets the running exit transition, which fires transitioncancel —
+treating it as completion unmounted the node the instant it was reopened
+(quick-add strip spam-click regression). animationend from an animation
+already running at close time (an entrance keyframe mid-flight) is ignored
+too; the timeout sweeps that corner. Zero-duration probe via
+getComputedStyle: all durations 0 → unmount synchronously. Interruptible:
+reopening during "closing" clears timers/listeners and reverses the CSS
+transition from current computed values; every unmount path re-checks the
+live `open` (exit signals race the reopen commit), and the phase effect is
+keyed on (open, phase) so open-while-unmounted always converges back to
+"open" instead of being an absorbing dead state.
 
 ### Collapse (packages/ui/src/components/Collapse.tsx, ~60 lines)
 ```tsx
