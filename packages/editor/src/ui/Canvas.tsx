@@ -22,6 +22,7 @@ import {
 } from "@dnd-kit/sortable";
 import { BlockRenderContext, getRegistryEntry } from "@forge/blocks";
 import type { InlineEditingPort, RenderContext } from "@forge/blocks";
+import { fontStackOf } from "@forge/player";
 import type { BlocksLesson, CourseDoc, Lesson } from "@forge/schema";
 import {
   renameLesson,
@@ -46,8 +47,10 @@ function themeVars(course: CourseDoc): CSSProperties {
     "--forge-surface": theme.surfaceColor,
     "--forge-text": theme.textColor,
     "--forge-accent": theme.accentColor,
-    "--forge-heading-font": theme.headingTypeface,
-    "--forge-body-font": theme.bodyTypeface,
+    // Map bare typeface names through the same curated stacks the player
+    // uses, so canvas and published output resolve identical fonts.
+    "--forge-heading-font": fontStackOf(theme.headingTypeface),
+    "--forge-body-font": fontStackOf(theme.bodyTypeface),
   } as CSSProperties;
 }
 

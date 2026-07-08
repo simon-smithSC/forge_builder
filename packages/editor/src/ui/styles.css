@@ -346,7 +346,10 @@ button:focus-visible {
   min-height: 100%;
   background: var(--forge-bg, #ffffff);
   color: var(--forge-text, #1f2328);
-  font-family: var(--forge-body-font, inherit), sans-serif;
+  /* NOTE: "inherit" is a CSS-wide keyword and is INVALID inside a font list;
+     with it the whole declaration is dropped whenever the var is unset, and
+     the browser default (serif) shows. Fall back to the Anvil sans stack. */
+  font-family: var(--forge-body-font, var(--an-font-family-sans, system-ui)), sans-serif;
   padding: 40px 0 96px;
 }
 
@@ -355,7 +358,7 @@ button:focus-visible {
 .fe-canvas-lesson-title {
   display: block;
   width: 100%;
-  font-family: var(--forge-heading-font, inherit), sans-serif;
+  font-family: var(--forge-heading-font, var(--an-font-family-sans, system-ui)), sans-serif;
   font-weight: 700;
   font-size: var(--an-font-size-32);
   margin: 0 auto 12px;

@@ -51,3 +51,7 @@ export const previewDeviceWidths: Record<PreviewDevice, number> = {
 export function getPreviewDeviceWidth(device: PreviewDevice): number {
   return previewDeviceWidths[device];
 }
+
+/** Course-theme typeface helpers (shared with the editor canvas so both
+ * surfaces resolve the same curated stacks from a bare typeface name). */
+export { fontStackOf, readableTextOn } from "./fonts.js";
