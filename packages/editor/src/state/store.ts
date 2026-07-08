@@ -15,6 +15,10 @@ export interface CourseSummary {
 
 export type SaveStatus = "saved" | "saving" | "offline" | "conflict";
 
+/** Which screen is shown while a course is open: the Rise-style course
+ * overview hub or the three-region lesson editor. */
+export type WorkspaceScreen = "overview" | "lesson";
+
 /** Summary of unacknowledged journal entries offered for restore. */
 export interface RestoreCandidate {
   lessonIds: string[];
@@ -25,6 +29,7 @@ export interface RestoreCandidate {
 export interface EditorState {
   course: CourseDoc | null;
   courseList: CourseSummary[];
+  screen: WorkspaceScreen;
   selectedLessonId: string | null;
   selectedBlockId: string | null;
   saveStatus: SaveStatus;
@@ -61,6 +66,7 @@ export function createStore<S>(initial: S): Store<S> {
 export const initialEditorState: EditorState = {
   course: null,
   courseList: [],
+  screen: "overview",
   selectedLessonId: null,
   selectedBlockId: null,
   saveStatus: "saved",

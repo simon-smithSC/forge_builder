@@ -320,13 +320,19 @@ export function moveLesson(
 
 export function updateCourseMeta(
   course: CourseDoc,
-  meta: { title?: string; description?: string },
+  meta: { title?: string; description?: string; author?: string },
 ): CourseDoc {
   const next = { ...course };
   if (meta.title !== undefined && meta.title.trim().length > 0) {
     next.title = meta.title;
   }
   if (meta.description !== undefined) next.description = meta.description;
+  if (meta.author !== undefined) {
+    // author is optional with min length 1 (schema 1.1.0): omit when emptied.
+    const author = meta.author.trim();
+    if (author.length === 0) delete next.author;
+    else next.author = author;
+  }
   return touch(next);
 }
 

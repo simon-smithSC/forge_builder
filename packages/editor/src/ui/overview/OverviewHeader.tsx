@@ -1,29 +1,26 @@
+// Header bar for the course overview screen. Slim variant of ui/TopBar.tsx:
+// back goes to the course LIST (the overview is the course's home), and the
+// title lives in the page body, so the bar only carries status + actions.
+// Owns the same dialogs (theme/labels/publish) and the whole-course preview.
 import type { ReactElement } from "react";
 import { useState } from "react";
 import {
   ArrowLeft,
   Languages,
-  Monitor,
   Palette,
   Play,
   Redo2,
-  Smartphone,
-  Tablet,
   Undo2,
   UploadCloud,
 } from "lucide-react";
 import type { PreviewDevice } from "@forge/player";
-import {
-  redo,
-  setCourseMeta,
-  showCourseOverview,
-  undo,
-} from "../state/actions.js";
-import { useStore } from "../state/store.js";
-import type { SaveStatus } from "../state/store.js";
-import { LabelSetEditor } from "./dialogs/LabelSetEditor.js";
-import { ThemeEditor } from "./dialogs/ThemeEditor.js";
-import { PublishDialog } from "./publish/PublishDialog.js";
+import { closeCourse, redo, undo } from "../../state/actions.js";
+import { useStore } from "../../state/store.js";
+import type { SaveStatus } from "../../state/store.js";
+import { LabelSetEditor } from "../dialogs/LabelSetEditor.js";
+import { ThemeEditor } from "../dialogs/ThemeEditor.js";
+import { PreviewOverlay } from "../PreviewOverlay.js";
+import { PublishDialog } from "../publish/PublishDialog.js";
 
 const STATUS_LABEL: Record<SaveStatus, string> = {
   saved: "All changes saved",
@@ -32,52 +29,27 @@ const STATUS_LABEL: Record<SaveStatus, string> = {
   conflict: "Save conflict",
 };
 
-const DEVICES: { id: PreviewDevice; label: string }[] = [
-  { id: "phone", label: "Phone" },
-  { id: "tablet", label: "Tablet" },
-  { id: "desktop", label: "Desktop" },
-];
-
-function deviceIcon(device: PreviewDevice): ReactElement {
-  if (device === "phone") return <Smartphone size={14} aria-hidden />;
-  if (device === "tablet") return <Tablet size={14} aria-hidden />;
-  return <Monitor size={14} aria-hidden />;
-}
-
-export interface TopBarProps {
-  device: PreviewDevice;
-  onDeviceChange: (device: PreviewDevice) => void;
-  onPreview: () => void;
-}
-
-export function TopBar({ device, onDeviceChange, onPreview }: TopBarProps): ReactElement {
-  const title = useStore((state) => state.course?.title ?? "");
+export function OverviewHeader(): ReactElement {
   const saveStatus = useStore((state) => state.saveStatus);
   const canUndo = useStore((state) => state.canUndo);
   const canRedo = useStore((state) => state.canRedo);
   const [themeOpen, setThemeOpen] = useState(false);
   const [labelsOpen, setLabelsOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [device, setDevice] = useState<PreviewDevice>("desktop");
 
   return (
     <header className="fe-topbar">
       <button
         type="button"
         className="fe-icon-btn"
-        onClick={() => showCourseOverview()}
-        title="Back to course overview"
-        aria-label="Back to course overview"
+        onClick={() => closeCourse()}
+        title="Back to courses"
+        aria-label="Back to courses"
       >
         <ArrowLeft size={18} aria-hidden />
       </button>
-
-      <input
-        className="fe-title-input"
-        value={title}
-        onChange={(event) => setCourseMeta({ title: event.target.value })}
-        aria-label="Course title"
-        placeholder="Course title"
-      />
 
       <span
         className={`fe-save-status fe-save-status-${saveStatus}`}
@@ -128,23 +100,11 @@ export function TopBar({ device, onDeviceChange, onPreview }: TopBarProps): Reac
         Labels
       </button>
 
-      <span className="fe-device-toggle" role="group" aria-label="Preview device">
-        {DEVICES.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            className={`fe-device-btn${device === item.id ? " fe-device-btn-active" : ""}`}
-            onClick={() => onDeviceChange(item.id)}
-            title={item.label}
-            aria-label={`Preview as ${item.label}`}
-            aria-pressed={device === item.id}
-          >
-            {deviceIcon(item.id)}
-          </button>
-        ))}
-      </span>
-
-      <button type="button" className="fe-btn fe-btn-primary" onClick={onPreview}>
+      <button
+        type="button"
+        className="fe-btn fe-btn-primary"
+        onClick={() => setPreviewOpen(true)}
+      >
         <Play size={14} aria-hidden />
         Preview
       </button>
@@ -162,6 +122,13 @@ export function TopBar({ device, onDeviceChange, onPreview }: TopBarProps): Reac
       <ThemeEditor open={themeOpen} onClose={() => setThemeOpen(false)} />
       <LabelSetEditor open={labelsOpen} onClose={() => setLabelsOpen(false)} />
       <PublishDialog open={publishOpen} onClose={() => setPublishOpen(false)} />
+      {previewOpen ? (
+        <PreviewOverlay
+          device={device}
+          onDeviceChange={setDevice}
+          onClose={() => setPreviewOpen(false)}
+        />
+      ) : null}
     </header>
   );
 }

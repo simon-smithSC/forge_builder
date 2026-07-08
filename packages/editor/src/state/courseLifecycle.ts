@@ -144,6 +144,8 @@ async function enterCourse(result: api.RevisionedCourse): Promise<void> {
     busy: false,
     course,
     revision: result.revision,
+    // Opening a course lands on the overview hub, not the lesson editor.
+    screen: "overview",
     selectedLessonId: course.lessons[0]?.id ?? null,
     selectedBlockId: null,
     saveStatus: "saved",
@@ -206,6 +208,7 @@ export function closeCourse(): void {
   setState((prev) => ({
     ...prev,
     course: null,
+    screen: "overview",
     selectedLessonId: null,
     selectedBlockId: null,
     saveStatus: "saved",

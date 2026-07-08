@@ -1,0 +1,228 @@
+/* Course overview screen (fe-ov- prefix). Rise-style hub: centered ~46rem
+   column on the light page background. Shell tokens (--fe-*) and shared
+   controls (.fe-btn, .fe-icon-btn, .fe-topbar) come from ui/styles.css. */
+
+.fe-ov-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--fe-bg);
+}
+
+.fe-ov-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 48px 24px 96px;
+}
+
+.fe-ov-column {
+  max-width: 46rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- course meta ---- */
+
+.fe-ov-title-input,
+.fe-ov-author-input,
+.fe-ov-desc-input {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: var(--fe-radius);
+  padding: 6px 10px;
+  margin-left: -10px;
+}
+
+.fe-ov-title-input:hover,
+.fe-ov-author-input:hover,
+.fe-ov-desc-input:hover {
+  border-color: var(--fe-border);
+}
+
+.fe-ov-title-input:focus,
+.fe-ov-author-input:focus,
+.fe-ov-desc-input:focus {
+  border-color: var(--fe-border);
+  background: var(--fe-surface);
+}
+
+.fe-ov-title-input {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.fe-ov-author-input {
+  font-size: 14px;
+  color: var(--fe-muted);
+  margin-top: 2px;
+}
+
+.fe-ov-desc-input {
+  font-size: 15px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 56px;
+  margin-top: 6px;
+}
+
+/* ---- outline ---- */
+
+.fe-ov-outline {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fe-ov-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--fe-surface);
+  border: 1px solid var(--fe-border);
+  border-radius: var(--fe-radius);
+  box-shadow: var(--fe-shadow);
+  padding: 10px 14px;
+  min-height: 52px;
+}
+
+.fe-ov-row-section {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--fe-border);
+  padding: 22px 14px 6px;
+  min-height: 0;
+}
+
+.fe-ov-chip {
+  flex: none;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fe-muted);
+  background: var(--fe-bg);
+  border: 1px solid var(--fe-border);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.fe-ov-chip-quiz {
+  color: var(--fe-primary);
+  background: var(--fe-primary-soft);
+  border-color: var(--fe-primary-soft);
+}
+
+.fe-ov-row-title {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 4px 8px;
+  margin-left: -8px;
+  border-radius: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fe-ov-row-title:hover {
+  background: var(--fe-primary-soft);
+}
+
+.fe-ov-row-section .fe-ov-row-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fe-muted);
+}
+
+.fe-ov-rename {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.fe-ov-edit-link {
+  flex: none;
+  border: none;
+  background: transparent;
+  color: var(--fe-primary);
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.fe-ov-edit-link:hover {
+  background: var(--fe-primary-soft);
+}
+
+.fe-ov-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.fe-ov-row:hover .fe-ov-row-actions,
+.fe-ov-row:focus-within .fe-ov-row-actions {
+  opacity: 1;
+}
+
+/* ---- inline creation ---- */
+
+.fe-ov-create {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.fe-ov-create-top {
+  margin-top: 18px;
+}
+
+.fe-ov-create-bottom {
+  margin-top: 8px;
+}
+
+.fe-ov-create-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px dashed var(--fe-border);
+  background: var(--fe-surface);
+  border-radius: var(--fe-radius);
+  padding: 11px 14px;
+  font-size: 15px;
+}
+
+.fe-ov-create-input:focus {
+  border-style: solid;
+}
+
+.fe-ov-hint {
+  display: block;
+  margin: 4px 0 0 14px;
+  font-size: 12px;
+  color: var(--fe-muted);
+}
+
+.fe-ov-empty {
+  margin: 24px 0 0;
+  color: var(--fe-muted);
+  font-size: 14px;
+}

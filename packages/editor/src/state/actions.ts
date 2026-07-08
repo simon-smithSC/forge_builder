@@ -72,6 +72,23 @@ export function selectBlock(blockId: string | null): void {
   setState((prev) => ({ ...prev, selectedBlockId: blockId }));
 }
 
+// ---- screen navigation (course overview <-> lesson editor) ----
+
+/** Select a lesson and enter the three-region lesson editor. */
+export function openLessonEditor(lessonId: string): void {
+  setState((prev) => ({
+    ...prev,
+    screen: "lesson",
+    selectedLessonId: lessonId,
+    selectedBlockId: null,
+  }));
+}
+
+/** Return from the lesson editor to the course overview hub. */
+export function showCourseOverview(): void {
+  setState((prev) => ({ ...prev, screen: "overview", selectedBlockId: null }));
+}
+
 // ---- undo/redo ----
 
 export function undo(): void {
@@ -235,7 +252,11 @@ export function moveLesson(lessonId: string, direction: "up" | "down"): void {
   applyCourseMutation((course) => mutations.moveLesson(course, lessonId, direction));
 }
 
-export function setCourseMeta(meta: { title?: string; description?: string }): void {
+export function setCourseMeta(meta: {
+  title?: string;
+  description?: string;
+  author?: string;
+}): void {
   applyCourseMutation((course) => mutations.updateCourseMeta(course, meta));
 }
 
