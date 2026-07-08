@@ -1,7 +1,11 @@
 // Rise-style two-row selection toolbar (POLISH-PLAN V2). Rendered in a
-// Tiptap BubbleMenu, so tippy appends it to document.body - the root div
-// carries .anvil (plus data-theme) itself because the Anvil token scope does
-// not reach detached subtrees. Selection survival: plain buttons preventDefault
+// Tiptap BubbleMenu: tippy MOVES this component's DOM node into a popper it
+// appends elsewhere, so the popper must land INSIDE the React root (#root,
+// see main.tsx) - React delegates all synthetic events at that container, and
+// a body-level popper would sit outside it, leaving every onClick/onChange
+// dead (buttons render but no command ever runs). The root div still carries
+// .anvil (plus data-theme) itself because the popper is a sibling of the
+// .anvil app shell, outside its token scope. Selection survival: plain buttons preventDefault
 // on mousedown so the editor never loses focus; focus-stealing controls
 // (selects, the link input, native color inputs) store the selection when the
 // interaction starts and re-apply it via setTextSelection before running the
@@ -332,7 +336,10 @@ export function SelectionToolbar({ editor }: SelectionToolbarProps): ReactElemen
       updateDelay={100}
       shouldShow={shouldShow}
       tippyOptions={{
-        appendTo: () => document.body,
+        // Must stay inside the React root so event delegation keeps working
+        // (see header comment). #root spans the viewport without overflow
+        // clipping, so positioning is equivalent to a body-level popper.
+        appendTo: () => document.getElementById("root") ?? document.body,
         placement: "top",
         maxWidth: "none",
       }}
