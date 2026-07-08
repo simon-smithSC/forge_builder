@@ -97,8 +97,8 @@
   --an-space-48: 3rem;
   --an-space-64: 4rem;
 
-  --an-font-family-sans: "Geist Sans", "Geist Sans Fallback", Inter, "Segoe UI", system-ui, sans-serif;
-  --an-font-family-mono: "JetBrains Mono", "JetBrains Mono Fallback", SFMono-Regular, Menlo, Consolas, monospace;
+  --an-font-family-sans: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --an-font-family-mono: "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
   --an-font-weight-regular: 400;
   --an-font-weight-medium: 500;
   --an-font-weight-semibold: 600;

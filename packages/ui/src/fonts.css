@@ -57,24 +57,10 @@
   font-display: swap;
 }
 
-/* Metric-adjusted local fallbacks. size-adjust/ascent/descent tuned so Arial
-   (and Helvetica via local matching) occupies the same box as Geist, keeping
-   layout stable before the webfont arrives (or when it never does). */
-
-@font-face {
-  font-family: "Geist Sans Fallback";
-  src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
-  size-adjust: 104%;
-  ascent-override: 96%;
-  descent-override: 24%;
-  line-gap-override: 0%;
-}
-
-@font-face {
-  font-family: "JetBrains Mono Fallback";
-  src: local("Menlo"), local("Consolas"), local("Courier New");
-  size-adjust: 108%;
-  ascent-override: 95%;
-  descent-override: 25%;
-  line-gap-override: 0%;
-}
+/* REMOVED: the metric-adjusted local() fallback faces ("Geist Sans Fallback",
+   "JetBrains Mono Fallback"). Chrome can match a local()+size-adjust face and
+   then fail glyph loading, falling to the LAST-RESORT font (Times) instead of
+   the next family in the stack: observed live as Rendered Fonts "Times-Bold,
+   Local file" despite a valid sans stack. The token stacks now fall back to
+   plain system sans/mono faces directly. Do not reintroduce metric-override
+   local() faces without testing Rendered Fonts in Chrome. */

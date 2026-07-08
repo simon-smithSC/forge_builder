@@ -114,8 +114,8 @@ export const anvilTokens = {
   },
   "font": {
     "family": {
-      "sans": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
-      "mono": "\"JetBrains Mono\", \"JetBrains Mono Fallback\", SFMono-Regular, Menlo, Consolas, monospace"
+      "sans": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
+      "mono": "\"JetBrains Mono\", SFMono-Regular, Menlo, Consolas, monospace"
     },
     "weight": {
       "regular": "400",
@@ -202,84 +202,84 @@ export const anvilTokens = {
   },
   "type": {
     "displayLarge": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "2.5rem",
       "lineHeight": "3rem",
       "fontWeight": 700,
       "letterSpacing": "-0.02em"
     },
     "display": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "2rem",
       "lineHeight": "2.5rem",
       "fontWeight": 700,
       "letterSpacing": "-0.02em"
     },
     "headingLarge": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "1.5rem",
       "lineHeight": "2rem",
       "fontWeight": 600,
       "letterSpacing": "-0.015em"
     },
     "heading": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "1.25rem",
       "lineHeight": "1.75rem",
       "fontWeight": 600,
       "letterSpacing": "-0.01em"
     },
     "headingSmall": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "1rem",
       "lineHeight": "1.5rem",
       "fontWeight": 600,
       "letterSpacing": "-0.005em"
     },
     "labelLarge": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "1rem",
       "lineHeight": "1.5rem",
       "fontWeight": 500,
       "letterSpacing": "0em"
     },
     "label": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "0.875rem",
       "lineHeight": "1.25rem",
       "fontWeight": 500,
       "letterSpacing": "0em"
     },
     "labelSmall": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "0.8125rem",
       "lineHeight": "1.125rem",
       "fontWeight": 500,
       "letterSpacing": "0.01em"
     },
     "paragraphLarge": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "1.125rem",
       "lineHeight": "1.75rem",
       "fontWeight": 400,
       "letterSpacing": "0em"
     },
     "paragraph": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "1rem",
       "lineHeight": "1.5rem",
       "fontWeight": 400,
       "letterSpacing": "0em"
     },
     "paragraphSmall": {
-      "fontFamily": "\"Geist Sans\", \"Geist Sans Fallback\", Inter, \"Segoe UI\", system-ui, sans-serif",
+      "fontFamily": "\"Geist Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
       "fontSize": "0.875rem",
       "lineHeight": "1.25rem",
       "fontWeight": 400,
       "letterSpacing": "0em"
     },
     "mono": {
-      "fontFamily": "\"JetBrains Mono\", \"JetBrains Mono Fallback\", SFMono-Regular, Menlo, Consolas, monospace",
+      "fontFamily": "\"JetBrains Mono\", SFMono-Regular, Menlo, Consolas, monospace",
       "fontSize": "0.8125rem",
       "lineHeight": "1.25rem",
       "fontWeight": 400,
