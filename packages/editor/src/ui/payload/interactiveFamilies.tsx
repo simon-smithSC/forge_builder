@@ -3,7 +3,14 @@
 import type { ReactElement } from "react";
 import type { Block } from "@forge/schema";
 import { createUlid } from "@forge/schema";
-import { HtmlField, ItemListEditor, NumberField, SelectField, StringField } from "./fields.js";
+import {
+  HtmlField,
+  ItemListEditor,
+  NumberField,
+  SelectField,
+  StringField,
+  ToggleField,
+} from "./fields.js";
 import { MediaPickerField } from "./mediaField.js";
 import type { FamilyEditorProps } from "./types.js";
 import { setOptional } from "./types.js";
@@ -211,49 +218,63 @@ function TimelineEditor({
   onChange: Commit;
 }): ReactElement {
   return (
-    <ItemListEditor
-      label="Timeline events"
-      itemLabel="Event"
-      items={payload.events}
-      minItems={1}
-      onCommit={(events) => onChange({ events })}
-      createItem={() => ({
-        id: createUlid(),
-        date: "2026",
-        title: "New event",
-        html: "Details",
-      })}
-      renderItem={(event, update) => (
-        <>
-          <StringField
-            label="Date"
-            value={event.date}
-            required
-            hint="Free text, e.g. 1969 or July 2026."
-            onCommit={(raw) => update({ ...event, date: raw })}
-          />
-          <StringField
-            label="Event title"
-            value={event.title}
-            required
-            onCommit={(raw) => update({ ...event, title: raw })}
-          />
-          <HtmlField
-            label="Event text (HTML)"
-            value={event.html}
-            required
-            onCommit={(raw) => update({ ...event, html: raw })}
-          />
-          <MediaPickerField
-            label="Image"
-            kind="image"
-            mediaId={event.mediaId}
-            onSelect={(mediaId) => update({ ...event, mediaId })}
-            onClear={() => update(setOptional(event, "mediaId", undefined))}
-          />
-        </>
-      )}
-    />
+    <>
+      <ToggleField
+        label="Show all details"
+        checked={payload.detailsAlwaysVisible === true}
+        onCommit={(checked) =>
+          onChange(setOptional(payload, "detailsAlwaysVisible", checked || undefined))
+        }
+      />
+      <ItemListEditor
+        label="Timeline events"
+        itemLabel="Event"
+        items={payload.events}
+        minItems={1}
+        onCommit={(events) => onChange({ ...payload, events })}
+        createItem={() => ({
+          id: createUlid(),
+          title: "New event",
+          html: "Details",
+        })}
+        renderItem={(event, update) => (
+          <>
+            <StringField
+              label="Label"
+              value={event.label ?? ""}
+              hint="Optional eyebrow, e.g. 1969 or Phase 1."
+              onCommit={(raw) => update(setOptional(event, "label", raw))}
+            />
+            <StringField
+              label="Event title"
+              value={event.title}
+              required
+              onCommit={(raw) => update({ ...event, title: raw })}
+            />
+            <HtmlField
+              label="Event text (HTML)"
+              value={event.html}
+              required
+              onCommit={(raw) => update({ ...event, html: raw })}
+            />
+            <MediaPickerField
+              label="Image"
+              kind="image"
+              mediaId={event.mediaId}
+              onSelect={(mediaId) => update({ ...event, mediaId })}
+              onClear={() => update(setOptional(event, "mediaId", undefined))}
+            />
+            <ToggleField
+              label="Start expanded"
+              checked={event.startExpanded === true}
+              onCommit={(checked) =>
+                update(setOptional(event, "startExpanded", checked || undefined))
+              }
+            />
+          </>
+        )}
+      />
+    </>
   );
 }
 

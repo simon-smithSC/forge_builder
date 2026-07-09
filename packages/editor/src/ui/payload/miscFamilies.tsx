@@ -291,6 +291,12 @@ export function DividerEditor({ block, onChange }: FamilyEditorProps): ReactElem
           onCommit={(label) => onChange({ label })}
         />
       );
+    case "screen bar":
+      return (
+        <p className="fe-pl-hint">
+          No content — use Format padding and background for spacing.
+        </p>
+      );
     default:
       return null;
   }

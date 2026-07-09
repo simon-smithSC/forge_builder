@@ -47,15 +47,24 @@ is a superset upgrade later if wanted).
   uses drawer editing (plain Html, not EditableHtml) so the transform can't
   break inline editing; comment noting care if EditableHtml lands here later.
 
-## B3 — Timeline "show all details" option (M)
+## B3 — Timeline details options: per-block AND per-item (M)
 
 Current: details collapse behind per-item title buttons; opening every item
-completes the block (interaction-gated). New optional payload flag
-`detailsAlwaysVisible` — when true, titles are plain headings, all bodies
-visible, node dots filled.
+completes the block (interaction-gated). Two new optional knobs (Simon
+2026-07-08: "We want some timeline items uncollapsed"):
+
+- Per-block `detailsAlwaysVisible` — titles become plain headings, all
+  bodies visible, dots filled, no toggling at all.
+- Per-item `startExpanded` — the item renders OPEN initially in the player
+  (still toggleable). For gating, a startExpanded item counts as already
+  opened; if every item is startExpanded (or the block flag is set) the
+  block consumes by scroll instead of interaction.
 
 - schemas.ts: `detailsAlwaysVisible: z.boolean().optional()` on the timeline
-  payload (rides v1.3.0, no transform).
+  payload AND `startExpanded: z.boolean().optional()` on the timeline event
+  schema (both ride v1.3.0, no transform).
+- Editor: per-item "Start expanded" toggle in the item editor alongside the
+  block-level "Show all details" toggle.
 - ifsGraphicTimeline.tsx: branch on the flag; ALSO upgrade the toggle mode's
   instant show/hide to a smooth pure-CSS height animation
   (grid-template-rows 0fr↔1fr wrapper, visibility delayed so collapsed

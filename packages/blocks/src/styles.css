@@ -438,6 +438,9 @@
   color: color-mix(in srgb, var(--fb-text) 60%, transparent);
   cursor: default;
 }
+/* Screen bar: empty full-bleed band matching the line variant's 2px content
+ * footprint - spacing comes from block padding, background from settings. */
+.fb-divider-screenbar { height: 2px; }
 
 /* ---------- multimedia ---------- */
 .fb-multimedia-video-player { width: 100%; border-radius: 8px; display: block; }
@@ -868,7 +871,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
   box-sizing: border-box;
 }
 .fb-timeline-event-open .fb-timeline-node { background: var(--fb-primary); }
-.fb-timeline-date {
+.fb-timeline-label {
   display: block;
   font-size: 0.75rem;
   font-weight: 700;
@@ -892,6 +895,28 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
 }
 .fb-timeline-trigger:hover { color: var(--fb-primary); }
 .fb-timeline-body { margin-top: 0.6rem; }
+/* Toggle-mode collapse: the body stays mounted inside a grid clip whose row
+ * animates 0fr<->1fr; visibility flips only after the collapse transition so
+ * closed content is untabbable. Spacing moves to border-box padding because
+ * an outer margin would escape the 0-height row. */
+.fb-timeline-body-clip {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 240ms ease, visibility 0s 240ms;
+}
+.fb-timeline-event-open .fb-timeline-body-clip {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows 240ms ease, visibility 0s;
+}
+.fb-timeline-body-clip .fb-timeline-body {
+  overflow: hidden;
+  min-height: 0;
+  margin-top: 0;
+  padding-top: 0.6rem;
+  box-sizing: border-box;
+}
 .fb-timeline-image {
   max-width: 100%;
   border-radius: 6px;
@@ -1463,4 +1488,5 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
   .fb-flashcard-card { transition: none; }
   .fb-labeled-graphic-marker { animation: none; }
   .fb-interactive-chevron { transition: none; }
+  .fb-timeline-body-clip { transition: none; }
 }

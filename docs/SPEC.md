@@ -149,10 +149,10 @@ Parity set, matching every variant present in the example course:
 | list | bulleted, numbered, checkboxes | Items of HTML fragments; checkbox state is cosmetic |
 | image | hero, full width, centered, text aside, banner | mediaId, alt (required, see 12), caption, zoomOnClick |
 | gallery | carousel (centered), two/three/four column grid | Array of images with captions |
-| divider | line, numbered, spacer, continue button | Continue gates progress until clicked |
+| divider | line, numbered, spacer, continue button, screen bar | Continue gates progress until clicked; screen bar is an empty full-bleed band (spacing from block padding, background from settings) |
 | multimedia | video, embed (iframe), attachment, code | Video: mediaId, poster, captions (VTT); embed: URL against an allowlist; attachment: mediaId + size + label; code: language + syntax highlighting + copy button |
 | interactive | accordion, tabs | Items with title, rich description, optional image/audio |
-| interactive-fullscreen | process, labeled graphic, timeline, sorting | Process: intro/steps/summary; labeled graphic: base image + markers at x/y % with title/description; timeline: dated events; sorting: items → piles |
+| interactive-fullscreen | process, labeled graphic, timeline, sorting | Process: intro/steps/summary; labeled graphic: base image + markers at x/y % with title/description; timeline: events with optional label eyebrow, per-event startExpanded, block-level detailsAlwaysVisible (consumes by scroll when nothing is left to open); sorting: items → piles |
 | flashcard | single card, grid, stack | Front/back, each text or full image |
 | buttons | single button, button stack | Label + destination (URL, lesson id, mailto) |
 | knowledgeCheck | multiple choice, multiple response, fill in the blank, matching | Inline ungraded checks; answers, per-answer feedback, correct feedback, incorrect feedback |

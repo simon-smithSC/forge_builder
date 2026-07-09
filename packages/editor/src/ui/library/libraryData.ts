@@ -166,7 +166,7 @@ export const libraryCategories: readonly LibraryCategory[] = [
       card("interactive", "tabs", "Tabbed panels, keyboard accessible."),
       card("interactive-fullscreen", "process", "Step-by-step process with intro and summary."),
       card("interactive-fullscreen", "labeled graphic", "Image with clickable markers."),
-      card("interactive-fullscreen", "timeline", "Dated events on a vertical timeline."),
+      card("interactive-fullscreen", "timeline", "Labeled events on a vertical timeline."),
       card("interactive-fullscreen", "sorting", "Sort items into category piles."),
       card("flashcard", "single card", "One flip card.", "Flashcard"),
       card("flashcard", "grid", "Grid of flip cards.", "Flashcard grid"),
@@ -205,6 +205,11 @@ export const libraryCategories: readonly LibraryCategory[] = [
       card("divider", "numbered", "Numbered section divider."),
       card("divider", "spacer", "Invisible vertical space."),
       card("divider", "continue button", "Continue button that gates progress."),
+      card(
+        "divider",
+        "screen bar",
+        "Empty full-width band; use padding and background for spacing.",
+      ),
     ],
   },
   {

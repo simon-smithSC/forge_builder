@@ -9,7 +9,8 @@ type DividerBlock =
   | BlockFor<"divider", "line">
   | BlockFor<"divider", "numbered">
   | BlockFor<"divider", "spacer">
-  | BlockFor<"divider", "continue button">;
+  | BlockFor<"divider", "continue button">
+  | BlockFor<"divider", "screen bar">;
 
 function DividerRendererImpl({ block }: BlockRendererProps): ReactElement {
   const b = block as DividerBlock;
@@ -53,6 +54,8 @@ function DividerRendererImpl({ block }: BlockRendererProps): ReactElement {
         </div>
       );
     }
+    case "screen bar":
+      return <div className="fb-divider-screenbar" aria-hidden="true" />;
   }
 }
 
@@ -61,6 +64,7 @@ const defaults: Record<string, () => unknown> = {
   numbered: () => ({ number: 1 }),
   spacer: () => ({ size: "medium" }),
   "continue button": () => ({ label: "Continue" }),
+  "screen bar": () => ({}),
 };
 
 export const dividerEntry: BlockRegistryEntry = {

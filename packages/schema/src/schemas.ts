@@ -7,7 +7,7 @@ import {
 } from "./sanitizer.js";
 import { ULID_PATTERN } from "./ulid.js";
 
-export const CURRENT_SCHEMA_VERSION = "1.2.0";
+export const CURRENT_SCHEMA_VERSION = "1.3.0";
 
 const idSchema = z.string().min(1);
 export const ulidSchema = z.string().regex(new RegExp(ULID_PATTERN), {
@@ -86,7 +86,7 @@ export const blockFamilyVariants = {
     "three column grid",
     "four column grid",
   ],
-  divider: ["line", "numbered", "spacer", "continue button"],
+  divider: ["line", "numbered", "spacer", "continue button", "screen bar"],
   multimedia: ["video", "embed", "attachment", "code"],
   interactive: ["accordion", "tabs"],
   "interactive-fullscreen": ["process", "labeled graphic", "timeline", "sorting"],
@@ -243,6 +243,10 @@ const dividerContinuePayloadSchema = z
   })
   .strict();
 
+// Screen bar (v1.3.0): an empty full-bleed band — spacing comes from the
+// block's padding envelope, background from block settings. No payload knobs.
+const dividerScreenBarPayloadSchema = z.object({}).strict();
+
 const videoPayloadSchema = z
   .object({
     mediaId: mediaIdSchema,
@@ -368,14 +372,20 @@ const timelinePayloadSchema = z
         z
           .object({
             id: idSchema,
-            date: z.string().min(1),
+            // v1.3.0: eyebrow renamed date -> label and made optional so
+            // non-temporal timelines can omit it (migrate120To130).
+            label: z.string().min(1).optional(),
             title: z.string().min(1),
             html: htmlFragmentSchema,
             mediaId: mediaIdSchema.optional(),
+            // v1.3.0: render this event open initially (still toggleable).
+            startExpanded: z.boolean().optional(),
           })
           .strict(),
       )
       .min(1),
+    // v1.3.0: plain headings, all bodies visible, no toggling at all.
+    detailsAlwaysVisible: z.boolean().optional(),
   })
   .strict();
 
@@ -707,6 +717,7 @@ export const blockPayloadSchemas = {
     numbered: dividerNumberedPayloadSchema,
     spacer: dividerSpacerPayloadSchema,
     "continue button": dividerContinuePayloadSchema,
+    "screen bar": dividerScreenBarPayloadSchema,
   },
   multimedia: {
     video: videoPayloadSchema,

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Block, BlocksLesson } from "@forge/schema";
 import {
   computeLessonPercent,
+  consumesByInteraction,
   isContinueGate,
   visibleBlocks,
 } from "./progress.js";
@@ -42,6 +43,38 @@ function lineDivider(id: string): Block {
   };
 }
 
+function timeline(
+  id: string,
+  payload: {
+    events: {
+      id: string;
+      title: string;
+      html: string;
+      label?: string;
+      startExpanded?: boolean;
+    }[];
+    detailsAlwaysVisible?: boolean;
+  },
+): Block {
+  return {
+    id,
+    family: "interactive-fullscreen",
+    variant: "timeline",
+    payload,
+    settings,
+  } as Block;
+}
+
+const timelineEvent = (
+  id: string,
+  startExpanded?: boolean,
+): { id: string; title: string; html: string; startExpanded?: boolean } => ({
+  id,
+  title: "Event",
+  html: "<p>Detail</p>",
+  ...(startExpanded === undefined ? {} : { startExpanded }),
+});
+
 function lessonOf(blocks: Block[]): BlocksLesson {
   return { type: "blocks", id: "lesson-1", title: "Lesson", blocks };
 }
@@ -55,6 +88,43 @@ describe("isContinueGate", () => {
     expect(isContinueGate(continueGate("g1"))).toBe(true);
     expect(isContinueGate(lineDivider("d1"))).toBe(false);
     expect(isContinueGate(paragraph("p1"))).toBe(false);
+  });
+});
+
+describe("consumesByInteraction", () => {
+  it("keeps the default timeline interaction-gated", () => {
+    const block = timeline("t1", {
+      events: [timelineEvent("e1"), timelineEvent("e2")],
+    });
+    expect(consumesByInteraction(block)).toBe(true);
+  });
+
+  it("consumes by scroll when detailsAlwaysVisible is set", () => {
+    const block = timeline("t1", {
+      events: [timelineEvent("e1"), timelineEvent("e2")],
+      detailsAlwaysVisible: true,
+    });
+    expect(consumesByInteraction(block)).toBe(false);
+  });
+
+  it("consumes by scroll when every event starts expanded", () => {
+    const block = timeline("t1", {
+      events: [timelineEvent("e1", true), timelineEvent("e2", true)],
+    });
+    expect(consumesByInteraction(block)).toBe(false);
+  });
+
+  it("stays interaction-gated while any event starts collapsed", () => {
+    const block = timeline("t1", {
+      events: [timelineEvent("e1", true), timelineEvent("e2")],
+    });
+    expect(consumesByInteraction(block)).toBe(true);
+  });
+
+  it("keeps the non-timeline behavior unchanged", () => {
+    expect(consumesByInteraction(continueGate("g1"))).toBe(true);
+    expect(consumesByInteraction(lineDivider("d1"))).toBe(false);
+    expect(consumesByInteraction(paragraph("p1"))).toBe(false);
   });
 });
 

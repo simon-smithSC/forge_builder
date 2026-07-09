@@ -13,6 +13,7 @@ const {
   visibleBlocks,
   isContinueGate,
   computeLessonPercent,
+  consumesByInteraction,
   resolveEntranceKind,
   entranceDelaySeconds,
 } = player;
@@ -106,7 +107,52 @@ check(
   100,
 );
 
-// 8. Entrance resolution + Rise stagger timings (U1 surface used on reveal).
+// 8. Timeline consumption mode (BLOCKS-POLISH-PLAN B3): interaction-gated by
+// default, scroll-consumed when detailsAlwaysVisible is set or every event
+// starts expanded (nothing left to open).
+const timelineOf = (payload) => ({
+  id: "t1",
+  family: "interactive-fullscreen",
+  variant: "timeline",
+  payload,
+  settings,
+});
+const tlEvent = (id, startExpanded) => ({
+  id,
+  title: "Event",
+  html: "<p>Detail</p>",
+  ...(startExpanded === undefined ? {} : { startExpanded }),
+});
+check(
+  "timeline default is interaction-gated",
+  consumesByInteraction(timelineOf({ events: [tlEvent("e1"), tlEvent("e2")] })),
+  true,
+);
+check(
+  "timeline detailsAlwaysVisible consumes by scroll",
+  consumesByInteraction(
+    timelineOf({ events: [tlEvent("e1")], detailsAlwaysVisible: true }),
+  ),
+  false,
+);
+check(
+  "timeline all startExpanded consumes by scroll",
+  consumesByInteraction(
+    timelineOf({ events: [tlEvent("e1", true), tlEvent("e2", true)] }),
+  ),
+  false,
+);
+check(
+  "timeline partial startExpanded stays interaction-gated",
+  consumesByInteraction(
+    timelineOf({ events: [tlEvent("e1", true), tlEvent("e2")] }),
+  ),
+  true,
+);
+check("continue divider still interactive", consumesByInteraction(gate("g")), true);
+check("line divider still scroll-consumed", consumesByInteraction(line("d")), false);
+
+// 9. Entrance resolution + Rise stagger timings (U1 surface used on reveal).
 check("entrance inherit", resolveEntranceKind("fade", "inherit"), "fade");
 check("entrance absent", resolveEntranceKind("slide", undefined), "slide");
 check("entrance override", resolveEntranceKind("fade", "zoom"), "zoom");

@@ -304,7 +304,7 @@ describe("Forge schema public API", () => {
     );
   });
 
-  it("migrates a 1.1.0 course doc to 1.2.0, moving headerImage into header", () => {
+  it("migrates a 1.1.0 course doc forward, moving headerImage into header", () => {
     const legacyDoc = structuredClone(loadKitchenSink()) as Record<string, unknown>;
     legacyDoc.schemaVersion = "1.1.0";
     delete legacyDoc.cover;
@@ -321,7 +321,7 @@ describe("Forge schema public API", () => {
     const migrated = migrateCourseDoc(legacyDoc);
 
     expect(legacyDoc).toEqual(original);
-    expect(migrated.schemaVersion).toBe("1.2.0");
+    expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
     expect(migrated.cover).toBeUndefined();
     expect(migrated.descriptionHtml).toBeUndefined();
     const blocksLesson = migrated.lessons.find((lesson) => lesson.type === "blocks");
@@ -334,6 +334,78 @@ describe("Forge schema public API", () => {
     ).toBeUndefined();
     expect(courseDocMigrationRegistry.map((migration) => migration.from)).toContain(
       "1.1.0",
+    );
+  });
+
+  it("migrates a 1.2.0 course doc to 1.3.0, renaming timeline event date to label", () => {
+    const legacyDoc = structuredClone(loadKitchenSink()) as Record<string, unknown>;
+    legacyDoc.schemaVersion = "1.2.0";
+    // Rebuild the fixture's timeline blocks in their 1.2.0 shape: events carry
+    // a required `date`, and the 1.3.0 additions do not exist yet. The
+    // detailsAlwaysVisible fixture block gets an EMPTY date to prove empties
+    // are dropped rather than copied into `label`.
+    const legacyLessons = legacyDoc.lessons as Record<string, unknown>[];
+    for (const lesson of legacyLessons) {
+      if (lesson.type !== "blocks") continue;
+      for (const block of lesson.blocks as Record<string, unknown>[]) {
+        if (
+          block.family !== "interactive-fullscreen" ||
+          block.variant !== "timeline"
+        ) {
+          continue;
+        }
+        const payload = block.payload as Record<string, unknown>;
+        delete payload.detailsAlwaysVisible;
+        payload.events = (payload.events as Record<string, unknown>[]).map(
+          (event) => {
+            const next = { ...event };
+            const label = next.label;
+            delete next.label;
+            delete next.startExpanded;
+            next.date = typeof label === "string" ? label : "";
+            return next;
+          },
+        );
+      }
+    }
+    const original = structuredClone(legacyDoc);
+
+    const migrated = migrateCourseDoc(legacyDoc);
+
+    expect(legacyDoc).toEqual(original);
+    expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
+
+    const timelineBlocks = migrated.lessons.flatMap((lesson) =>
+      lesson.type === "blocks"
+        ? lesson.blocks.filter(
+            (block) =>
+              block.family === "interactive-fullscreen" &&
+              block.variant === "timeline",
+          )
+        : [],
+    );
+    const dated = timelineBlocks.find(
+      (block) => block.id === "block_fullscreen_timeline",
+    );
+    if (!dated) throw new Error("Expected the dated timeline block.");
+    const datedEvents = (dated.payload as {
+      events: Record<string, unknown>[];
+    }).events;
+    expect(datedEvents.map((event) => event.label)).toEqual(["Week 1", "Week 2"]);
+    expect(datedEvents.some((event) => "date" in event)).toBe(false);
+
+    const undated = timelineBlocks.find(
+      (block) => block.id === "block_fullscreen_timeline_open",
+    );
+    if (!undated) throw new Error("Expected the always-visible timeline block.");
+    const undatedEvents = (undated.payload as {
+      events: Record<string, unknown>[];
+    }).events;
+    expect(undatedEvents.some((event) => "date" in event)).toBe(false);
+    expect(undatedEvents.some((event) => "label" in event)).toBe(false);
+
+    expect(courseDocMigrationRegistry.map((migration) => migration.from)).toContain(
+      "1.2.0",
     );
   });
 

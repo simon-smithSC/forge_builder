@@ -1,9 +1,11 @@
 // Labeled graphic + timeline views for interactive-fullscreen, rebuilt to
 // the Rise treatments (teardown lines 712-749 and 784-815): pulsing accent
 // marker dots with viewed state and a popover card with previous/next/close;
-// a vertical accent timeline with node dots, small-caps date labels, bold
+// a vertical accent timeline with node dots, small-caps label eyebrows, bold
 // titles, and per-event reveal. Both report onCompleted once every item has
-// been viewed (interactive-fullscreen is interaction-gated in the player).
+// been viewed (interactive-fullscreen is interaction-gated in the player,
+// except timelines whose details are visible from the start — see
+// consumesByInteraction in @forge/player progress.ts).
 import type { ReactElement } from "react";
 import { useState } from "react";
 import type { BlockFor } from "@forge/schema";
@@ -118,10 +120,21 @@ export function LabeledGraphicView({
 
 export function TimelineView({ block }: { block: TimelineBlock }): ReactElement {
   const { mode, events, resolveMediaUrl } = useRenderContext();
-  const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
-  const [opened, setOpened] = useState<ReadonlySet<string>>(new Set());
-  const [completed, setCompleted] = useState(false);
   const entries = block.payload.events;
+  const alwaysVisible = block.payload.detailsAlwaysVisible === true;
+  // startExpanded seeds the initial per-viewer state only; after mount the
+  // React state owns open/closed and items stay toggleable.
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(
+    () => new Set(entries.filter((entry) => entry.startExpanded).map((e) => e.id)),
+  );
+  // startExpanded items count as already opened for interaction completion.
+  // When the block flag is set (or every item starts expanded) the player
+  // consumes this block by scroll instead (progress.ts consumesByInteraction),
+  // so the view never needs to report completion in those shapes.
+  const [opened, setOpened] = useState<ReadonlySet<string>>(
+    () => new Set(entries.filter((entry) => entry.startExpanded).map((e) => e.id)),
+  );
+  const [completed, setCompleted] = useState(false);
 
   const toggle = (entryId: string) => {
     const isOpen = expanded.has(entryId);
@@ -144,33 +157,45 @@ export function TimelineView({ block }: { block: TimelineBlock }): ReactElement 
   return (
     <ol className="fb-timeline">
       {entries.map((entry) => {
-        const isOpen = expanded.has(entry.id);
+        const isOpen = alwaysVisible || expanded.has(entry.id);
         const mediaUrl = entry.mediaId ? resolveMediaUrl(entry.mediaId) : undefined;
+        const body = (
+          <div className="fb-timeline-body">
+            {mediaUrl ? (
+              <img src={mediaUrl} alt="" className="fb-timeline-image" />
+            ) : null}
+            <Html fragment={entry.html} />
+          </div>
+        );
         return (
           <li
             key={entry.id}
             className={`fb-timeline-event${isOpen ? " fb-timeline-event-open" : ""}`}
           >
             <span className="fb-timeline-node" aria-hidden="true" />
-            <span className="fb-timeline-date">{entry.date}</span>
-            <h3 className="fb-timeline-heading">
-              <button
-                type="button"
-                className="fb-timeline-trigger"
-                aria-expanded={isOpen}
-                onClick={() => toggle(entry.id)}
-              >
-                {entry.title}
-              </button>
-            </h3>
-            {isOpen ? (
-              <div className="fb-timeline-body">
-                {mediaUrl ? (
-                  <img src={mediaUrl} alt="" className="fb-timeline-image" />
-                ) : null}
-                <Html fragment={entry.html} />
-              </div>
+            {entry.label ? (
+              <span className="fb-timeline-label">{entry.label}</span>
             ) : null}
+            {alwaysVisible ? (
+              <>
+                <h3 className="fb-timeline-heading">{entry.title}</h3>
+                {body}
+              </>
+            ) : (
+              <>
+                <h3 className="fb-timeline-heading">
+                  <button
+                    type="button"
+                    className="fb-timeline-trigger"
+                    aria-expanded={isOpen}
+                    onClick={() => toggle(entry.id)}
+                  >
+                    {entry.title}
+                  </button>
+                </h3>
+                <div className="fb-timeline-body-clip">{body}</div>
+              </>
+            )}
           </li>
         );
       })}

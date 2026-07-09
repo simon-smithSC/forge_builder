@@ -94,10 +94,61 @@ const migrate110To120: CourseDocMigration = {
   },
 };
 
+// 1.2.0 -> 1.3.0 (BLOCKS-POLISH-PLAN B1/B3/B4): the screen bar divider and
+// the timeline detailsAlwaysVisible/startExpanded flags are purely additive.
+// The one transform renames the timeline event eyebrow `date` to `label`,
+// which is now optional: empty/absent dates are dropped instead of copied.
+const migrate120To130: CourseDocMigration = {
+  from: "1.2.0",
+  to: "1.3.0",
+  up(input: unknown): unknown {
+    const source = isRecord(input) ? cloneJson(input) : {};
+
+    if (Array.isArray(source.lessons)) {
+      source.lessons = source.lessons.map((lesson: unknown) => {
+        if (!isRecord(lesson) || !Array.isArray(lesson.blocks)) return lesson;
+        return {
+          ...lesson,
+          blocks: lesson.blocks.map((block: unknown) => {
+            if (
+              !isRecord(block) ||
+              block.family !== "interactive-fullscreen" ||
+              block.variant !== "timeline" ||
+              !isRecord(block.payload) ||
+              !Array.isArray(block.payload.events)
+            ) {
+              return block;
+            }
+            return {
+              ...block,
+              payload: {
+                ...block.payload,
+                events: block.payload.events.map((event: unknown) => {
+                  if (!isRecord(event) || !("date" in event)) return event;
+                  const { date, ...rest } = event;
+                  return typeof date === "string" && date !== ""
+                    ? { ...rest, label: date }
+                    : rest;
+                }),
+              },
+            };
+          }),
+        };
+      });
+    }
+
+    return {
+      ...source,
+      schemaVersion: "1.3.0",
+    };
+  },
+};
+
 export const courseDocMigrationRegistry = [
   migrate090To100,
   migrate100To110,
   migrate110To120,
+  migrate120To130,
 ] as const;
 
 export function migrateCourseDoc(input: unknown): CourseDoc {

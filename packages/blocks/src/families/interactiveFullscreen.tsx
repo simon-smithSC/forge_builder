@@ -49,8 +49,8 @@ const defaults: Record<string, () => unknown> = {
   }),
   timeline: () => ({
     events: [
-      { id: "event-1", date: "2020", title: "First milestone", html: "<p>What happened first.</p>" },
-      { id: "event-2", date: "2023", title: "Second milestone", html: "<p>What happened next.</p>" },
+      { id: "event-1", label: "Step 1", title: "First milestone", html: "<p>What happened first.</p>" },
+      { id: "event-2", label: "Step 2", title: "Second milestone", html: "<p>What happened next.</p>" },
     ],
   }),
   sorting: () => ({

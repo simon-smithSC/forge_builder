@@ -26,10 +26,17 @@ const interactionGatedFamilies: ReadonlySet<string> = new Set([
 /**
  * True when the block consumes through interaction (events.onCompleted);
  * false when it consumes by scrolling into view. Continue-button dividers are
- * the only interactive divider variant.
+ * the only interactive divider variant. Timelines whose details are visible
+ * from the start (detailsAlwaysVisible, or every event startExpanded) have
+ * nothing left to open, so they consume by scroll like static blocks.
  */
 export function consumesByInteraction(block: Block): boolean {
   if (block.family === "divider") return block.variant === "continue button";
+  if (block.family === "interactive-fullscreen" && block.variant === "timeline") {
+    const payload = block.payload;
+    if (payload.detailsAlwaysVisible === true) return false;
+    if (payload.events.every((event) => event.startExpanded === true)) return false;
+  }
   return interactionGatedFamilies.has(block.family);
 }
 

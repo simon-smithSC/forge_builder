@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "1.3.0",
   "id": "01JZ9S99Z8A0Y4Y6RAZ76D9M7F",
   "title": "Forge Kitchen Sink",
   "description": "A cleaned Forge-shaped fixture covering every v1 block variant and quiz question type.",
@@ -525,6 +525,18 @@
           }
         },
         {
+          "id": "block_divider_screenbar",
+          "family": "divider",
+          "variant": "screen bar",
+          "payload": {},
+          "settings": {
+            "paddingTop": 1,
+            "paddingBottom": 1,
+            "textColorMode": "auto",
+            "backgroundColor": "#1f2328"
+          }
+        },
+        {
           "id": "block_divider_continue",
           "family": "divider",
           "variant": "continue button",
@@ -711,17 +723,38 @@
             "events": [
               {
                 "id": "timeline_01",
-                "date": "Week 1",
+                "label": "Week 1",
                 "title": "Kickoff",
-                "html": "<p>The work begins.</p>"
+                "html": "<p>The work begins.</p>",
+                "startExpanded": true
               },
               {
                 "id": "timeline_02",
-                "date": "Week 2",
+                "label": "Week 2",
                 "title": "Review",
                 "html": "<p>The review closes the loop.</p>"
               }
             ]
+          },
+          "settings": {
+            "paddingTop": 2,
+            "paddingBottom": 2,
+            "textColorMode": "auto"
+          }
+        },
+        {
+          "id": "block_fullscreen_timeline_open",
+          "family": "interactive-fullscreen",
+          "variant": "timeline",
+          "payload": {
+            "events": [
+              {
+                "id": "timeline_open_01",
+                "title": "Everything visible",
+                "html": "<p>No toggling; the body renders statically.</p>"
+              }
+            ],
+            "detailsAlwaysVisible": true
           },
           "settings": {
             "paddingTop": 2,
