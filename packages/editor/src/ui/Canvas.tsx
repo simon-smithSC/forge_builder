@@ -23,7 +23,7 @@ import {
 import { Button, EmptyState, Icon, Input, Presence } from "@forge/ui";
 import { BlockRenderContext, getRegistryEntry } from "@forge/blocks";
 import type { InlineEditingPort, RenderContext } from "@forge/blocks";
-import { fontStackOf } from "@forge/player";
+import { fontStackOf, readableTextOn } from "@forge/player";
 import type { BlocksLesson, CourseDoc, Lesson } from "@forge/schema";
 import {
   renameLesson,
@@ -52,6 +52,9 @@ function themeVars(course: CourseDoc): CSSProperties {
     "--forge-surface": theme.surfaceColor,
     "--forge-text": theme.textColor,
     "--forge-accent": theme.accentColor,
+    // Luminance-derived foreground for accent-filled markers (mirrors the
+    // player's themeStyleOf so canvas and published output match).
+    "--forge-accent-contrast": readableTextOn(theme.accentColor),
     // Map bare typeface names through the same curated stacks the player
     // uses, so canvas and published output resolve identical fonts.
     "--forge-heading-font": fontStackOf(theme.headingTypeface),

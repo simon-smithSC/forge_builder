@@ -274,3 +274,28 @@ graduate to ADRs in `docs/adr/`; API changes follow semver in
 - **Styleguide**: TokensSection gains a "Depth and focus finishes" specimen
   (bevelled primary, focus-glow input, the two sanctioned gradients) so 5A/5C
   finishes are visible in review; Wordmark specimen landed with V5A.
+
+## 2026-07-09: B5 course accent Tier 1 (blocks)
+
+- **Course color roles codified.** Course PRIMARY owns actions and reading
+  affordances: buttons (continue/start/submit), links, tabs, selected and
+  hover states, impact bands/borders, knowledge-check chrome. Course ACCENT
+  owns non-interactive structure/energy markers: numbered-list circles and
+  bulleted dots, the divider numbered circle, process counter count / step
+  circle / active dot, timeline spine / node border and fill / eyebrow
+  label, and labeled-graphic markers + pulse. The checklist "Required" pill
+  (previously the accent's only block surface) is now consistent instead of
+  orphaned.
+- **Correct/incorrect stay semantic** green/red (quiz, knowledge check,
+  sorting results); callout icons keep their semantic palette. Neither role
+  ever colors correctness.
+- **Anvil's ember accent stays chrome-only** (Wordmark spark, gradients,
+  progress affordances per V5C); the course accent and Anvil accent remain
+  separate systems and never cross the blocks/chrome boundary.
+- **Contrast**: accent-filled circles use `--fb-accent-contrast`
+  (`var(--forge-accent-contrast, #ffffff)`), luminance-derived via
+  `readableTextOn(theme.accentColor)` in player chrome.tsx and now also in
+  editor Canvas.tsx themeVars for canvas parity.
+- **Compat consequence (accepted by Simon)**: existing courses shift these
+  markers from primary blue to accent orange (defaults) on republish.
+  CSS-only, trivially reversible.

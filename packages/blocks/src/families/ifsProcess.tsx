@@ -3,7 +3,7 @@
 // counter, START on the intro, large accent-numbered step circles, a step
 // card with left/right edge arrows, progress dots, START AGAIN at the end.
 import type { ReactElement } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { BlockFor } from "@forge/schema";
 import { useRenderContext } from "../context.js";
 import { Html } from "../html.js";
@@ -39,12 +39,26 @@ export function ProcessView({ block }: { block: ProcessBlock }): ReactElement {
 
   const [index, setIndex] = useState(0);
   const [completed, setCompleted] = useState(false);
+  // B2 slide animation: the card is re-keyed per page, so each navigation
+  // remounts it and the fresh mount runs a direction-aware enter keyframe
+  // (no transitioning flag, no onAnimationEnd). `navigated` suppresses the
+  // animation on the initial mount so the first card doesn't slide in.
+  // NOTE: the card animates with a transform, which creates a containing
+  // block. The card uses drawer editing (plain Html) so this is safe today;
+  // if EditableHtml ever lands inside this container, its fixed-position
+  // toolbar would anchor to the card instead of the viewport - revisit then.
+  const [direction, setDirection] = useState<"next" | "prev">("next");
+  const navigated = useRef(false);
   const last = pages.length - 1;
   const safeIndex = Math.min(index, last);
   const page = pages[safeIndex];
 
   const go = (next: number) => {
     const clamped = Math.max(0, Math.min(last, next));
+    if (clamped !== safeIndex) {
+      navigated.current = true;
+      setDirection(clamped > safeIndex ? "next" : "prev");
+    }
     setIndex(clamped);
     if (mode === "player") {
       events.onInteracted?.(block.id, { pageIndex: clamped });
@@ -78,7 +92,12 @@ export function ProcessView({ block }: { block: ProcessBlock }): ReactElement {
         >
           <span aria-hidden="true">&#8592;</span>
         </button>
-        <div className="fb-process-card">
+        <div
+          key={page.key}
+          className={`fb-process-card${
+            navigated.current ? ` fb-process-card-enter-${direction}` : ""
+          }`}
+        >
           {page.kind === "step" ? (
             <span className="fb-process-step-circle" aria-hidden="true">
               {page.stepNumber}
@@ -102,12 +121,7 @@ export function ProcessView({ block }: { block: ProcessBlock }): ReactElement {
             <button
               type="button"
               className="fb-process-start fb-process-restart"
-              onClick={() => {
-                setIndex(0);
-                if (mode === "player") {
-                  events.onInteracted?.(block.id, { pageIndex: 0 });
-                }
-              }}
+              onClick={() => go(0)}
             >
               Start again
             </button>
