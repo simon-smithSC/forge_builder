@@ -76,10 +76,17 @@ The schema mirrors the proven Rise shape (course → lessons → blocks → item
 
 ```ts
 interface CourseDoc {
-  schemaVersion: string;          // semver, e.g. "1.0.0"; migrations in packages/schema/migrations
+  schemaVersion: string;          // semver, currently "1.3.0"; migrations in packages/schema/src/migrations.ts
   id: string;                     // ULID
   title: string;
-  description: string;
+  description: string;            // plain text stays canonical (feeds tincan.xml)
+  descriptionHtml?: string;       // v1.2.0: rich projection, kept in sync on commit
+  author?: string;                // v1.1.0 (ADR 0004): cover byline
+  cover?: {                       // v1.2.0: title screen background
+    mediaId: MediaId;
+    layout: "cover" | "hero";     // scrimmed full cover vs image above title
+    overlayOpacity?: number;      // 0-100 scrim strength
+  };
   defaultLocale: string;          // BCP 47, e.g. "en-US"
   theme: Theme;                   // colors, typefaces, spacing scale, logo
   labelSet: LabelSet;             // all learner-facing UI strings, localizable

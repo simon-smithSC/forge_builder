@@ -1,6 +1,6 @@
 # Forge Coordination Contracts
 
-These contracts freeze the interfaces agents build against during Phase 1 and Phase 2. Changes require an ADR.
+These contracts freeze the cross-package interfaces. Changes require an ADR. Enforced mechanically by `scripts/contract-check.mjs`; verified against the code 2026-07-09 (ADR 0005 handoff). Rule numbers in `docs/CODEX-RULES.md` cite this file.
 
 ## Package Public APIs
 
@@ -52,40 +52,38 @@ export function buildInteractionIri(courseId: string, questionId: string): strin
 
 `@forge/blocks` owns registry metadata and shared presentational rendering. Editor affordances wrap shared renderers instead of forking visuals.
 
-```ts
-import type { Block, BlockFamily } from "@forge/schema";
+As built (`packages/blocks/src/registry.ts`, `context.ts`, `index.ts`):
 
-export interface BlockRegistryEntry<TPayload = unknown> {
+```ts
+export interface BlockRegistryEntry {
   family: BlockFamily;
   variants: readonly string[];
-  palette: {
-    label: string;
-    group: "text" | "media" | "interactive" | "quiz" | "data" | "structure";
-    description: string;
-    icon: string;
-  };
-  createDefaultPayload(variant: string): TPayload;
-  validatePayload(payload: unknown, variant: string): TPayload;
+  palette: PaletteMeta; // label, group, description, lucide icon name
+  createDefaultPayload: (variant: string) => unknown;
+  validatePayload: (payload: unknown, variant: string) => unknown;
+  /** THE single renderer, mounted by editor canvas AND player (rule A3). */
+  Renderer: ComponentType<BlockRendererProps>;
+  /** Content column width hint: "column" | "wide" | "full" (per variant). */
+  contentWidth?: ContentWidthHint;
 }
 
-export interface BlockRenderContext {
-  mode: "editor" | "player" | "preview";
-  courseId: string;
-  lessonId: string;
-  reducedMotion: boolean;
-}
+export const blockRegistry: Record<BlockFamily, BlockRegistryEntry>;
+export { BlockView }; // band + column envelope wrapping Renderer
 
-export interface BlockInteractionPort {
-  markConsumed(blockId: string): void;
-  recordInteraction(blockId: string, payload: unknown): void;
+export interface RenderContext {
+  mode: "edit" | "player"; // toggles affordance hooks, never visuals
+  inlineEditing?: InlineEditingPort; // editor-only; player never provides it
+  theme: Theme;
+  labels: LabelSet;
+  media: Record<string, MediaRef>;
+  resolveMediaUrl: (mediaId: string) => string | undefined;
+  events: BlockEvents; // onInteracted / onCompleted / onNavigateToLesson
+  consumedBlockIds: ReadonlySet<string>;
+  videoPlaybackSpeedControl?: boolean;
 }
-
-export const blockRegistry: readonly BlockRegistryEntry[];
-export function getBlockRegistryEntry(family: BlockFamily): BlockRegistryEntry;
-export function createDefaultBlock(family: BlockFamily, variant: string): Block;
 ```
 
-React component exports are negotiated by A2 and A3 after the registry is implemented, but the data contract above is stable.
+The single-renderer property is enforced by `scripts/contract-check.mjs` rule 4 and `packages/editor/src/moduleIdentity.test.ts`.
 
 ## TrackingPort Contract
 
@@ -244,23 +242,17 @@ export interface PublishSettings {
 }
 ```
 
-## Phase 1 Ownership
+## Ownership (post-handoff)
 
-A1 owns:
+The multi-agent Phase 1 ownership split is retired (ADR 0005). One agent works the repo at
+a time; `docs/SPEC.md`, this file, and `docs/CODEX-RULES.md` govern; Simon approves
+contract changes and new dependencies.
 
-- `packages/schema/**`
-- `docs/reference/course.json` mapping notes once the missing reference appears
+Notes:
 
-A6 owns:
-
-- `services/api/**`
-- `.github/workflows/**`
-- `docs/adr/0001-gateway-sse-websocket.md`
-
-The orchestrator owns:
-
-- `coordination/**`
-- `docs/SPEC.md`
-- `docs/reference/NOTES.md`
-- cross-agent gate decisions
+- `statementProfile` keeps `"rise-compat"` in the schema enum for forward compatibility,
+  but only `"forge-v1"` ships (ADR 0003); the editor offers only `forge-v1`.
+- The REST surface above includes R4 endpoints (publish jobs, locks, comments, events,
+  versions, shared blocks) that `services/api` has not implemented yet — see
+  `services/api/README.md` and `docs/ROADMAP.md` item 1.
 
