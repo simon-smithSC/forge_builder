@@ -423,7 +423,15 @@ function BlocksCanvas({
               <div key={block.id} className="fe-block-slot">
                 <div className="fe-lib-anchor">
                   <InsertAffordance
-                    onInsert={() => setInsertAt({ index, tier: "strip" })}
+                    // Toggle: a second click on the plus while its popover is
+                    // open (either tier) closes it. QuickAddStrip's click-away
+                    // deliberately ignores this button so the mousedown does
+                    // not null insertAt before this click handler reads it.
+                    onInsert={() =>
+                      setInsertAt((prev) =>
+                        prev?.index === index ? null : { index, tier: "strip" },
+                      )
+                    }
                   />
                   <Presence
                     open={insertAt?.index === index && insertAt.tier === "strip"}
@@ -462,7 +470,11 @@ function BlocksCanvas({
         <InsertAffordance
           terminal
           onInsert={() =>
-            setInsertAt({ index: lesson.blocks.length, tier: "strip" })
+            setInsertAt((prev) =>
+              prev?.index === lesson.blocks.length
+                ? null
+                : { index: lesson.blocks.length, tier: "strip" },
+            )
           }
         />
         <Presence

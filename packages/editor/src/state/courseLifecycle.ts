@@ -7,6 +7,7 @@ import {
   defaultCourseSettings,
   defaultLabelSet,
   defaultTheme,
+  migrateCourseDoc,
   validateCourseDoc,
 } from "@forge/schema";
 import { getRegistryEntry } from "@forge/blocks";
@@ -14,7 +15,12 @@ import { toast } from "@forge/ui";
 import * as api from "../api/client.js";
 import * as journal from "../journal/journal.js";
 import * as history from "./history.js";
-import { markLessonDirty, resetPersistence, scheduleSave } from "./persistence.js";
+import {
+  markCourseDirty,
+  markLessonDirty,
+  resetPersistence,
+  scheduleSave,
+} from "./persistence.js";
 import { editorStore } from "./store.js";
 import type { CourseSummary } from "./store.js";
 
@@ -119,11 +125,20 @@ async function enterCourse(result: api.RevisionedCourse): Promise<void> {
   resetPersistence();
   history.clearHistory();
 
+  // EVERY course entering the store goes through migrateCourseDoc, not the
+  // strict validator: the server stores raw JSON, so docs written by older
+  // editors (e.g. timeline event `date` before the 1.3.0 rename to `label`)
+  // would fail the strict parse and previously entered the store UNMIGRATED —
+  // after which every payload commit failed validatePayload with
+  // "Unrecognized key(s) in object: 'date'".
   let course: CourseDoc;
+  let upgraded = false;
   try {
-    course = validateCourseDoc(result.data);
+    course = migrateCourseDoc(result.data);
+    const rawVersion = (result.data as { schemaVersion?: unknown }).schemaVersion;
+    upgraded = rawVersion !== course.schemaVersion;
   } catch (error) {
-    console.warn("Server course failed schema validation; editing as-is.", error);
+    console.warn("Server course failed schema migration; editing as-is.", error);
     course = result.data;
   }
 
@@ -156,6 +171,14 @@ async function enterCourse(result: api.RevisionedCourse): Promise<void> {
     canUndo: history.canUndo(),
     canRedo: history.canRedo(),
   }));
+
+  // A migrated doc differs from the stored copy: schedule a save so the
+  // server is rewritten in the current shape and the migration never
+  // needs to run again for this course.
+  if (upgraded) {
+    markCourseDirty();
+    scheduleSave();
+  }
 }
 
 /** Apply journaled lesson objects onto the fetched doc, newest last. */

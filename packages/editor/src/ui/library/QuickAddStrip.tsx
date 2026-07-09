@@ -38,7 +38,17 @@ export function QuickAddStrip({
     if (closing) return;
     ref.current?.querySelector("button")?.focus();
     const onPointerDown = (event: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(event.target as Node)) onClose();
+      const target = event.target as Node;
+      if (!ref.current || ref.current.contains(target)) return;
+      // The plus button sharing this strip's .fe-lib-anchor is a TOGGLE:
+      // closing here on mousedown would make its click handler read a null
+      // insertAt and immediately reopen the strip. Leave that close to the
+      // button's own onClick. Plus buttons of OTHER anchors still dismiss.
+      const anchor = ref.current.closest(".fe-lib-anchor");
+      const plus =
+        target instanceof Element ? target.closest(".fe-insert-btn") : null;
+      if (plus !== null && anchor !== null && anchor.contains(plus)) return;
+      onClose();
     };
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);

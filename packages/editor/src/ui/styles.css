@@ -579,11 +579,22 @@ button:focus-visible {
 
 /* Contextual block rail (P2): compact vertical icon stack attached to the
    block's left edge, shown on hover/selection. Anvil overlay surface at
-   popover elevation; controls inside are Anvil IconButtons + a Chip. */
+   popover elevation; controls inside are Anvil IconButtons + a Chip.
+
+   Positioning (Rise parity, teardown "Contextual Block Rail"): the rail
+   lives in the band's GUTTER, left of the centered content column, so it
+   never covers text or inline-edit areas when the canvas is wide enough.
+   Right-anchored: the first min() term parks the rail's right edge 10px
+   left of the column's outer edge (column = --fb-column 46rem, centered,
+   so its left edge sits at 50% - 23rem); the second term is the
+   narrow-canvas floor keeping the rail on screen (max-width 132px + 6px
+   inset), where it overlays only the column's own padding area as an
+   opaque elevated pill. Offset-only: no margin/padding lands on the band
+   chain (layout contract). */
 .fe-block-rail {
   position: absolute;
   top: 8px;
-  left: 6px;
+  right: min(calc(50% + 23rem + 10px), calc(100% - 138px));
   z-index: 6;
   display: flex;
   flex-direction: column;
@@ -605,6 +616,17 @@ button:focus-visible {
     opacity var(--an-duration-120) var(--an-ease-standard),
     transform var(--an-duration-120) var(--an-ease-standard),
     visibility 0s var(--an-duration-120);
+}
+
+/* Wide blocks track their 64rem column; full-bleed blocks (banner/hero)
+   have no gutter at all, so the rail pins to the band's left edge and
+   reads as chrome on its opaque overlay surface. */
+.fe-block-frame:has(.fb-width-wide) .fe-block-rail {
+  right: min(calc(50% + 32rem + 10px), calc(100% - 138px));
+}
+
+.fe-block-frame:has(.fb-width-full) .fe-block-rail {
+  right: calc(100% - 138px);
 }
 
 .fe-block-frame:hover .fe-block-rail,

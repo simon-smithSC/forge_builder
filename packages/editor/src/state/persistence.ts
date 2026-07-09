@@ -2,6 +2,7 @@
 // with revision discipline, an IndexedDB write-ahead journal, offline retry,
 // and 409 conflict surfacing. NO localStorage for course data (ADR 0003).
 import type { CourseDoc } from "@forge/schema";
+import { migrateCourseDoc } from "@forge/schema";
 import {
   ApiConflictError,
   ApiNetworkError,
@@ -160,9 +161,18 @@ export async function reloadServerCopy(): Promise<void> {
   resetPersistence();
   const result = await getCourse(courseId);
   await journal.ackEntries(courseId, new Date().toISOString());
+  // Same contract as courseLifecycle.enterCourse: every doc entering the
+  // store passes through migrateCourseDoc (the server stores raw JSON).
+  let course: CourseDoc;
+  try {
+    course = migrateCourseDoc(result.data);
+  } catch (error) {
+    console.warn("Server course failed schema migration; editing as-is.", error);
+    course = result.data;
+  }
   editorStore.setState((prev) => ({
     ...prev,
-    course: result.data,
+    course,
     revision: result.revision,
     saveStatus: "saved",
     selectedBlockId: null,

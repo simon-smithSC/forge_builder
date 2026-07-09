@@ -25,6 +25,7 @@ import { BlockView, getRegistryEntry } from "@forge/blocks";
 import type { BlockRegistryEntry } from "@forge/blocks";
 import type { Block } from "@forge/schema";
 import {
+  closeBlockSettings,
   deleteBlock,
   duplicateBlock,
   moveBlock,
@@ -32,6 +33,7 @@ import {
   selectBlock,
   setBlockVariant,
 } from "../state/actions.js";
+import { useStore } from "../state/store.js";
 import { blockIcon } from "./blockIcons.js";
 import { variantLabel } from "./variantLabels.js";
 
@@ -66,7 +68,16 @@ function VariantMenu({
     // keep swallowing outside pointer-downs (CSS also drops pointer-events).
     if (closing) return;
     const onPointerDown = (event: MouseEvent): void => {
-      if (ref.current && !ref.current.contains(event.target as Node)) onClose();
+      const target = event.target as Node;
+      if (!ref.current || ref.current.contains(target)) return;
+      // The rail chip that opened this menu is a TOGGLE: closing here on
+      // mousedown would race its click handler into reopening the menu.
+      // Leave that close to the chip's own onClick.
+      const rail = ref.current.closest(".fe-block-rail");
+      const chip =
+        target instanceof Element ? target.closest(".fe-rail-chip") : null;
+      if (chip !== null && rail !== null && rail.contains(chip)) return;
+      onClose();
     };
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
@@ -123,6 +134,9 @@ export function BlockEditFrame({
 }: BlockEditFrameProps): ReactElement {
   const entry = getRegistryEntry(block.family);
   const [variantMenuOpen, setVariantMenuOpen] = useState(false);
+  // Toggle support for the rail's Edit settings button: the tray is open FOR
+  // THIS BLOCK only when it is both selected and settingsOpen.
+  const settingsOpen = useStore((state) => state.settingsOpen);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: block.id });
 
@@ -182,7 +196,11 @@ export function BlockEditFrame({
             label="Edit settings"
             title="Edit settings"
             icon={<SlidersHorizontal size={14} aria-hidden />}
-            onClick={() => openBlockSettings(block.id)}
+            onClick={() =>
+              selected && settingsOpen
+                ? closeBlockSettings()
+                : openBlockSettings(block.id)
+            }
           />
         </Tooltip>
         <IconButton

@@ -124,17 +124,30 @@ export function TimelineView({ block }: { block: TimelineBlock }): ReactElement 
   const alwaysVisible = block.payload.detailsAlwaysVisible === true;
   // startExpanded seeds the initial per-viewer state only; after mount the
   // React state owns open/closed and items stay toggleable.
-  const [expanded, setExpanded] = useState<ReadonlySet<string>>(
-    () => new Set(entries.filter((entry) => entry.startExpanded).map((e) => e.id)),
-  );
+  const seedExpanded = (): ReadonlySet<string> =>
+    new Set(entries.filter((entry) => entry.startExpanded).map((e) => e.id));
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(seedExpanded);
   // startExpanded items count as already opened for interaction completion.
   // When the block flag is set (or every item starts expanded) the player
   // consumes this block by scroll instead (progress.ts consumesByInteraction),
   // so the view never needs to report completion in those shapes.
-  const [opened, setOpened] = useState<ReadonlySet<string>>(
-    () => new Set(entries.filter((entry) => entry.startExpanded).map((e) => e.id)),
-  );
+  const [opened, setOpened] = useState<ReadonlySet<string>>(seedExpanded);
   const [completed, setCompleted] = useState(false);
+  // Edit-mode canvas keeps this view MOUNTED while the drawer edits the
+  // payload, so useState initializers never re-run. Re-seed when the set of
+  // startExpanded ids changes (render-phase state adjustment) so the canvas
+  // reflects the toggle immediately. In the player the payload never changes,
+  // so per-viewer toggling is untouched.
+  const seedKey = entries
+    .filter((entry) => entry.startExpanded)
+    .map((entry) => entry.id)
+    .join("|");
+  const [lastSeedKey, setLastSeedKey] = useState(seedKey);
+  if (seedKey !== lastSeedKey) {
+    setLastSeedKey(seedKey);
+    setExpanded(seedExpanded());
+    setOpened(seedExpanded());
+  }
 
   const toggle = (entryId: string) => {
     const isOpen = expanded.has(entryId);
