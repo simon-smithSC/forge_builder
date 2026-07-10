@@ -5,9 +5,9 @@
 import type { ChangeEvent, DragEvent, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Captions, Image as ImageIcon, Music, Paperclip, UploadCloud, Video } from "lucide-react";
-import { Button, Input, TabPanel, Tabs } from "@forge/ui";
+import { AssetTile, Button, Dropzone, Input, TabPanel, Tabs, UploadProgressRow } from "@forge/ui";
 import type { MediaRef } from "@forge/schema";
-import { createUlid } from "@forge/schema";
+import { collectMediaUses, createUlid } from "@forge/schema";
 import { registerMedia } from "../../state/courseToolsActions.js";
 import { useStore } from "../../state/store.js";
 import { Dialog } from "./Dialog.js";
@@ -111,6 +111,7 @@ function MediaPickerDialog({
   onSelect: (mediaId: string) => void;
 }): ReactElement {
   const media = useStore((state) => state.course?.media);
+  const course = useStore((state) => state.course);
   const mediaUrls = useStore((state) => state.mediaUrls);
   const [tab, setTab] = useState<Tab>("library");
   const [pending, setPending] = useState<PendingUpload | null>(null);
@@ -250,6 +251,12 @@ function MediaPickerDialog({
   const entries = Object.values(media ?? {}).filter(
     (ref) => !kind || ref.kind === kind,
   );
+  const usageCounts = new Map<string, number>();
+  if (course) {
+    for (const use of collectMediaUses(course)) {
+      usageCounts.set(use.mediaId, (usageCounts.get(use.mediaId) ?? 0) + 1);
+    }
+  }
 
   return (
     <Dialog
@@ -279,26 +286,35 @@ function MediaPickerDialog({
           <div className="fe-media-grid">
             {entries.map((ref) => {
               const url = mediaUrls[ref.id];
+              const usageCount = usageCounts.get(ref.id) ?? 0;
               return (
-                <button
+                <AssetTile
                   key={ref.id}
-                  type="button"
                   className="fe-media-item"
+                  role="button"
+                  tabIndex={0}
+                  title={ref.filename}
+                  meta={`${ref.kind} · ${usageCount} ${usageCount === 1 ? "use" : "uses"}`}
+                  preview={
+                    ref.kind === "image" && url ? (
+                      <img src={url} alt={ref.alt ?? ref.filename} />
+                    ) : (
+                      kindIcon(ref.kind)
+                    )
+                  }
                   onClick={() => {
                     onSelect(ref.id);
                     onClose();
                   }}
+                  onKeyDown={(event) => {
+                    if (event.key !== "Enter" && event.key !== " ") return;
+                    event.preventDefault();
+                    onSelect(ref.id);
+                    onClose();
+                  }}
                 >
-                  <span className="fe-media-thumb">
-                    {ref.kind === "image" && url ? (
-                      <img src={url} alt={ref.alt ?? ref.filename} />
-                    ) : (
-                      kindIcon(ref.kind)
-                    )}
-                  </span>
-                  <span className="fe-media-name">{ref.filename}</span>
-                  <span className="fe-media-kind">{ref.kind}</span>
-                </button>
+                  {ref.alt ? <span>Alt: {ref.alt}</span> : null}
+                </AssetTile>
               );
             })}
           </div>
@@ -312,7 +328,12 @@ function MediaPickerDialog({
               <img src={pending.objectUrl} alt="" />
             </span>
             <div className="fe-media-pending-fields">
-              <p className="fe-media-name">{pending.file.name}</p>
+              <UploadProgressRow
+                filename={pending.file.name}
+                progress={100}
+                meta={`${Math.round(pending.file.size / 1024)} KB`}
+                status="Ready"
+              />
               <label className="fe-field">
                 <span className="fe-field-label">Alt text (required)</span>
                 <Input
@@ -334,8 +355,20 @@ function MediaPickerDialog({
             </div>
           </div>
         ) : (
-          <div
-            className={`fe-dropzone${dragOver ? " fe-dropzone-active" : ""}`}
+          <Dropzone
+            className="fe-dropzone"
+            title="Upload to course library"
+            description="Drag and drop a file here, or choose one from your device."
+            icon={<UploadCloud size={28} aria-hidden />}
+            active={dragOver}
+            actions={
+              <Button
+                iconStart={<UploadCloud size={14} aria-hidden />}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Choose file
+              </Button>
+            }
             onDragOver={(event) => {
               event.preventDefault();
               setDragOver(true);
@@ -343,8 +376,6 @@ function MediaPickerDialog({
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
           >
-            <UploadCloud size={28} aria-hidden />
-            <span>Drag and drop a file here, or</span>
             <input
               ref={fileInputRef}
               type="file"
@@ -352,13 +383,7 @@ function MediaPickerDialog({
               onChange={handleFileInput}
               style={{ display: "none" }}
             />
-            <Button
-              iconStart={<UploadCloud size={14} aria-hidden />}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Choose file
-            </Button>
-          </div>
+          </Dropzone>
         )}
       </TabPanel>
 

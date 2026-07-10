@@ -15,7 +15,7 @@ renders every value; this file documents naming and intent.
 | `--an-color-ember-{50..950}` | 11 steps | Warm accent; progress and emphasis only. |
 | `--an-color-{danger,success,warn,info}-{50..950}` | 11 steps each | Status ramps. |
 | `--an-space-{0,2,4,6,8,12,16,20,24,32,40,48,64}` | 13 steps | 4px base, emitted as rem. |
-| `--an-font-family-{sans,mono}` | 2 | Geist Sans / JetBrains Mono stacks (metric-adjusted fallbacks in fonts.css). |
+| `--an-font-family-{sans,mono}` | 2 | Geist Sans / JetBrains Mono stacks. Geist Sans is fetched from Fontsource as static 400/500/600/700 weights; fallbacks are plain system sans/mono faces. |
 | `--an-font-weight-{regular,medium,semibold,bold}` | 4 | 400 / 500 / 600 / 700. |
 | `--an-font-size-{12,13,14,16,18,20,22,24,28,32,40}` | 11 | rem sizes, px-named. 12px is the absolute floor. |
 | `--an-font-line-{12..40}` | 11 | Paired line heights. |
@@ -74,3 +74,10 @@ Total: 45 semantic tokens (31 remapped in dark, 9 in compact).
 WCAG 2.2 AA is the compliance floor; APCA Lc targets guided the ramps
 (Lc 75+ for 12-13px chrome text, Lc 60+ for body), which is why status `fg`
 uses the 600/700 steps on light and 400 on dark rather than the 500 solids.
+
+Theme Editor and runtime primary/accent surfaces use luminance-derived contrast
+where those paths are wired, including accent-filled block markers that read
+from the derived course contrast variable. Keep future font and theme docs
+aligned with rules B7 and E2: avoid risky CSS-comment terminator prose, never
+put `inherit` in font-family lists, do not restore metric-override `local()`
+fallback faces, and keep sanitized course font stacks quote-free.

@@ -15,7 +15,22 @@ export interface CourseSummary {
   revision: number;
 }
 
-export type SaveStatus = "saved" | "saving" | "offline" | "conflict";
+export type SaveStatus = "saved" | "saving" | "offline" | "conflict" | "locked";
+
+export interface LockHolder {
+  subject: string;
+  email: string | null;
+  displayName: string | null;
+}
+
+export interface LessonLockState {
+  status: "idle" | "acquiring" | "owned" | "blocked" | "error";
+  token: string | null;
+  holder: LockHolder | null;
+  expiresAt: string | null;
+  serverTime: string | null;
+  message: string | null;
+}
 
 /** Which screen is shown while a course is open: the Rise-style course
  * overview hub or the three-region lesson editor. */
@@ -41,6 +56,7 @@ export interface EditorState {
   uiTheme: UiTheme;
   saveStatus: SaveStatus;
   revision: number;
+  lessonLocks: Record<string, LessonLockState>;
   /** mediaId -> object URL (R1 local media bridge). // R2: signed-URL uploads */
   mediaUrls: Record<string, string>;
   canUndo: boolean;
@@ -80,6 +96,7 @@ export const initialEditorState: EditorState = {
   uiTheme: resolveInitialTheme(),
   saveStatus: "saved",
   revision: 1,
+  lessonLocks: {},
   mediaUrls: {},
   canUndo: false,
   canRedo: false,

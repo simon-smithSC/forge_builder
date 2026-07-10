@@ -12,6 +12,7 @@ import { IconsSection } from "./IconsSection.js";
 import { MotionSection } from "./MotionSection.js";
 import { OverlaysSection } from "./OverlaysSection.js";
 import { PatternsSection } from "./PatternsSection.js";
+import { ProductPatternsSection } from "./ProductPatternsSection.js";
 import { TokensSection } from "./TokensSection.js";
 import { TypeSection } from "./TypeSection.js";
 
@@ -23,6 +24,7 @@ const NAV: Array<[string, string]> = [
   ["#overlays", "Surfaces"],
   ["#motion", "Motion"],
   ["#patterns", "Patterns"],
+  ["#product-patterns", "Product Patterns"],
   ["#do-dont", "Principles"],
 ];
 
@@ -137,6 +139,7 @@ export default function App(): ReactElement {
         <OverlaysSection />
         <MotionSection />
         <PatternsSection />
+        <ProductPatternsSection />
         <DoDontSection />
 
         <footer

@@ -18,9 +18,11 @@ const REVEAL_OPTIONS = [
 function TimeLimitField({
   totalSeconds,
   onCommit,
+  readOnly = false,
 }: {
   totalSeconds: number | null;
   onCommit: (value: number | null) => void;
+  readOnly?: boolean;
 }): ReactElement {
   const minutesText = totalSeconds === null ? "" : String(Math.floor(totalSeconds / 60));
   const secondsText = totalSeconds === null ? "" : String(totalSeconds % 60);
@@ -53,6 +55,7 @@ function TimeLimitField({
             min={0}
             value={minutes}
             aria-label="Time limit minutes"
+            readOnly={readOnly}
             onChange={(event) => {
               setMinutes(event.target.value);
               commitParts(event.target.value, seconds);
@@ -68,6 +71,7 @@ function TimeLimitField({
             max={59}
             value={seconds}
             aria-label="Time limit seconds"
+            readOnly={readOnly}
             onChange={(event) => {
               setSeconds(event.target.value);
               commitParts(minutes, event.target.value);
@@ -83,13 +87,16 @@ function TimeLimitField({
 
 export function QuizSettingsForm({
   lesson,
+  readOnly = false,
 }: {
   lesson: QuizLesson;
+  readOnly?: boolean;
 }): ReactElement {
   const [error, setError] = useState<string | null>(null);
   const settings = lesson.settings;
 
   const commit = (next: QuizSettings): void => {
+    if (readOnly) return;
     setError(setQuizSettings(lesson.id, next));
   };
 
@@ -118,6 +125,7 @@ export function QuizSettingsForm({
           value={settings.passingScore}
           min={0}
           max={100}
+          disabled={readOnly}
           onCommit={(value) => {
             if (value !== null) patch({ passingScore: value });
           }}
@@ -127,7 +135,7 @@ export function QuizSettingsForm({
             label="Retries"
             value={unlimited ? null : settings.retryCount}
             min={0}
-            disabled={unlimited}
+            disabled={readOnly || unlimited}
             onCommit={(value) => {
               if (value !== null) patch({ retryCount: value });
             }}
@@ -135,6 +143,7 @@ export function QuizSettingsForm({
           <CheckboxField
             label="Unlimited retries"
             checked={unlimited}
+            disabled={readOnly}
             onChange={(checked) => patch({ retryCount: checked ? -1 : 0 })}
           />
         </div>
@@ -142,6 +151,7 @@ export function QuizSettingsForm({
           label="Reveal answers"
           value={settings.revealAnswers}
           options={REVEAL_OPTIONS}
+          disabled={readOnly}
           onChange={(value) =>
             patch({ revealAnswers: value as QuizSettings["revealAnswers"] })
           }
@@ -151,11 +161,13 @@ export function QuizSettingsForm({
         <CheckboxField
           label="Shuffle answer choices"
           checked={settings.shuffleAnswerChoices}
+          disabled={readOnly}
           onChange={(checked) => patch({ shuffleAnswerChoices: checked })}
         />
         <CheckboxField
           label="Randomize question order"
           checked={settings.randomizeQuestionOrder}
+          disabled={readOnly}
           onChange={(checked) => patch({ randomizeQuestionOrder: checked })}
         />
       </div>
@@ -166,12 +178,14 @@ export function QuizSettingsForm({
             value={settings.questionPoolSize ?? null}
             min={1}
             allowEmpty
+            disabled={readOnly}
             onCommit={(value) => setOptional("questionPoolSize", value)}
           />
           <p className="fe-muted fq-hint">Leave empty to use every question.</p>
         </div>
         <TimeLimitField
           totalSeconds={settings.timeLimitSeconds ?? null}
+          readOnly={readOnly}
           onCommit={(value) => setOptional("timeLimitSeconds", value)}
         />
       </div>

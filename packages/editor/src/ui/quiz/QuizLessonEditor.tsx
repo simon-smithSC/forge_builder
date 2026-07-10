@@ -17,8 +17,10 @@ import { QuizSettingsForm } from "./QuizSettingsForm.js";
 
 export function QuizLessonEditor({
   lesson,
+  readOnly = false,
 }: {
   lesson: QuizLesson;
+  readOnly?: boolean;
 }): ReactElement {
   const [menuOpen, setMenuOpen] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
@@ -41,6 +43,7 @@ export function QuizLessonEditor({
           <Input
             value={lesson.title}
             onChange={(event) => renameLesson(lesson.id, event.target.value)}
+            readOnly={readOnly}
             aria-label="Lesson title"
           />
         </label>
@@ -51,7 +54,7 @@ export function QuizLessonEditor({
 
       <section className="fq-section" aria-label="Quiz settings">
         <h2 className="fq-section-title">Settings</h2>
-        <QuizSettingsForm lesson={lesson} />
+        <QuizSettingsForm lesson={lesson} readOnly={readOnly} />
       </section>
 
       <section className="fq-section" aria-label="Questions">
@@ -68,6 +71,7 @@ export function QuizLessonEditor({
               onToggle={() =>
                 setExpandedId(expandedId === question.id ? null : question.id)
               }
+              readOnly={readOnly}
             />
           ))}
         </div>
@@ -77,6 +81,7 @@ export function QuizLessonEditor({
             className="fq-add-btn"
             aria-haspopup="menu"
             aria-expanded={menuOpen}
+            disabled={readOnly}
             onClick={() => setMenuOpen((open) => !open)}
           >
             <Plus size={14} aria-hidden /> Add question

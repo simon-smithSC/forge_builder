@@ -18,6 +18,11 @@ function historyFlags() {
   return { canUndo: history.canUndo(), canRedo: history.canRedo() };
 }
 
+function lessonCanEdit(lessonId: string): boolean {
+  const lock = getState().lessonLocks[lessonId];
+  return lock?.status === "owned" && lock.token !== null;
+}
+
 function touch(course: CourseDoc): CourseDoc {
   return { ...course, updatedAt: new Date().toISOString() };
 }
@@ -75,6 +80,7 @@ export function reorderBlock(
 ): void {
   const state = getState();
   if (!state.course) return;
+  if (!lessonCanEdit(lessonId)) return;
   const next = reorderBlockPure(state.course, lessonId, fromIndex, toIndex);
   if (next === state.course) return;
   history.pushSnapshot(state.course);

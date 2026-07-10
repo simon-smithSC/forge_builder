@@ -18,8 +18,12 @@ const PADDING_SCALE_REM = [0, 0.75, 1.5, 2.5, 4, 6] as const;
 export function BlockView({ block }: { block: Block }): ReactElement {
   const entry = getRegistryEntry(block.family);
   const style: CSSProperties = {
-    paddingTop: `${PADDING_SCALE_REM[block.settings.paddingTop] ?? 0}rem`,
-    paddingBottom: `${PADDING_SCALE_REM[block.settings.paddingBottom] ?? 0}rem`,
+    paddingTop: `calc(${
+      PADDING_SCALE_REM[block.settings.paddingTop] ?? 0
+    }rem * var(--forge-block-spacing, 1))`,
+    paddingBottom: `calc(${
+      PADDING_SCALE_REM[block.settings.paddingBottom] ?? 0
+    }rem * var(--forge-block-spacing, 1))`,
   };
   if (block.settings.backgroundColor) {
     style.backgroundColor = block.settings.backgroundColor;

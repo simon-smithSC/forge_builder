@@ -3,11 +3,15 @@
 import type { ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PreviewDevice } from "@forge/player";
-import { Button, Collapse, Presence, toast } from "@forge/ui";
+import { Button, Collapse, Presence, StatusBanner, toast } from "@forge/ui";
 import {
   dismissRestore,
+  ensureLessonLock,
+  releaseOwnedLessonLocks,
+  renewSelectedLessonLock,
   restoreFromJournal,
 } from "../state/actions.js";
+import { putSession } from "../api/client.js";
 import {
   overwriteServerCopy,
   reloadServerCopy,
@@ -24,6 +28,12 @@ import { useScrolled } from "./useScrolled.js";
 export function EditorScreen(): ReactElement {
   const saveStatus = useStore((state) => state.saveStatus);
   const restoreCandidate = useStore((state) => state.restoreCandidate);
+  const courseId = useStore((state) => state.course?.id);
+  const selectedLessonId = useStore((state) => state.selectedLessonId);
+  const selectedBlockId = useStore((state) => state.selectedBlockId);
+  const selectedLock = useStore((state) =>
+    state.selectedLessonId ? state.lessonLocks[state.selectedLessonId] : undefined,
+  );
   // Last non-null candidate: the restore banner keeps rendering its lesson
   // count while its Collapse plays the exit (motion M7). Render-phase update;
   // rewriting the same value is harmless.
@@ -62,6 +72,43 @@ export function EditorScreen(): ReactElement {
   );
   // Scroll-aware topbar (5B.2): flat at rest, elevation once the canvas moves.
   const { scrollRef, scrolled } = useScrolled<HTMLElement>();
+
+  useEffect(() => {
+    if (!selectedLessonId) return;
+    void ensureLessonLock(selectedLessonId);
+  }, [selectedLessonId]);
+
+  useEffect(() => {
+    if (!courseId) return;
+    const heartbeat = (): void => {
+      void putSession(courseId, {
+        lastOpenLessonId: selectedLessonId,
+        scrollAnchor: null,
+        selectedBlockId,
+        panelState: { settingsOpen },
+        activeAt: new Date().toISOString(),
+      }).catch(() => {
+        // Session state is informational; authoring save status owns failures.
+      });
+    };
+    heartbeat();
+    const id = window.setInterval(heartbeat, 10000);
+    return () => window.clearInterval(id);
+  }, [courseId, selectedLessonId, selectedBlockId, settingsOpen]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      void renewSelectedLessonLock();
+    }, 30000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(
+    () => () => {
+      void releaseOwnedLessonLocks();
+    },
+    [],
+  );
 
   const toggleOutlineCollapsed = useCallback(() => {
     setOutlineCollapsed((prev) => {
@@ -198,6 +245,46 @@ export function EditorScreen(): ReactElement {
               </Button>
             </span>
           </div>
+        ) : null}
+      </Collapse>
+
+      <Collapse
+        className="fe-banner-collapse"
+        open={
+          selectedLock?.status === "blocked" ||
+          selectedLock?.status === "error" ||
+          selectedLock?.status === "acquiring"
+        }
+        keepMounted={false}
+      >
+        {selectedLock ? (
+          <StatusBanner
+            className="fe-banner fe-banner-lock"
+            tone={selectedLock.status === "blocked" ? "warn" : "info"}
+            title={
+              selectedLock.status === "acquiring"
+                ? "Acquiring lesson lock"
+                : selectedLock.status === "blocked"
+                  ? "Lesson is read-only"
+                  : "Lesson lock unavailable"
+            }
+            actions={
+              selectedLessonId ? (
+                <Button
+                  size="sm"
+                  onClick={() => void ensureLessonLock(selectedLessonId)}
+                  disabled={selectedLock.status === "acquiring"}
+                >
+                  Request control
+                </Button>
+              ) : null
+            }
+            role="status"
+          >
+            {selectedLock.status === "blocked"
+              ? `${selectedLock.holder?.displayName ?? selectedLock.holder?.email ?? "Another author"} is editing this lesson. You can view it until the lock is released or expires.`
+              : selectedLock.message ?? "Preparing edit access for this lesson."}
+          </StatusBanner>
         ) : null}
       </Collapse>
 

@@ -26,6 +26,7 @@ class CoursePatchRequest(StrictBaseModel):
 
 class LessonPutRequest(StrictBaseModel):
     revision: int = Field(ge=1)
+    lockToken: str | None = Field(default=None, min_length=1)
     data: dict[str, Any]
 
 
@@ -42,11 +43,41 @@ class SessionPutRequest(StrictBaseModel):
     data: dict[str, Any]
 
 
+class SessionHeartbeatResponse(StrictBaseModel):
+    status: Literal["active"]
+    intervalSeconds: int
+    staleAfterSeconds: int
+
+
 class SessionResponse(StrictBaseModel):
     courseId: str
     userSubject: str
     data: dict[str, Any]
     updatedAt: str | None
+    serverTime: str
+    heartbeat: SessionHeartbeatResponse
+
+
+class LockHolderResponse(StrictBaseModel):
+    subject: str
+    email: str | None
+    displayName: str | None
+
+
+class LessonLockRequest(StrictBaseModel):
+    token: str | None = Field(default=None, min_length=1)
+
+
+class LessonLockResponse(StrictBaseModel):
+    lessonId: str
+    token: str
+    holder: LockHolderResponse
+    expiresAt: str
+    serverTime: str
+
+
+class LessonLockReleaseRequest(StrictBaseModel):
+    token: str = Field(min_length=1)
 
 
 UploadKind = Literal["image", "video", "audio", "attachment", "captions"]

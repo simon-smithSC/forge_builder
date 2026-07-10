@@ -28,6 +28,7 @@ const STATUS_LABEL: Record<SaveStatus, string> = {
   saving: "Saving...",
   offline: "Offline, changes queued",
   conflict: "Save conflict",
+  locked: "Lesson locked",
 };
 
 const STATUS_TONE: Record<SaveStatus, "success" | "neutral" | "warn" | "danger"> = {
@@ -35,6 +36,7 @@ const STATUS_TONE: Record<SaveStatus, "success" | "neutral" | "warn" | "danger">
   saving: "neutral",
   offline: "warn",
   conflict: "danger",
+  locked: "warn",
 };
 
 function deviceIcon(device: PreviewDevice): ReactElement {

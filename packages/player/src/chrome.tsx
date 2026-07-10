@@ -53,11 +53,25 @@ export function themeStyleOf(course: CourseDoc): CSSProperties {
     // for any hex the author picks (U3 contrast audit).
     "--forge-primary-contrast": readableTextOn(theme.primaryColor),
     "--forge-accent-contrast": readableTextOn(theme.accentColor),
+    "--forge-block-spacing": blockSpacingScale(theme.spacingScale),
     // Bare typeface names become curated stacks (fonts.ts; WOFF2 is U6).
     "--forge-heading-font": fontStackOf(theme.headingTypeface),
     "--forge-body-font": fontStackOf(theme.bodyTypeface),
     "--forge-ui-font": fontStackOf(theme.uiTypeface),
   } as CSSProperties;
+}
+
+function blockSpacingScale(
+  spacingScale: CourseDoc["theme"]["spacingScale"],
+): string {
+  switch (spacingScale) {
+    case "compact":
+      return "0.875";
+    case "spacious":
+      return "1.2";
+    case "comfortable":
+      return "1";
+  }
 }
 
 /** Dismissible "progress not recorded" notice (untracked preview mode).

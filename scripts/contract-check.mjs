@@ -114,6 +114,22 @@ for (const pkg of ["editor", "player", "blocks", "ui", "xapi", "exporter"]) {
   }
 }
 
+// 7. Theme primary contrast coverage in shared block visuals. Any rule that
+// fills with the course primary must use the luminance-derived foreground
+// token, not hard-coded white; authors can choose any primary color.
+const blocksCss = join(root, "packages/blocks/src/styles.css");
+if (existsSync(blocksCss)) {
+  const src = readFileSync(blocksCss, "utf8");
+  const primaryWhiteRule = /{[^}]*?(?:background(?:-color)?:\s*var\(--(?:fb-primary|forge-primary)[^)]*\)[^}]*?color:\s*(?:#fff(?:fff)?|white)\b|color:\s*(?:#fff(?:fff)?|white)\b[^}]*?background(?:-color)?:\s*var\(--(?:fb-primary|forge-primary)[^)]*\))[^}]*?}/gi;
+  for (const m of src.matchAll(primaryWhiteRule)) {
+    const before = src.slice(0, m.index ?? 0);
+    const line = before.split("\n").length;
+    failures.push(
+      `packages/blocks/src/styles.css:${line} fills with the course primary but hard-codes white text. Use --fb-primary-contrast so authored themes stay readable.`,
+    );
+  }
+}
+
 if (failures.length > 0) {
   console.error("Contract check FAILED:\n");
   for (const f of failures) console.error("  - " + f);

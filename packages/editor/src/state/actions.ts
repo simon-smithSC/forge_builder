@@ -18,6 +18,12 @@ import {
   scheduleSave,
 } from "./persistence.js";
 import { shouldAutoOpenSettings } from "./settingsPolicy.js";
+import {
+  ApiLockedError,
+  ApiNetworkError,
+  acquireLessonLock,
+  releaseLessonLock,
+} from "../api/client.js";
 import { editorStore } from "./store.js";
 import { storeTheme } from "../ui/uiPrefs.js";
 import type { UiTheme } from "../ui/uiPrefs.js";
@@ -37,12 +43,42 @@ function historyFlags() {
   return { canUndo: history.canUndo(), canRedo: history.canRedo() };
 }
 
+function lessonCanEdit(lessonId: string): boolean {
+  const lock = getState().lessonLocks[lessonId];
+  return lock?.status === "owned" && lock.token !== null;
+}
+
+function noteReadonlyLesson(lessonId: string): void {
+  setState((prev) => {
+    const lock = prev.lessonLocks[lessonId];
+    if (lock?.status === "blocked") return prev;
+    return {
+      ...prev,
+      lessonLocks: {
+        ...prev.lessonLocks,
+        [lessonId]: {
+          status: "error",
+          token: null,
+          holder: lock?.holder ?? null,
+          expiresAt: lock?.expiresAt ?? null,
+          serverTime: lock?.serverTime ?? null,
+          message: "Acquire the lesson lock before editing this lesson.",
+        },
+      },
+    };
+  });
+}
+
 function applyLessonMutation(
   lessonId: string,
   fn: (course: CourseDoc) => CourseDoc,
 ): void {
   const state = getState();
   if (!state.course) return;
+  if (!lessonCanEdit(lessonId)) {
+    noteReadonlyLesson(lessonId);
+    return;
+  }
   const next = fn(state.course);
   if (next === state.course) return;
   history.pushSnapshot(state.course);
@@ -109,6 +145,7 @@ export function openLessonEditor(lessonId: string): void {
     selectedBlockId: null,
     settingsOpen: false,
   }));
+  void ensureLessonLock(lessonId);
 }
 
 /** Return from the lesson editor to the course overview hub. */
@@ -196,6 +233,10 @@ export function insertBlock(
 ): void {
   const state = getState();
   if (!state.course) return;
+  if (!lessonCanEdit(lessonId)) {
+    noteReadonlyLesson(lessonId);
+    return;
+  }
   const { course, blockId } = mutations.addBlock(
     state.course,
     lessonId,
@@ -241,6 +282,10 @@ export function moveBlock(
 export function duplicateBlock(lessonId: string, blockId: string): void {
   const state = getState();
   if (!state.course) return;
+  if (!lessonCanEdit(lessonId)) {
+    noteReadonlyLesson(lessonId);
+    return;
+  }
   const { course, blockId: newId } = mutations.duplicateBlock(
     state.course,
     lessonId,
@@ -281,7 +326,7 @@ export function renameLesson(lessonId: string, title: string): void {
 }
 
 export function setSectionDescription(lessonId: string, description: string): void {
-  applyCourseMutation((course) =>
+  applyLessonMutation(lessonId, (course) =>
     mutations.updateSectionDescription(course, lessonId, description),
   );
 }
@@ -318,9 +363,131 @@ export function setLessonHeader(
   lessonId: string,
   header: LessonHeader | undefined,
 ): void {
-  applyCourseMutation((course) =>
+  applyLessonMutation(lessonId, (course) =>
     mutations.updateLessonHeader(course, lessonId, header),
   );
+}
+
+// ---- lesson locks ----
+
+export async function ensureLessonLock(lessonId: string): Promise<void> {
+  const state = getState();
+  const courseId = state.course?.id;
+  if (!courseId) return;
+  const existing = state.lessonLocks[lessonId];
+  if (existing?.status === "owned" || existing?.status === "acquiring") return;
+
+  setState((prev) => ({
+    ...prev,
+    lessonLocks: {
+      ...prev.lessonLocks,
+      [lessonId]: {
+        status: "acquiring",
+        token: existing?.token ?? null,
+        holder: existing?.holder ?? null,
+        expiresAt: existing?.expiresAt ?? null,
+        serverTime: existing?.serverTime ?? null,
+        message: null,
+      },
+    },
+  }));
+
+  try {
+    const lock = await acquireLessonLock(courseId, lessonId, existing?.token ?? undefined);
+    setState((prev) => ({
+      ...prev,
+      lessonLocks: {
+        ...prev.lessonLocks,
+        [lessonId]: {
+          status: "owned",
+          token: lock.token,
+          holder: lock.holder,
+          expiresAt: lock.expiresAt,
+          serverTime: lock.serverTime,
+          message: null,
+        },
+      },
+    }));
+  } catch (error) {
+    if (error instanceof ApiLockedError) {
+      setState((prev) => ({
+        ...prev,
+        lessonLocks: {
+          ...prev.lessonLocks,
+          [lessonId]: {
+            status: "blocked",
+            token: null,
+            holder: error.holder,
+            expiresAt: error.expiresAt,
+            serverTime: error.serverTime,
+            message: error.message,
+          },
+        },
+      }));
+      return;
+    }
+    const message =
+      error instanceof ApiNetworkError
+        ? "Lesson lock server is unreachable."
+        : "Could not acquire the lesson lock.";
+    setState((prev) => ({
+      ...prev,
+      lessonLocks: {
+        ...prev.lessonLocks,
+        [lessonId]: {
+          status: "error",
+          token: null,
+          holder: null,
+          expiresAt: null,
+          serverTime: null,
+          message,
+        },
+      },
+    }));
+  }
+}
+
+export async function renewSelectedLessonLock(): Promise<void> {
+  const state = getState();
+  const lessonId = state.selectedLessonId;
+  const courseId = state.course?.id;
+  if (!courseId || !lessonId) return;
+  const lock = state.lessonLocks[lessonId];
+  if (lock?.status !== "owned" || !lock.token) return;
+  try {
+    const renewed = await acquireLessonLock(courseId, lessonId, lock.token);
+    setState((prev) => ({
+      ...prev,
+      lessonLocks: {
+        ...prev.lessonLocks,
+        [lessonId]: {
+          status: "owned",
+          token: renewed.token,
+          holder: renewed.holder,
+          expiresAt: renewed.expiresAt,
+          serverTime: renewed.serverTime,
+          message: null,
+        },
+      },
+    }));
+  } catch {
+    await ensureLessonLock(lessonId);
+  }
+}
+
+export async function releaseOwnedLessonLocks(): Promise<void> {
+  const state = getState();
+  const courseId = state.course?.id;
+  if (!courseId) return;
+  const owned = Object.entries(state.lessonLocks).filter(
+    ([, lock]) => lock.status === "owned" && lock.token !== null,
+  );
+  await Promise.allSettled(
+    owned.map(([lessonId, lock]) =>
+      releaseLessonLock(courseId, lessonId, lock.token as string),
+    ),
+  );
+  setState((prev) => ({ ...prev, lessonLocks: {} }));
 }
 
 // ---- media (R1 bridge: object URLs + local storage keys) ----

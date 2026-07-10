@@ -5,6 +5,7 @@ import type { CourseDoc } from "@forge/schema";
 import { migrateCourseDoc } from "@forge/schema";
 import {
   ApiConflictError,
+  ApiLockedError,
   ApiNetworkError,
   getCourse,
   patchCourse,
@@ -114,16 +115,29 @@ export async function flushNow(): Promise<void> {
       });
     }
 
+    for (const lessonId of lessonIds) {
+      const lesson = course.lessons.find((item) => item.id === lessonId);
+      if (!lesson) continue;
+      const lockToken = editorStore.getState().lessonLocks[lessonId]?.token;
+      if (!lockToken) {
+        throw new ApiLockedError({
+          code: "lesson_lock_required",
+          message: "Lesson writes require an active lesson lock token.",
+        });
+      }
+      const result = await putLesson(
+        course.id,
+        lessonId,
+        lesson,
+        revision,
+        lockToken,
+      );
+      revision = result.revision;
+    }
+
     if (wasCourseDirty) {
       const result = await patchCourse(course.id, revision, courseToPatchData(course));
       revision = result.revision;
-    } else {
-      for (const lessonId of lessonIds) {
-        const lesson = course.lessons.find((item) => item.id === lessonId);
-        if (!lesson) continue;
-        const result = await putLesson(course.id, lessonId, lesson, revision);
-        revision = result.revision;
-      }
     }
 
     await journal.ackEntries(course.id, at);
@@ -134,6 +148,24 @@ export async function flushNow(): Promise<void> {
     if (wasCourseDirty) courseDirty = true;
     if (error instanceof ApiConflictError) {
       setSaveStatus("conflict");
+    } else if (error instanceof ApiLockedError) {
+      for (const lessonId of lessonIds) {
+        editorStore.setState((prev) => ({
+          ...prev,
+          lessonLocks: {
+            ...prev.lessonLocks,
+            [lessonId]: {
+              status: "blocked",
+              token: null,
+              holder: error.holder,
+              expiresAt: error.expiresAt,
+              serverTime: error.serverTime,
+              message: error.message,
+            },
+          },
+        }));
+      }
+      setSaveStatus("locked");
     } else if (error instanceof ApiNetworkError) {
       setSaveStatus("offline");
       scheduleRetry();

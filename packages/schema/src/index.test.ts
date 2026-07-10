@@ -13,6 +13,7 @@ import {
   buildLessonIri,
   courseDocMigrationRegistry,
   courseDocSchema,
+  collectMediaUses,
   createUlid,
   generateJsonSchemas,
   isUlid,
@@ -122,6 +123,98 @@ describe("Forge schema public API", () => {
         "SEQUENCING",
         "NUMERIC",
         "LIKERT",
+      ]),
+    );
+  });
+
+  it("collects course cover, logo, and lesson header media uses", () => {
+    const course = validateCourseDoc(loadKitchenSink());
+    const uses = collectMediaUses(course);
+
+    expect(uses).toEqual(
+      expect.arrayContaining([
+        {
+          mediaId: "image_cover",
+          area: "course",
+          path: "cover.mediaId",
+          label: "Course cover",
+          classification: "decorative",
+        },
+        {
+          mediaId: "image_logo",
+          area: "course",
+          path: "theme.logoMediaId",
+          label: "Course logo",
+          classification: "decorative",
+        },
+        {
+          mediaId: "image_cover",
+          area: "lesson",
+          path: "lessons[1].header.imageMediaId",
+          label: "Lesson header: All block variants",
+          classification: "decorative",
+        },
+      ]),
+    );
+  });
+
+  it("collects block payload and quiz question media uses", () => {
+    const course = validateCourseDoc(loadKitchenSink());
+    const quizLesson = course.lessons[2];
+    if (quizLesson?.type !== "quiz") {
+      throw new Error("Expected quiz lesson in fixture.");
+    }
+    const firstQuestion = quizLesson.questions[0];
+    if (!firstQuestion) {
+      throw new Error("Expected quiz question in fixture.");
+    }
+    firstQuestion.mediaId = "quiz_question_image";
+    const uses = collectMediaUses(course);
+
+    expect(uses).toEqual(
+      expect.arrayContaining([
+        {
+          mediaId: "audio_text_narration",
+          area: "block",
+          path: "lessons[1].blocks[0].payload.audioMediaId",
+          label: "Text audio: paragraph",
+          classification: "informative",
+        },
+        {
+          mediaId: "image_hero",
+          area: "block",
+          path: "lessons[1].blocks[14].payload.mediaId",
+          label: "Image: hero",
+          classification: "informative",
+        },
+        {
+          mediaId: "captions_en",
+          area: "block",
+          path: "lessons[1].blocks[28].payload.captions[0].mediaId",
+          label: "Video captions: English",
+          classification: "informative",
+        },
+        {
+          mediaId: "image_labeled",
+          area: "block",
+          path: "lessons[1].blocks[35].payload.image.mediaId",
+          label: "Labeled graphic image",
+          classification: "informative",
+        },
+        {
+          mediaId: "image_gallery_01",
+          area: "block",
+          path: "lessons[1].blocks[40].payload.cards[0].back.mediaId",
+          label: "Flashcard back image: card_grid_01",
+          classification: "informative",
+        },
+        {
+          mediaId: "quiz_question_image",
+          area: "quiz",
+          path: "lessons[2].questions[0].mediaId",
+          label: "Quiz question media: Which runtime tracking standard does Forge use?",
+          classification: "unknown",
+        },
       ]),
     );
   });

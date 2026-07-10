@@ -7,14 +7,16 @@ shaped on: industrial precision without noise. See
 
 ## Identity
 
-- **Type**: Geist Sans for UI (variable, OFL; tracking tightened at
-  display/heading sizes via the role tokens), JetBrains Mono for IDs, code,
-  and xAPI/publish detail. Twelve Base-style roles (`--an-type-*`:
+- **Type**: Geist Sans for UI (OFL, fetched from Fontsource as static
+  400/500/600/700 weights; tracking tightened at display/heading sizes via
+  the role tokens), JetBrains Mono for IDs, code, and xAPI/publish detail.
+  Twelve Base-style roles (`--an-type-*`:
   display/heading/label/paragraph/mono) with hard floors: 16px default
   reading, 14px UI paragraph/label, 13px small label, 12px absolute.
   Webfont binaries are not committed; fetch once with
-  `node packages/ui/scripts/fetch-fonts.mjs` (fallback stack is
-  metric-adjusted until then).
+  `node packages/ui/scripts/fetch-fonts.mjs`. Metric-adjusted `local()` fallback
+  faces were removed after the Chrome/Times incident; Anvil now falls back to
+  plain system sans/mono stacks.
 - **Icons**: 104 stroke icons on the 24px Lucide grid, vendored as data
   (`<Icon name size={16|20|24} />`, ISC attribution); sizes 16 inline, 20
   controls, 24 emphasis, stroke width 2.
@@ -84,3 +86,12 @@ export function App() {
 - `scripts/make-styleguide.mjs`: builds `anvil-styleguide.html`, the living
   styleguide and review artifact (run after building `packages/ui`).
 - `docs/design-system/tokens.md`: token reference. `decisions.md`: decision log.
+
+## Drift checks
+
+- Theme Editor and runtime contrast surfaces use luminance-derived contrast
+  for primary/accent fills where those paths are wired.
+- Future font or theme changes must keep these docs aligned with rules B7 and
+  E2: no risky CSS-comment terminator prose, no `inherit` in font-family
+  lists, no metric-override `local()` fallback faces, and quote-free font
+  stacks where course content is sanitized.

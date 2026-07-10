@@ -168,6 +168,7 @@ async function enterCourse(result: api.RevisionedCourse): Promise<void> {
     saveStatus: "saved",
     restoreCandidate,
     mediaUrls: {},
+    lessonLocks: {},
     canUndo: history.canUndo(),
     canRedo: history.canRedo(),
   }));
@@ -240,6 +241,7 @@ export function closeCourse(): void {
     saveStatus: "saved",
     revision: 1,
     mediaUrls: {},
+    lessonLocks: {},
     restoreCandidate: null,
     canUndo: false,
     canRedo: false,

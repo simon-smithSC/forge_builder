@@ -10,10 +10,14 @@ from forge_api.schemas import (
     CourseListResponse,
     CoursePatchRequest,
     IdentityResponse,
+    LessonLockReleaseRequest,
+    LessonLockRequest,
+    LessonLockResponse,
     LessonPutRequest,
     MediaUploadRequest,
     MediaUploadResponse,
     RevisionedCourseResponse,
+    SessionHeartbeatResponse,
     SessionPutRequest,
     SessionResponse,
 )
@@ -133,18 +137,68 @@ def create_app(repository: CourseRepository | None = None) -> FastAPI:
     @app.put(
         "/courses/{course_id}/lessons/{lesson_id}",
         response_model=RevisionedCourseResponse,
-        responses={409: {"model": ApiError}},
+        responses={409: {"model": ApiError}, 423: {"model": ApiError}},
         tags=["lessons"],
     )
     def put_lesson(
         course_id: str,
         lesson_id: str,
         request: LessonPutRequest,
-        _identity: Identity = Depends(get_identity),
+        identity: Identity = Depends(get_identity),
         repo: CourseRepository = Depends(_get_repository),
     ) -> RevisionedCourseResponse:
-        course = repo.put_lesson(course_id, lesson_id, request.revision, request.data)
+        course = repo.put_lesson(
+            course_id,
+            lesson_id,
+            request.revision,
+            request.data,
+            request.lockToken,
+            identity,
+        )
         return RevisionedCourseResponse(revision=course.revision, data=course.data)
+
+    @app.post(
+        "/courses/{course_id}/lessons/{lesson_id}/lock",
+        response_model=LessonLockResponse,
+        responses={423: {"model": ApiError}},
+        tags=["lessons"],
+    )
+    def acquire_lesson_lock(
+        course_id: str,
+        lesson_id: str,
+        request: LessonLockRequest | None = None,
+        identity: Identity = Depends(get_identity),
+        repo: CourseRepository = Depends(_get_repository),
+    ) -> LessonLockResponse:
+        lock = repo.acquire_lesson_lock(
+            course_id,
+            lesson_id,
+            identity,
+            None if request is None else request.token,
+        )
+        return LessonLockResponse(
+            lessonId=lock.lesson_id,
+            token=lock.token,
+            holder=_holder_response(lock.holder),
+            expiresAt=lock.expires_at,
+            serverTime=lock.server_time,
+        )
+
+    @app.delete(
+        "/courses/{course_id}/lessons/{lesson_id}/lock",
+        status_code=status.HTTP_204_NO_CONTENT,
+        responses={423: {"model": ApiError}},
+        tags=["lessons"],
+    )
+    def release_lesson_lock(
+        course_id: str,
+        lesson_id: str,
+        request: LessonLockReleaseRequest,
+        identity: Identity = Depends(get_identity),
+        repo: CourseRepository = Depends(_get_repository),
+    ) -> Response:
+        repo.release_lesson_lock(course_id, lesson_id, identity, request.token)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     @app.get(
         "/courses/{course_id}/session",
@@ -158,12 +212,7 @@ def create_app(repository: CourseRepository | None = None) -> FastAPI:
         repo: CourseRepository = Depends(_get_repository),
     ) -> SessionResponse:
         session = repo.get_session(course_id, identity.subject)
-        return SessionResponse(
-            courseId=session.course_id,
-            userSubject=session.user_subject,
-            data=session.data,
-            updatedAt=session.updated_at,
-        )
+        return _session_response(session, repo)
 
     @app.put(
         "/courses/{course_id}/session",
@@ -178,12 +227,7 @@ def create_app(repository: CourseRepository | None = None) -> FastAPI:
         repo: CourseRepository = Depends(_get_repository),
     ) -> SessionResponse:
         session = repo.put_session(course_id, identity.subject, request.data)
-        return SessionResponse(
-            courseId=session.course_id,
-            userSubject=session.user_subject,
-            data=session.data,
-            updatedAt=session.updated_at,
-        )
+        return _session_response(session, repo)
 
     @app.post(
         "/media/uploads",
@@ -208,6 +252,29 @@ def _get_repository(request: Request) -> CourseRepository:
 
 def _get_upload_signer(request: Request) -> LocalUploadSigner:
     return request.app.state.upload_signer
+
+
+def _holder_response(identity: Identity) -> dict[str, str | None]:
+    return {
+        "subject": identity.subject,
+        "email": identity.email,
+        "displayName": identity.display_name,
+    }
+
+
+def _session_response(session, repo: CourseRepository) -> SessionResponse:
+    return SessionResponse(
+        courseId=session.course_id,
+        userSubject=session.user_subject,
+        data=session.data,
+        updatedAt=session.updated_at,
+        serverTime=repo.server_time(),
+        heartbeat=SessionHeartbeatResponse(
+            status="active",
+            intervalSeconds=10,
+            staleAfterSeconds=30,
+        ),
+    )
 
 
 app = create_app()

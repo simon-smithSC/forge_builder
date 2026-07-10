@@ -164,6 +164,10 @@ function commitQuizMutation(
   const state = editorStore.getState();
   const course = state.course;
   if (!course) return null;
+  const lock = state.lessonLocks[lessonId];
+  if (lock?.status !== "owned" || lock.token === null) {
+    return "Acquire the lesson lock before editing this quiz.";
+  }
   const next = mapQuizLesson(course, lessonId, fn);
   if (next === course) return null;
   const nextLesson = next.lessons.find((lesson) => lesson.id === lessonId);

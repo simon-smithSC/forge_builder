@@ -34,6 +34,7 @@ export function QuestionCard({
   count,
   expanded,
   onToggle,
+  readOnly = false,
 }: {
   lessonId: string;
   question: Question;
@@ -41,6 +42,7 @@ export function QuestionCard({
   count: number;
   expanded: boolean;
   onToggle: () => void;
+  readOnly?: boolean;
 }): ReactElement {
   const [error, setError] = useState<string | null>(null);
 
@@ -49,6 +51,7 @@ export function QuestionCard({
   };
 
   const handleDelete = (): void => {
+    if (readOnly) return;
     if (!window.confirm("Delete this question?")) return;
     setError(removeQuestion(lessonId, question.id));
   };
@@ -78,7 +81,7 @@ export function QuestionCard({
             label={`Move question ${index + 1} up`}
             title="Move question up"
             size="sm"
-            disabled={index === 0}
+            disabled={readOnly || index === 0}
             onClick={() => setError(moveQuestion(lessonId, question.id, "up"))}
           />
           <IconButton
@@ -86,7 +89,7 @@ export function QuestionCard({
             label={`Move question ${index + 1} down`}
             title="Move question down"
             size="sm"
-            disabled={index === count - 1}
+            disabled={readOnly || index === count - 1}
             onClick={() => setError(moveQuestion(lessonId, question.id, "down"))}
           />
           <IconButton
@@ -94,6 +97,7 @@ export function QuestionCard({
             label={`Duplicate question ${index + 1}`}
             title="Duplicate question"
             size="sm"
+            disabled={readOnly}
             onClick={() =>
               setError(duplicateQuestion(lessonId, question.id).error)
             }
@@ -107,13 +111,18 @@ export function QuestionCard({
                 : "Delete question"
             }
             size="sm"
-            disabled={count <= 1}
+            disabled={readOnly || count <= 1}
             onClick={handleDelete}
           />
         </span>
       </header>
       <FieldError message={error} />
-      {expanded ? <QuestionEditor question={question} onCommit={commit} /> : null}
+      {expanded ? (
+        <QuestionEditor
+          question={question}
+          onCommit={readOnly ? () => undefined : commit}
+        />
+      ) : null}
     </article>
   );
 }

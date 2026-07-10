@@ -43,6 +43,7 @@ export interface BlockEditFrameProps {
   index: number;
   count: number;
   selected: boolean;
+  readOnly?: boolean;
 }
 
 /** Variant menu popover opened from the block-type chip. Presence (motion M5)
@@ -131,6 +132,7 @@ export function BlockEditFrame({
   index,
   count,
   selected,
+  readOnly = false,
 }: BlockEditFrameProps): ReactElement {
   const entry = getRegistryEntry(block.family);
   const [variantMenuOpen, setVariantMenuOpen] = useState(false);
@@ -138,7 +140,7 @@ export function BlockEditFrame({
   // THIS BLOCK only when it is both selected and settingsOpen.
   const settingsOpen = useStore((state) => state.settingsOpen);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: block.id });
+    useSortable({ id: block.id, disabled: readOnly });
 
   // @dnd-kit/utilities is not directly importable in this workspace layout,
   // so the transform string is computed by hand (translation only).
@@ -171,9 +173,12 @@ export function BlockEditFrame({
       <div className="fe-block-rail" onClick={(event) => event.stopPropagation()}>
         <Chip
           className="fe-rail-chip"
-          onClick={() => setVariantMenuOpen((open) => !open)}
+          onClick={() => {
+            if (!readOnly) setVariantMenuOpen((open) => !open);
+          }}
           aria-haspopup="menu"
-          aria-expanded={variantMenuOpen}
+          aria-expanded={readOnly ? undefined : variantMenuOpen}
+          aria-disabled={readOnly}
           title={`${variantLabel(entry.palette.label, block.variant)}: change style`}
         >
           <FamilyIcon size={14} aria-hidden />
@@ -196,6 +201,7 @@ export function BlockEditFrame({
             label="Edit settings"
             title="Edit settings"
             icon={<SlidersHorizontal size={14} aria-hidden />}
+            disabled={readOnly}
             onClick={() =>
               selected && settingsOpen
                 ? closeBlockSettings()
@@ -208,8 +214,9 @@ export function BlockEditFrame({
           size="sm"
           label="Drag to reorder"
           icon={<GripVertical size={14} aria-hidden />}
+          disabled={readOnly}
           {...attributes}
-          {...listeners}
+          {...(readOnly ? {} : listeners)}
         />
         {index > 0 ? (
           <Tooltip content="Move up" placement="bottom">
@@ -218,6 +225,7 @@ export function BlockEditFrame({
               label="Move block up"
               title="Move up"
               icon={<ChevronUp size={14} aria-hidden />}
+              disabled={readOnly}
               onClick={() => moveBlock(lessonId, block.id, "up")}
             />
           </Tooltip>
@@ -229,6 +237,7 @@ export function BlockEditFrame({
               label="Move block down"
               title="Move down"
               icon={<ChevronDown size={14} aria-hidden />}
+              disabled={readOnly}
               onClick={() => moveBlock(lessonId, block.id, "down")}
             />
           </Tooltip>
@@ -239,6 +248,7 @@ export function BlockEditFrame({
             label="Duplicate block"
             title="Duplicate"
             icon={<Copy size={14} aria-hidden />}
+            disabled={readOnly}
             onClick={() => duplicateBlock(lessonId, block.id)}
           />
         </Tooltip>
@@ -249,6 +259,7 @@ export function BlockEditFrame({
             label="Delete block"
             title="Delete"
             icon={<Trash2 size={14} aria-hidden />}
+            disabled={readOnly}
             onClick={() => deleteBlock(lessonId, block.id)}
           />
         </Tooltip>

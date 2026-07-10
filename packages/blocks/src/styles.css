@@ -27,6 +27,7 @@
   --fb-surface: var(--forge-surface, #f6f8fa);
   --fb-text: var(--forge-text, #1f2328);
   --fb-accent: var(--forge-accent, #dd6b20);
+  --fb-primary-contrast: var(--forge-primary-contrast, #ffffff);
   --fb-accent-contrast: var(--forge-accent-contrast, #ffffff);
   --fb-border: color-mix(in srgb, var(--fb-text) 14%, transparent);
   --fb-column: 46rem;
@@ -228,7 +229,7 @@
 .fb-block[data-family="impact"][data-variant="d"] {
   background-color: var(--forge-primary, #1f6feb);
 }
-.fb-impact-d { color: #ffffff; }
+.fb-impact-d { color: var(--fb-primary-contrast); }
 .fb-impact-d .fb-impact-quote {
   font-size: 1.75rem;
   line-height: 1.4;
@@ -421,7 +422,7 @@
 .fb-divider-continue { text-align: center; }
 .fb-divider-continue-button {
   background: var(--fb-primary);
-  color: #ffffff;
+  color: var(--fb-primary-contrast);
   border: none;
   border-radius: 999px;
   padding: 0.8rem 3rem;
@@ -509,7 +510,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
   height: 2.75rem;
   border-radius: 50%;
   background: var(--fb-primary);
-  color: #ffffff;
+  color: var(--fb-primary-contrast);
   font-size: 1.2rem;
   flex-shrink: 0;
 }
@@ -697,7 +698,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
 .fb-process-start {
   margin-top: 1.5rem;
   background: var(--fb-primary);
-  color: #ffffff;
+  color: var(--fb-primary-contrast);
   border: none;
   border-radius: 999px;
   padding: 0.75rem 2.75rem;
@@ -1032,7 +1033,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
 }
 .fb-sorting-retry {
   background: var(--fb-primary);
-  color: #ffffff;
+  color: var(--fb-primary-contrast);
   border: none;
   border-radius: 999px;
   padding: 0.65rem 2.25rem;
@@ -1160,7 +1161,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
   align-items: center;
   justify-content: center;
   background: var(--fb-primary);
-  color: #ffffff;
+  color: var(--fb-primary-contrast);
   border: none;
   border-radius: 999px;
   padding: 0.75rem 2.5rem;
@@ -1242,7 +1243,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
 .fb-knowledgeCheck-retry {
   margin-top: 1.5rem;
   background: var(--fb-primary);
-  color: #ffffff;
+  color: var(--fb-primary-contrast);
   border: none;
   border-radius: 999px;
   padding: 0.7rem 2.5rem;
@@ -1451,7 +1452,7 @@ a.fb-multimedia-attachment:hover { border-color: var(--fb-primary); }
 .fb-scenario-continue {
   margin-top: 0.75rem;
   background: var(--fb-primary);
-  color: #ffffff;
+  color: var(--fb-primary-contrast);
   border: none;
   border-radius: 999px;
   padding: 0.6rem 2rem;

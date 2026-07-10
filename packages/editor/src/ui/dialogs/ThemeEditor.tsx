@@ -5,7 +5,7 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import { Check, TriangleAlert } from "lucide-react";
 import { Badge, Button, Input, Select } from "@forge/ui";
-import { courseFontCatalog } from "@forge/player";
+import { courseFontCatalog, fontStackOf, readableTextOn } from "@forge/player";
 import type { Theme } from "@forge/schema";
 import { defaultTheme, themeSchema } from "@forge/schema";
 import { setTheme } from "../../state/courseToolsActions.js";
@@ -190,6 +190,68 @@ function ContrastRow({
   );
 }
 
+function ThemePreview({ draft }: { draft: ThemeDraft }): ReactElement {
+  const primaryContrast = readableTextOn(draft.primaryColor.trim());
+  const accentContrast = readableTextOn(draft.accentColor.trim());
+  const spacingLabel =
+    draft.spacingScale === "compact"
+      ? "Compact rhythm"
+      : draft.spacingScale === "spacious"
+        ? "Spacious rhythm"
+        : "Comfortable rhythm";
+  return (
+    <div
+      className="fe-theme-preview"
+      style={{
+        color: draft.textColor,
+        background: draft.backgroundColor,
+        fontFamily: fontStackOf(draft.bodyTypeface),
+      }}
+    >
+      <div
+        className="fe-theme-preview-card"
+        style={{ background: draft.surfaceColor }}
+      >
+        <div className="fe-theme-preview-head">
+          <span
+            className="fe-theme-preview-marker"
+            style={{
+              background: draft.accentColor,
+              color: accentContrast,
+            }}
+          >
+            1
+          </span>
+          <div>
+            <p
+              className="fe-theme-preview-title"
+              style={{ fontFamily: fontStackOf(draft.headingTypeface) }}
+            >
+              Lesson moment
+            </p>
+            <p className="fe-theme-preview-meta">{spacingLabel}</p>
+          </div>
+        </div>
+        <p className="fe-theme-preview-copy">
+          A focused learner prompt sits on the authored surface, with rhythm
+          shaped by the selected spacing.
+        </p>
+        <button
+          type="button"
+          className="fe-theme-preview-button"
+          style={{
+            background: draft.primaryColor,
+            color: primaryContrast,
+            fontFamily: fontStackOf(draft.uiTypeface),
+          }}
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function ThemeEditor({
   open,
   onClose,
@@ -289,11 +351,19 @@ function ThemeEditorDialog({ onClose }: { onClose: () => void }): ReactElement {
           background={draft.surfaceColor.trim()}
         />
         <ContrastRow
-          label="White on primary (buttons)"
-          foreground="#ffffff"
+          label="Computed text on primary"
+          foreground={readableTextOn(draft.primaryColor.trim())}
           background={draft.primaryColor.trim()}
         />
+        <ContrastRow
+          label="Computed text on accent markers"
+          foreground={readableTextOn(draft.accentColor.trim())}
+          background={draft.accentColor.trim()}
+        />
       </ul>
+
+      <h3 className="fe-dlg-section-title">Preview</h3>
+      <ThemePreview draft={draft} />
 
       <h3 className="fe-dlg-section-title">Typography and spacing</h3>
       <div className="fe-dlg-grid-2">

@@ -45,6 +45,35 @@ export class ApiConflictError extends ApiRequestError {
   }
 }
 
+export interface LockHolder {
+  subject: string;
+  email: string | null;
+  displayName: string | null;
+}
+
+export interface LessonLockDetails {
+  lessonId?: string;
+  holder?: LockHolder;
+  expiresAt?: string;
+  serverTime?: string;
+}
+
+/** 423 lesson lock failure. The details may include the active holder. */
+export class ApiLockedError extends ApiRequestError {
+  readonly holder: LockHolder | null;
+  readonly expiresAt: string | null;
+  readonly serverTime: string | null;
+
+  constructor(body: ApiErrorBody) {
+    super(423, body);
+    this.name = "ApiLockedError";
+    const details = body.details as LessonLockDetails | undefined;
+    this.holder = details?.holder ?? null;
+    this.expiresAt = details?.expiresAt ?? null;
+    this.serverTime = details?.serverTime ?? null;
+  }
+}
+
 /** Network-level failure (server unreachable); drives the offline state. */
 export class ApiNetworkError extends Error {
   constructor(cause: unknown) {
@@ -64,6 +93,20 @@ export interface SessionDoc {
   userSubject: string;
   data: Record<string, unknown>;
   updatedAt: string | null;
+  serverTime?: string;
+  heartbeat?: {
+    status: "active";
+    intervalSeconds: number;
+    staleAfterSeconds: number;
+  };
+}
+
+export interface LessonLock {
+  lessonId: string;
+  token: string;
+  holder: LockHolder;
+  expiresAt: string;
+  serverTime: string;
 }
 
 async function request<T>(
@@ -98,6 +141,7 @@ async function request<T>(
       // Non-JSON error body; keep the fallback.
     }
     if (response.status === 409) throw new ApiConflictError(body);
+    if (response.status === 423) throw new ApiLockedError(body);
     throw new ApiRequestError(response.status, body);
   }
 
@@ -139,10 +183,36 @@ export function putLesson(
   lessonId: string,
   lesson: Lesson,
   revision: number,
+  lockToken: string,
 ): Promise<RevisionedCourse> {
   return request<RevisionedCourse>(
     `/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}`,
-    { method: "PUT", body: { revision, data: lesson } },
+    { method: "PUT", body: { revision, lockToken, data: lesson } },
+  );
+}
+
+export function acquireLessonLock(
+  courseId: string,
+  lessonId: string,
+  token?: string,
+): Promise<LessonLock> {
+  return request<LessonLock>(
+    `/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/lock`,
+    {
+      method: "POST",
+      body: token === undefined ? {} : { token },
+    },
+  );
+}
+
+export function releaseLessonLock(
+  courseId: string,
+  lessonId: string,
+  token: string,
+): Promise<void> {
+  return request<void>(
+    `/courses/${encodeURIComponent(courseId)}/lessons/${encodeURIComponent(lessonId)}/lock`,
+    { method: "DELETE", body: { token } },
   );
 }
 

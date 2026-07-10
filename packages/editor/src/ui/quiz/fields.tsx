@@ -177,16 +177,22 @@ export function SelectField({
   value,
   options,
   onChange,
+  disabled,
 }: {
   label: string;
   value: string;
   options: readonly { value: string; label: string }[];
   onChange: (value: string) => void;
+  disabled?: boolean;
 }): ReactElement {
   return (
     <label className="fe-field">
       <span className="fe-field-label">{label}</span>
-      <Select value={value} onChange={(event) => onChange(event.target.value)}>
+      <Select
+        value={value}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+      >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

@@ -299,3 +299,45 @@ graduate to ADRs in `docs/adr/`; API changes follow semver in
 - **Compat consequence (accepted by Simon)**: existing courses shift these
   markers from primary blue to accent orange (defaults) on republish.
   CSS-only, trivially reversible.
+
+## 2026-07-09: B6 theme contrast and rhythm hardening
+
+- **Primary contrast is now a course-theme token, not an assumption.**
+  Player chrome already derived `--forge-primary-contrast` from
+  `readableTextOn(theme.primaryColor)`; editor canvas now mirrors that value
+  and `@forge/blocks` aliases it as `--fb-primary-contrast`. Primary-filled
+  block controls and bands use that foreground instead of fixed white, so an
+  author choosing a pale primary color does not silently publish unreadable
+  buttons. Accent-filled structure markers continue to use
+  `--fb-accent-contrast`.
+- **Theme Editor contrast checks match runtime behavior.** The contrast panel
+  checks computed text on primary and computed text on accent markers rather
+  than checking white on primary. A small live preview shows the same role
+  split authors see in blocks: primary for actions, accent for structure and
+  momentum, surface/background/text for reading.
+- **Course `spacingScale` is rendered through a shared multiplier.** The
+  schema already stored `compact | comfortable | spacious`; canvas and player
+  now emit `--forge-block-spacing` (`0.875`, `1`, `1.2`) and `BlockView`
+  multiplies the existing block padding scale by it. This keeps the per-block
+  padding model intact while making the course-level rhythm control visible.
+- **Contract coverage**: `scripts/contract-check.mjs` now fails if shared
+  block CSS pairs a primary fill with hard-coded white text. This protects the
+  author-theme boundary without importing Anvil into player or blocks.
+
+## 2026-07-09: D7 product composites slice
+
+- **Anvil now owns generic product chrome composites, not Forge domain
+  objects.** `ProductShell.tsx` exports shell regions and status banners;
+  `ProductPatterns.tsx` exports inspector, library, asset, dropzone, and upload
+  patterns. Props are slot-based (`title`, `meta`, `actions`, `preview`,
+  `selected`, `progress`) and deliberately avoid course, lesson, block, and
+  media model types.
+- **The components stay extraction-ready.** They add no dependencies beyond
+  React, compose existing primitives where useful, and expose semantic
+  `.an-*` classes styled in `components.css` with Anvil tokens. The player
+  remains out of scope: no player imports, no player CSS, and no runtime
+  artifacts changed.
+- **The styleguide is the review surface.** `ProductPatternsSection` shows the
+  shell, inspector, library, asset tile, dropzone, and upload row working
+  together so future T&S apps can copy product anatomy without copying Forge
+  editor internals.

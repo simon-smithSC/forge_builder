@@ -52,9 +52,11 @@ function themeVars(course: CourseDoc): CSSProperties {
     "--forge-surface": theme.surfaceColor,
     "--forge-text": theme.textColor,
     "--forge-accent": theme.accentColor,
+    "--forge-primary-contrast": readableTextOn(theme.primaryColor),
     // Luminance-derived foreground for accent-filled markers (mirrors the
     // player's themeStyleOf so canvas and published output match).
     "--forge-accent-contrast": readableTextOn(theme.accentColor),
+    "--forge-block-spacing": blockSpacingScale(theme.spacingScale),
     // Map bare typeface names through the same curated stacks the player
     // uses, so canvas and published output resolve identical fonts.
     "--forge-heading-font": fontStackOf(theme.headingTypeface),
@@ -63,14 +65,29 @@ function themeVars(course: CourseDoc): CSSProperties {
   } as CSSProperties;
 }
 
+function blockSpacingScale(
+  spacingScale: CourseDoc["theme"]["spacingScale"],
+): string {
+  switch (spacingScale) {
+    case "compact":
+      return "0.875";
+    case "spacious":
+      return "1.2";
+    case "comfortable":
+      return "1";
+  }
+}
+
 /** Evergreen insert indicator (V1.2): hairline + small disc always visible
  * at rest; the terminal instance is a permanently-strong "Add block" pill. */
 function InsertAffordance({
   onInsert,
   terminal = false,
+  disabled = false,
 }: {
   onInsert: () => void;
   terminal?: boolean;
+  disabled?: boolean;
 }): ReactElement {
   return (
     <div className={terminal ? "fe-insert fe-insert-end" : "fe-insert"}>
@@ -79,6 +96,7 @@ function InsertAffordance({
         type="button"
         className="fe-insert-btn"
         onClick={onInsert}
+        disabled={disabled}
         title={terminal ? "Add block" : "Insert block"}
         aria-label={terminal ? "Add block at end of lesson" : "Insert block here"}
       >
@@ -110,7 +128,13 @@ function hexForColorInput(hex: string): string {
 /** Compact "Header" button next to the lesson title; opens a small dialog
  * with the lesson header background controls (V3.3): image via MediaPicker,
  * hex color row (ThemeEditor pattern), scrim opacity, remove all. */
-function LessonHeaderControl({ lesson }: { lesson: BlocksLesson }): ReactElement {
+function LessonHeaderControl({
+  lesson,
+  disabled = false,
+}: {
+  lesson: BlocksLesson;
+  disabled?: boolean;
+}): ReactElement {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -119,6 +143,7 @@ function LessonHeaderControl({ lesson }: { lesson: BlocksLesson }): ReactElement
         className="fe-lesson-header-btn"
         iconStart={<ImageIcon size={14} aria-hidden />}
         onClick={() => setOpen(true)}
+        disabled={disabled}
         title="Lesson header background"
       >
         Header
@@ -269,13 +294,20 @@ function LessonHeaderDialog({
   );
 }
 
-function LessonTitleField({ lesson }: { lesson: Lesson }): ReactElement {
+function LessonTitleField({
+  lesson,
+  readOnly = false,
+}: {
+  lesson: Lesson;
+  readOnly?: boolean;
+}): ReactElement {
   return (
     <label className="fe-field">
       <span className="fe-field-label">Lesson title</span>
       <input
         value={lesson.title}
         onChange={(event) => renameLesson(lesson.id, event.target.value)}
+        readOnly={readOnly}
         aria-label="Lesson title"
       />
     </label>
@@ -300,9 +332,11 @@ function BlockDragCard({ lesson, blockId }: {
 function BlocksCanvas({
   lesson,
   course,
+  readOnly,
 }: {
   lesson: BlocksLesson;
   course: CourseDoc;
+  readOnly: boolean;
 }): ReactElement {
   const mediaUrls = useStore((state) => state.mediaUrls);
   const selectedBlockId = useStore((state) => state.selectedBlockId);
@@ -377,7 +411,7 @@ function BlocksCanvas({
   const context = useMemo<RenderContext>(
     () => ({
       mode: "edit",
-      inlineEditing,
+      ...(readOnly ? {} : { inlineEditing }),
       theme: course.theme,
       labels: course.labelSet,
       media: course.media,
@@ -387,7 +421,14 @@ function BlocksCanvas({
       // Authors always get the full native video controls on the canvas.
       videoPlaybackSpeedControl: true,
     }),
-    [course.theme, course.labelSet, course.media, resolveMediaUrl, inlineEditing],
+    [
+      course.theme,
+      course.labelSet,
+      course.media,
+      resolveMediaUrl,
+      inlineEditing,
+      readOnly,
+    ],
   );
 
   return (
@@ -405,10 +446,11 @@ function BlocksCanvas({
           className="fe-canvas-lesson-title"
           value={lesson.title}
           onChange={(event) => renameLesson(lesson.id, event.target.value)}
+          readOnly={readOnly}
           placeholder="Lesson title"
           aria-label="Lesson title"
         />
-        <LessonHeaderControl lesson={lesson} />
+        <LessonHeaderControl lesson={lesson} disabled={readOnly} />
       </div>
       <BlockRenderContext.Provider value={context}>
         <DndContext
@@ -428,10 +470,15 @@ function BlocksCanvas({
                     // deliberately ignores this button so the mousedown does
                     // not null insertAt before this click handler reads it.
                     onInsert={() =>
-                      setInsertAt((prev) =>
-                        prev?.index === index ? null : { index, tier: "strip" },
-                      )
+                      readOnly
+                        ? undefined
+                        : setInsertAt((prev) =>
+                            prev?.index === index
+                              ? null
+                              : { index, tier: "strip" },
+                          )
                     }
+                    disabled={readOnly}
                   />
                   <Presence
                     open={insertAt?.index === index && insertAt.tier === "strip"}
@@ -455,6 +502,7 @@ function BlocksCanvas({
                   index={index}
                   count={lesson.blocks.length}
                   selected={block.id === selectedBlockId}
+                  readOnly={readOnly}
                 />
               </div>
             ))}
@@ -470,12 +518,15 @@ function BlocksCanvas({
         <InsertAffordance
           terminal
           onInsert={() =>
-            setInsertAt((prev) =>
-              prev?.index === lesson.blocks.length
-                ? null
-                : { index: lesson.blocks.length, tier: "strip" },
-            )
+            readOnly
+              ? undefined
+              : setInsertAt((prev) =>
+                  prev?.index === lesson.blocks.length
+                    ? null
+                    : { index: lesson.blocks.length, tier: "strip" },
+                )
           }
+          disabled={readOnly}
         />
         <Presence
           open={
@@ -505,6 +556,7 @@ function BlocksCanvas({
             <Button
               variant="primary"
               iconStart={<Icon name="plus" size={16} />}
+              disabled={readOnly}
               onClick={() => setInsertAt({ index: 0, tier: "library" })}
             >
               Add a block
@@ -535,6 +587,9 @@ export interface CanvasProps {
 export function Canvas({ scrollRef }: CanvasProps): ReactElement {
   const course = useStore((state) => state.course);
   const selectedLessonId = useStore((state) => state.selectedLessonId);
+  const lessonLock = useStore((state) =>
+    state.selectedLessonId ? state.lessonLocks[state.selectedLessonId] : undefined,
+  );
 
   const lesson = course?.lessons.find((item) => item.id === selectedLessonId);
 
@@ -552,11 +607,12 @@ export function Canvas({ scrollRef }: CanvasProps): ReactElement {
   }
 
   if (lesson.type === "blocks") {
+    const readOnly = lessonLock?.status !== "owned";
     // fe-canvas-blocks removes the scroll container's padding so block bands
     // span the full center area edge to edge (layout contract).
     return (
       <main className="fe-canvas fe-canvas-blocks" ref={scrollRef}>
-        <BlocksCanvas lesson={lesson} course={course} />
+        <BlocksCanvas lesson={lesson} course={course} readOnly={readOnly} />
       </main>
     );
   }
@@ -564,7 +620,7 @@ export function Canvas({ scrollRef }: CanvasProps): ReactElement {
   if (lesson.type === "quiz") {
     return (
       <main className="fe-canvas" ref={scrollRef}>
-        <QuizLessonEditor lesson={lesson} />
+        <QuizLessonEditor lesson={lesson} readOnly={lessonLock?.status !== "owned"} />
       </main>
     );
   }
@@ -572,12 +628,13 @@ export function Canvas({ scrollRef }: CanvasProps): ReactElement {
   return (
     <main className="fe-canvas" ref={scrollRef}>
       <div className="fe-canvas-panel">
-        <LessonTitleField lesson={lesson} />
+        <LessonTitleField lesson={lesson} readOnly={lessonLock?.status !== "owned"} />
         <label className="fe-field">
           <span className="fe-field-label">Section description</span>
           <textarea
             value={lesson.description ?? ""}
             onChange={(event) => setSectionDescription(lesson.id, event.target.value)}
+            readOnly={lessonLock?.status !== "owned"}
             rows={3}
             aria-label="Section description"
           />

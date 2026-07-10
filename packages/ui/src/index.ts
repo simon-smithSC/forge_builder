@@ -86,6 +86,42 @@ export { Skeleton } from "./components/Skeleton.js";
 export type { SkeletonProps } from "./components/Skeleton.js";
 export { Wordmark } from "./components/Wordmark.js";
 export type { WordmarkProps } from "./components/Wordmark.js";
+export {
+  AppShell,
+  ShellMain,
+  ShellRail,
+  ShellSidebar,
+  ShellTopBar,
+  StatusBanner,
+} from "./components/ProductShell.js";
+export type {
+  AppShellProps,
+  ShellMainProps,
+  ShellRailProps,
+  ShellSidebarProps,
+  ShellTopBarProps,
+  StatusBannerProps,
+} from "./components/ProductShell.js";
+export {
+  AssetTile,
+  Dropzone,
+  InspectorRail,
+  InspectorSection,
+  LibraryCard,
+  LibraryDrawer,
+  PropertyRow,
+  UploadProgressRow,
+} from "./components/ProductPatterns.js";
+export type {
+  AssetTileProps,
+  DropzoneProps,
+  InspectorRailProps,
+  InspectorSectionProps,
+  LibraryCardProps,
+  LibraryDrawerProps,
+  PropertyRowProps,
+  UploadProgressRowProps,
+} from "./components/ProductPatterns.js";
 export { toast, dismissToast, ToastHost } from "./components/Toast.js";
 export type { ToastOptions, ToastItem } from "./components/Toast.js";
 export type { ControlSize, Tone } from "./components/util.js";
